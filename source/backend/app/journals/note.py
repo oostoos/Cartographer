@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """A Note: a freeform bit of text, either a daily journal entry (anchored to a journal_date) or
 an ad-hoc note attached to a task or project (anchored to a target_type/target_id pair). A note's
 target_type and target_id are always both empty or both set together — never exactly one.

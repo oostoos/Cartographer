@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Scalar value encoders/decoders shared by every object module's field getters and setters, so
 a bool/date/optional-int field is represented identically no matter which object type holds it.
 """

@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Journals (frontend)
 
 `TodaysJournalPage.tsx` is the app's home page (route `/`) — the screen the app opens to. It reads

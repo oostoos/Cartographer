@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { Card } from "../../core/design-system/components/Card";
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
 import { useProjects } from "../projects/useProjects";

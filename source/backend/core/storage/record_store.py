@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Generic, object-type-agnostic primitives every per-object module (Task, Project, ...) builds
 its create/load/save/delete/list/find functions on top of.
 """

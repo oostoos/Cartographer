@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Builds the Flask application: settings, CORS, storage-error-to-JSON mapping, and every
 feature blueprint. See run.py for how this is started with hot reload and a debugger attached.
 """

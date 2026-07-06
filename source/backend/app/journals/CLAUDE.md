@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Journals (backend)
 
 `today_engine.py` builds "today's view" of tasks — `ensure_todays_recurring_tasks_exist()` stamps

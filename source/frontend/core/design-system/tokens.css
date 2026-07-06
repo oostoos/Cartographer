@@ -1,3 +1,4 @@
+/* @manualReviewRequested: 2026-07-06 */
 /* The only place raw colors/fonts/spacing values are allowed to appear. Every component must
    consume these custom properties — never a raw hex value or hard-coded px size — so the whole
    app's look can be changed from this one file. See CLAUDE.md in this directory. */

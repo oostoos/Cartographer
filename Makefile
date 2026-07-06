@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 # Thin wrapper around the npm scripts in package.json and source/frontend/package.json.
 # Keep those scripts as the source of truth; add targets here, not new command logic.
 

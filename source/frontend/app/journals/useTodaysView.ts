@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchTodaysView } from "./todayApi";

@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 def test_create_note_returns_the_created_note(client):
     response = client.post(
         "/api/notes", json={"title": "Reflection", "content": "Good day", "journalDate": "2026-07-04"}

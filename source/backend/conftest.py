@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Shared test setup for the whole backend test suite."""
 
 import pytest

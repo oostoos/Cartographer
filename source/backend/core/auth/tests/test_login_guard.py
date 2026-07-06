@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 from flask import Flask, jsonify
 
 from core.auth.login_guard import SESSION_KEY_IS_LOGGED_IN, login_required

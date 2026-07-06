@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { Navigate, Outlet } from "react-router-dom";
 
 import { useAuthStatus } from "../../app/auth/useAuthStatus";

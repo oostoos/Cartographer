@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """The math that turns a RecurringTaskTemplate's cadence fields into "does this occur on date D"
 and "which dates in this range does it occur on." Uses datetime.date exclusively (never
 timezone-aware datetimes), which sidesteps DST entirely by construction — there is no local

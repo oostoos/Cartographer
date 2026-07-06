@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """A RecurringTaskTemplate: describes both how often a task repeats and the shape of the Task
 instances stamped out for each occurrence — title, description, project, tags, and a checklist
 of subtask titles. See app/journals/today_engine.py for the "which templates apply today, and

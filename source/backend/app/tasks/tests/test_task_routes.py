@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 def test_create_task_returns_the_created_task(client):
     response = client.post("/api/tasks", json={"title": "Buy milk", "tags": ["errands"]})
     assert response.status_code == 201

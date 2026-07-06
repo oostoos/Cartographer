@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import type { HTMLAttributes } from "react";
 
 import "./Card.css";

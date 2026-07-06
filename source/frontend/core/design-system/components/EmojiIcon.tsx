@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 /** The only sanctioned way an emoji appears in this app's UI, in place of an icon font/SVG set.
  * Pairs every emoji with an accessible label so screen readers announce its meaning rather than
  * reading the raw character. See CLAUDE.md in this directory.

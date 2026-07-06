@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Storage (the hand-built database)
 
 Files are the database — one record = one text file, one directory per object type, under

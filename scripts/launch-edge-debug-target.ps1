@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 <#
 Cartographer: launches Edge as the debug target for VS Code's "Frontend: Edge" attach-mode config.
 

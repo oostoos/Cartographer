@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { todayIsoDate } from "../../core/utils/date";
 import {
   WEEKDAY_LABELS,

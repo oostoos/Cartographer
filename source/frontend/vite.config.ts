@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 

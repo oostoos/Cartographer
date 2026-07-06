@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { useMemo, useState } from "react";
 
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";

@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 <#
 Cartographer: Edge CDP target-discovery reproduction/verification harness.
 

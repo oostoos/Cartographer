@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Writing a record file so a concurrent reader never observes a half-written file."""
 
 import os

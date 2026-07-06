@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { Checkbox } from "../../core/design-system/components/Checkbox";
 import type { Task } from "./taskApi";
 import "./TaskRow.css";

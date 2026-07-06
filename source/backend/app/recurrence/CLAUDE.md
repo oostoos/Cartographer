@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Recurrence (backend)
 
 `recurring_task_template.py` is the object type — both the cadence fields (frequency/interval/

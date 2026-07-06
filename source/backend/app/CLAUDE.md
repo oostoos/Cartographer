@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Backend app
 
 Feature code, one directory per domain — `auth`, `tasks`, `projects`, `recurrence`, `journals`,

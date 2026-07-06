@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Tasks (backend)
 
 Owns two object types: `task.py` (the single shape every task uses, recurring-generated or not —

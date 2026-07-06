@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """A Subtask: one checklist item belonging to a single Task. All of a task's subtasks must be
 completed or skipped before that task itself can be marked complete — see
 app/tasks/task_routes.update_task.

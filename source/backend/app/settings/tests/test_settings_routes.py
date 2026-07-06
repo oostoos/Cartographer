@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 def test_get_settings_creates_defaults_on_first_use(client):
     response = client.get("/api/settings")
     assert response.status_code == 200

@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchAuthStatus } from "./authApi";

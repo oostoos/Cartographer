@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """HTTP routes for the Today page — the screen the app opens to. Generating today's recurring
 task instances happens as a side effect of GET /api/today; see
 app/journals/today_engine.ensure_todays_recurring_tasks_exist. Marking a task complete, or

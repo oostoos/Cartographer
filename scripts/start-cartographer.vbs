@@ -1,3 +1,4 @@
+' @manualReviewRequested: 2026-07-06
 ' Silent launcher for the desktop/taskbar shortcut: hides the PowerShell window so only the
 ' minimized "npm run dev" window (started by start-cartographer.ps1) is visible. Point a shortcut
 ' at this file directly and it never needs to change, even if start-cartographer.ps1's logic does.

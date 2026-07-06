@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Login/logout/status endpoints for the single local user. The password hash lives in .env, so
 login doesn't depend on the database layer being healthy.
 """

@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Builds "today's view": generates a fresh Task instance for every RecurringTaskTemplate that
 applies today, then buckets every task into what the Today page shows — recurring instances due
 today, ad-hoc tasks due today or overdue, and ad-hoc tasks with no due date at all

@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """A Project: a named grouping that tasks can optionally belong to, and that can itself belong to
 another project as a subproject (arbitrary nesting depth, via the same plain-id reference pattern
 `Task.project_id` uses). Same shape as app/tasks/task.py — see core/storage/CLAUDE.md for the

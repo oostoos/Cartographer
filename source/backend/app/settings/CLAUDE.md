@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Settings (backend)
 
 `user_preference.py` is a singleton object type — there is only ever one local user, so use

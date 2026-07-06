@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { registerShutdownOnClose } from "./shutdownOnClose";

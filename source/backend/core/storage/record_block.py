@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """The in-memory representation of one already-read record, plus the encode/decode functions
 that translate between that representation and a record file's raw text.
 """

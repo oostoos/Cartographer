@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """HTTP routes for creating, listing, updating, and deleting notes — both freeform daily journal
 entries (journalDate set, no target) and ad-hoc notes attached to a task or project (targetType/
 targetId set together).

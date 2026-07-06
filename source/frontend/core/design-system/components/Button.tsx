@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import type { ButtonHTMLAttributes } from "react";
 
 import "./Button.css";

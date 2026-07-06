@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """HTTP routes for creating, listing, updating, and deleting subtasks."""
 
 from flask import Blueprint, jsonify, request

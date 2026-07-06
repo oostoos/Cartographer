@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """HTTP routes for creating, listing, updating, and deleting recurring task templates."""
 
 from datetime import date

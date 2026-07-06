@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Frontend app
 
 Feature code, one directory per domain — `auth`, `tasks`, `projects`, `journals`, `settings` —

@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 from core.storage.atomic_write import write_text_atomically
 
 

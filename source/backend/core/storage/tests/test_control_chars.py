@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 import pytest
 
 from core.storage.control_chars import ALL_CONTROL_CHARACTERS, raise_if_contains_control_characters

@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """The @login_required decorator that gates every feature route except auth and the health
 check. Single local user, session-cookie based — see app/auth/auth_routes.py for login/logout.
 """

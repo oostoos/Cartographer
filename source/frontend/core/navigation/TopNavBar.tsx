@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { NavLink } from "react-router-dom";
 
 import { Button } from "../design-system/components/Button";

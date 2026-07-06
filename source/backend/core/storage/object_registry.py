@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Resolves reference fields (one record's field holding another record's id) into the record
 they point to. Object modules self-register here on import, which avoids circular imports
 between e.g. task.py and project.py.

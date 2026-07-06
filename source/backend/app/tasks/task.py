@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """A Task: something the user wants to get done — either created directly (one-off) or stamped
 out for a single calendar day by a RecurringTaskTemplate (see app/recurrence/recurring_task_template.py
 and app/journals/today_engine.py). Every task, recurring-generated or not, uses this exact same

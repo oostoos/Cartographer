@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import type { TextareaHTMLAttributes } from "react";
 
 import "./TextArea.css";

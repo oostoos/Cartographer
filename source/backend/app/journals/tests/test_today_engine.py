@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 from datetime import date
 
 from app.journals import today_engine

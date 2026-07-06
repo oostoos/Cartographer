@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Cartographer
 
 A daily-tracking and project-management app for people with ADHD, built to grow into a general

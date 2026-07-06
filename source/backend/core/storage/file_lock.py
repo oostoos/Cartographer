@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Guards a record file against two writers racing each other. Reader-vs-writer safety instead
 comes from atomic_write's os.replace, so only writers need to take this lock.
 """

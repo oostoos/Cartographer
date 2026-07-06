@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { defineConfig } from "vitest/config";
 
 // Kept separate from vite.config.ts: importing vitest's defineConfig alongside

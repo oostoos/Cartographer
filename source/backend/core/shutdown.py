@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Tears down the whole dev process tree a short while after the browser tab closes, unless a new
 page load cancels it first (so a refresh — which fires the same unload signal as a real close —
 doesn't kill the backend).

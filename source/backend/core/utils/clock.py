@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """The one place "what day is it" is read, so tests can mock a single function instead of
 patching datetime.date.today() everywhere it's used.
 """

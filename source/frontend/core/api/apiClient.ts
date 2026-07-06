@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 /** The one place every API call goes through, so request/response conventions (JSON, cookies,
  * error shape) are consistent everywhere instead of re-implemented per feature.
  */

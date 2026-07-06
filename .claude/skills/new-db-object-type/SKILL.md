@@ -2,6 +2,7 @@
 name: new-db-object-type
 description: Scaffolds a new file-based database object type (module + tests) matching Cartographer's standard shape, using app/tasks/task.py as the reference implementation. Use whenever a new kind of record needs to be persisted in the custom database, instead of hand-writing the module.
 ---
+<!-- @manualReviewRequested: 2026-07-06 -->
 
 # New DB object type
 

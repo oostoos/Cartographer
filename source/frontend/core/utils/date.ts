@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 /** Returns today's local calendar date as "YYYY-MM-DD" — never `toISOString().slice(0, 10)`,
  * which returns the *UTC* date and drifts a day off local "today" whenever the two differ (e.g.
  * near midnight in most timezones). Mirrors the backend's local-date-only convention (see

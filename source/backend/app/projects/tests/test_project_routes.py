@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 def test_create_project_returns_the_created_project(client):
     response = client.post("/api/projects", json={"title": "Home renovation", "description": "Kitchen first"})
     assert response.status_code == 201

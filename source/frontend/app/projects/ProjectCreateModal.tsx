@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { type FormEvent, useState } from "react";
 
 import { Button } from "../../core/design-system/components/Button";

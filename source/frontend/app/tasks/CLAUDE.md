@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Tasks (frontend)
 
 `RecurrencePicker.tsx` and `recurrenceApi.ts` live here (not in a separate frontend "recurrence"

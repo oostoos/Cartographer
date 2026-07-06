@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 # Force-stops Cartographer's dev servers (Flask/Werkzeug + Vite) by whatever is currently bound to
 # their well-known ports, tree-killing each one's parent process too — Werkzeug's reloader watcher
 # doesn't bind a socket itself (only its WERKZEUG_RUN_MAIN child does), so killing just the child

@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import type { ReactNode } from "react";
 
 import { Card } from "./Card";

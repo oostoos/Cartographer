@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 def test_create_recurring_task_template_returns_the_created_template(client):
     response = client.post(
         "/api/recurring-task-templates",

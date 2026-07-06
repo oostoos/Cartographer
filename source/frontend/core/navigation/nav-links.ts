@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 /** Every top-nav destination in one place, so adding a page means editing exactly this list. */
 export type NavLink = {
   path: string;

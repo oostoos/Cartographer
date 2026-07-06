@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Settings (frontend)
 
 `SettingsPage.tsx` reads/writes the single `UserPreference` record via `settingsApi.ts`. No

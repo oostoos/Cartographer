@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Auth (backend)
 
 Single local user, session-cookie based. `auth_routes.py` exposes `POST /api/auth/login`,

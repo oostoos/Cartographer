@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { apiGet, apiPatch, apiPost } from "../../core/api/apiClient";
 
 export type RecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";

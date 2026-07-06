@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """UserPreference: the single local user's in-app preferences (as opposed to the .env-backed
 settings in core/config/settings.py, which are deployment/secret configuration). Since there is
 only ever one local user, this is a singleton — see get_or_create_singleton.

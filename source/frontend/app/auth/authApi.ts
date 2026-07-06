@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import { apiGet, apiPost } from "../../core/api/apiClient";
 
 export type AuthStatus = {

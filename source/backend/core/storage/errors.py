@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Every error the storage layer raises directly. Callers (routes, engines) catch these by type
 rather than parsing error messages.
 """

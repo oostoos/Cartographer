@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Loads and documents every value .env can hold — the single source of truth for backend
 configuration. See .env.example for the file this reads, and CLAUDE.md in this directory for the
 rule that every new .env-able setting must be registered here.

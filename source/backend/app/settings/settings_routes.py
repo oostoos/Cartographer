@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """HTTP routes for the single local user's in-app preferences."""
 
 from flask import Blueprint, jsonify, request

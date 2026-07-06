@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Auth (frontend)
 
 `LoginPage.tsx` is the only public route (see `core/app-shell/AppRoutes.tsx`). `useAuthStatus.ts`

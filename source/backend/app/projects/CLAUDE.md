@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Projects (backend)
 
 `project.py` is a grouping object type that tasks can optionally belong to (`Task.project_id`)

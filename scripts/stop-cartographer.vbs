@@ -1,3 +1,4 @@
+' @manualReviewRequested: 2026-07-06
 ' Silent companion to start-cartographer.vbs, for an optional "Stop Cartographer" shortcut. Usually
 ' unnecessary — closing the minimized "npm run dev" window is enough — but useful as a clean sweep
 ' if that ever leaves an orphaned backend or frontend process behind.

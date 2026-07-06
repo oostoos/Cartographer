@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 # Starts Cartographer for day-to-day use outside VS Code: launches the same `npm run dev` (Flask +
 # Vite, hot-reload both sides) used everywhere else in this project, then opens the app in the
 # default browser. Meant to be run via the sibling start-cartographer.vbs, which a desktop/taskbar

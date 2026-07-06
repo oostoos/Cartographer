@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Frontend core
 
 Infrastructure/plumbing only — no feature logic. Subdirectories:

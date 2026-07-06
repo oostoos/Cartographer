@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-06
 import type { InputHTMLAttributes } from "react";
 
 import "./TextInput.css";

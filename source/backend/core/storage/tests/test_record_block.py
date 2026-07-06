@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 import pytest
 
 from core.storage.errors import MalformedRecordError, ValidationError

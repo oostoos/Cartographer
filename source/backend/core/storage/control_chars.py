@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """The delimiter scheme every record file uses, defined once so no other module hardcodes a
 control character. Using non-printable ASCII separator characters (rather than commas, colons,
 newlines, etc) means user-typed text can never accidentally collide with a delimiter.

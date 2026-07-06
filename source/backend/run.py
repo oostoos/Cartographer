@@ -1,3 +1,4 @@
+# @manualReviewRequested: 2026-07-06
 """Entry point: builds the Flask app and starts the dev server.
 
 VS Code debugging is wired entirely through .vscode/launch.json's "Backend: Flask (debugpy

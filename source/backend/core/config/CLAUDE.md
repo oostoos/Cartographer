@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Config
 
 `settings.py` is the single documented registry of every value `.env` can hold — see

@@ -1,3 +1,4 @@
+<!-- @manualReviewRequested: 2026-07-06 -->
 # Projects (frontend)
 
 `ProjectListPage.tsx` pairs the shared `Sidebar` (`core/design-system/components/Sidebar.tsx`,
