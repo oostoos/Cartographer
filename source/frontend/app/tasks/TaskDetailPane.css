@@ -1,0 +1,34 @@
+.cg-task-detail-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.cg-task-detail-pane__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  width: 100%;
+}
+
+.cg-task-detail-pane__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.cg-task-detail-pane__meta {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: var(--space-2) 0;
+}
+
+.cg-task-detail-pane__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}

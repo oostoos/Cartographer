@@ -1,0 +1,24 @@
+.cg-project-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+.cg-project-list-page__body {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.cg-project-list-page__detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.cg-project-list-page__empty-state {
+  color: var(--color-text-muted);
+  flex: 1;
+}

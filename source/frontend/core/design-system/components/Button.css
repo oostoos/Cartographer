@@ -1,0 +1,67 @@
+.cg-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.cg-button:hover {
+  opacity: 0.85;
+}
+
+.cg-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cg-button--icon-only {
+  padding: var(--space-2);
+  line-height: 1;
+}
+
+/* Solid: a fully colored button, used sparingly where ghost reads as too quiet. */
+
+.cg-button--solid.cg-button--primary {
+  background-color: var(--color-primary-blue);
+  border-color: var(--color-primary-blue);
+  color: var(--color-surface);
+}
+
+.cg-button--solid.cg-button--secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.cg-button--solid.cg-button--danger {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+  color: var(--color-surface);
+}
+
+/* Ghost: the default everywhere for now — an outline plus a light tint of the variant's color. */
+
+.cg-button--ghost.cg-button--primary {
+  background-color: var(--color-primary-blue-tint);
+  border-color: var(--color-primary-blue);
+  color: var(--color-primary-blue-strong);
+}
+
+.cg-button--ghost.cg-button--secondary {
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.cg-button--ghost.cg-button--danger {
+  background-color: var(--color-danger-tint);
+  border-color: var(--color-danger);
+  color: var(--color-danger-strong);
+}

@@ -1,0 +1,8 @@
+flask==3.1.0
+flask-cors==5.0.0
+python-dotenv==1.0.1
+portalocker==2.10.1
+debugpy==1.8.9
+watchdog==6.0.0
+pytest==8.3.4
+ruff==0.8.4

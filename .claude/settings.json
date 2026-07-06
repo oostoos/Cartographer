@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": [
+      "Bash",
+      "PowerShell",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "TodoWrite",
+      "NotebookEdit",
+      "Agent"
+    ],
+    "ask": [
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(rm -rf*)",
+      "PowerShell(git push --force*)",
+      "PowerShell(git reset --hard*)",
+      "PowerShell(git clean -f*)",
+      "PowerShell(Remove-Item -Recurse -Force*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "statusMessage": "Lint-fixing edited file",
+            "command": "try { $j = ($input | Out-String) | ConvertFrom-Json; $f = $j.tool_input.file_path; if (-not $f) { $f = $j.tool_response.filePath }; if ($f -like '*.py') { & 'C:\\Users\\austi\\Projects\\Cartographer\\source\\backend\\.venv\\Scripts\\python.exe' -m ruff check --fix $f } elseif ($f -like '*.ts' -or $f -like '*.tsx') { $env:Path = \"C:\\Program Files\\nodejs;$env:Path\"; Push-Location 'C:\\Users\\austi\\Projects\\Cartographer\\source\\frontend'; & '.\\node_modules\\.bin\\eslint.cmd' --fix $f; Pop-Location } } catch { }"
+          },
+          {
+            "type": "command",
+            "shell": "powershell",
+            "statusMessage": "Formatting edited file",
+            "command": "try { $j = ($input | Out-String) | ConvertFrom-Json; $f = $j.tool_input.file_path; if (-not $f) { $f = $j.tool_response.filePath }; if ($f -like '*.py') { & 'C:\\Users\\austi\\Projects\\Cartographer\\source\\backend\\.venv\\Scripts\\python.exe' -m ruff format $f } elseif ($f -like '*.ts' -or $f -like '*.tsx') { $env:Path = \"C:\\Program Files\\nodejs;$env:Path\"; Push-Location 'C:\\Users\\austi\\Projects\\Cartographer\\source\\frontend'; & '.\\node_modules\\.bin\\prettier.cmd' --write $f; Pop-Location } } catch { }"
+          }
+        ]
+      }
+    ]
+  }
+}

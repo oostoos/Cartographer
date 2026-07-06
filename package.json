@@ -1,0 +1,15 @@
+{
+  "name": "cartographer",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "concurrently --kill-others -n backend,frontend -c blue,green \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "source\\backend\\.venv\\Scripts\\python.exe source/backend/run.py",
+    "dev:frontend": "powershell -NoProfile -Command $env:Path = $env:ProgramFiles + '\\nodejs;' + $env:Path; npm --prefix source/frontend run dev",
+    "test:backend": "source\\backend\\.venv\\Scripts\\python.exe -m pytest source/backend",
+    "test:frontend": "powershell -NoProfile -Command $env:Path = $env:ProgramFiles + '\\nodejs;' + $env:Path; npm --prefix source/frontend run test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

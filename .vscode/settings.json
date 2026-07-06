@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/source/backend/.venv/Scripts/python.exe",
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["source/backend"],
+  "eslint.workingDirectories": [{ "directory": "source/frontend" }],
+  "editor.formatOnSave": true,
+  "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
+  "[typescript][typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
+}

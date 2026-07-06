@@ -1,0 +1,14 @@
+.cg-checkbox {
+  font-size: 1.25rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
+}
+
+.cg-checkbox:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

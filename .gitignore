@@ -1,0 +1,27 @@
+# Secrets - never commit
+.env
+
+# Runtime database files - created on disk, not in version control (DATA_ROOT defaults to
+# ./data relative to the backend's working directory, source/backend)
+source/backend/data/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Editor / OS
+.vscode/*.local.json
+.vscode/.browser-debug-profile/
+.DS_Store
+Thumbs.db
+
+# Claude Code local overrides (personal, not shared)
+.claude/settings.local.json

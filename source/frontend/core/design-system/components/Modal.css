@@ -1,0 +1,53 @@
+.cg-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 1000;
+}
+
+.cg-modal__dialog {
+  max-width: 32rem;
+  width: 100%;
+  max-height: calc(100vh - var(--space-6));
+  overflow-y: auto;
+}
+
+.cg-modal__dialog:focus {
+  outline: none;
+}
+
+.cg-modal__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cg-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cg-modal__title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.cg-modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.cg-modal__close:hover {
+  color: var(--color-text);
+}

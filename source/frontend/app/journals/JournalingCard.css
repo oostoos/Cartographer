@@ -1,0 +1,14 @@
+.cg-journaling-card form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cg-journaling-card button {
+  align-self: flex-start;
+}
+
+.cg-journaling-card__error {
+  color: var(--color-danger-strong);
+}

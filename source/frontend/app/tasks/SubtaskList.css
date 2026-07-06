@@ -1,0 +1,47 @@
+.cg-subtask-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cg-subtask-list__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cg-subtask-list__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cg-subtask-list__connector {
+  color: var(--color-text-muted);
+  font-family: monospace;
+}
+
+.cg-subtask-list__title--resolved {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.cg-subtask-list__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.cg-subtask-list__form {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cg-subtask-list__form .cg-text-input {
+  flex: 1;
+}

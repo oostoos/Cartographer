@@ -1,0 +1,52 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: Flask (debugpy launch)",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/source/backend/.venv/Scripts/python.exe",
+      "program": "${workspaceFolder}/source/backend/run.py",
+      "cwd": "${workspaceFolder}/source/backend",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "subProcess": true,
+      "postDebugTask": "Cartographer: Stop dev servers"
+    },
+    {
+      "name": "Frontend: Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/source/frontend",
+      "preLaunchTask": "Start Frontend (Vite)",
+      "postDebugTask": "Cartographer: Stop dev servers"
+    },
+    {
+      "name": "Frontend: Edge",
+      "type": "msedge",
+      "request": "attach",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/source/frontend",
+      "address": "127.0.0.1",
+      "port": 9223,
+      "preLaunchTask": "Start Edge (Debug Target)",
+      "postDebugTask": "Cartographer: Stop dev servers",
+      "trace": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Cartographer (F5, Chrome)",
+      "configurations": ["Backend: Flask (debugpy launch)", "Frontend: Chrome"],
+      "preLaunchTask": "Cartographer: Stop dev servers",
+      "stopAll": true
+    },
+    {
+      "name": "Cartographer (F5, Edge)",
+      "configurations": ["Backend: Flask (debugpy launch)", "Frontend: Edge"],
+      "preLaunchTask": "Cartographer: Stop dev servers",
+      "stopAll": true
+    }
+  ]
+}

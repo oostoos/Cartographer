@@ -1,0 +1,55 @@
+/* The only place raw colors/fonts/spacing values are allowed to appear. Every component must
+   consume these custom properties — never a raw hex value or hard-coded px size — so the whole
+   app's look can be changed from this one file. See CLAUDE.md in this directory. */
+
+:root {
+  --font-family-base: Georgia, "Times New Roman", serif;
+
+  /* Light theme: pastels, warm neutrals, blues and greens. */
+  --color-background: #faf6ef;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f2ede2;
+  --color-border: #e2d9c8;
+
+  --color-text: #3a352c;
+  --color-text-muted: #766f60;
+
+  --color-primary-blue: #7fa8c9;
+  --color-primary-blue-strong: #4f7fa3;
+  --color-primary-blue-tint: #e8f0f6;
+  --color-primary-green: #8fbf9f;
+  --color-primary-green-strong: #5c9770;
+  --color-primary-green-tint: #e9f5ec;
+  --color-warm-neutral: #e8ddc7;
+
+  --color-danger: #d98e83;
+  --color-danger-strong: #b85f52;
+  --color-danger-tint: #f8e9e7;
+
+  /* Modal backdrop tint — a translucent version of the text color, not a new hue. */
+  --color-overlay: rgba(58, 53, 44, 0.35);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.5rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-card: 0 1px 3px rgba(58, 53, 44, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}

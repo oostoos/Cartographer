@@ -1,0 +1,76 @@
+.cg-project-detail-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.cg-project-detail-pane__breadcrumb {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary-blue-strong);
+  font-family: var(--font-family-base);
+  font-size: 0.95rem;
+  padding: 0;
+}
+
+.cg-project-detail-pane__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: var(--space-2) var(--space-3);
+  width: 100%;
+}
+
+.cg-project-detail-pane__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.cg-project-detail-pane__meta {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.cg-project-detail-pane__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.cg-project-detail-pane__confirm-delete {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-danger);
+}
+
+.cg-project-detail-pane__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.cg-project-detail-pane__subproject-list,
+.cg-project-detail-pane__task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cg-project-detail-pane__subproject-list button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  color: var(--color-primary-blue-strong);
+  padding: var(--space-1) 0;
+}

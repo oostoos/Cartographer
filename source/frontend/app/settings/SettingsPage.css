@@ -1,0 +1,29 @@
+.cg-settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+.cg-settings-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.cg-settings-page__danger-zone {
+  border-color: var(--color-danger);
+}
+
+.cg-settings-page__danger-zone h2 {
+  color: var(--color-danger-strong);
+  margin-top: 0;
+}
+
+.cg-settings-page__danger-zone-actions {
+  display: flex;
+  gap: var(--space-2);
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Frontend (Vite)",
+      "type": "shell",
+      "command": "& 'C:\\Program Files\\nodejs\\npm.cmd' run dev",
+      "options": { "cwd": "${workspaceFolder}/source/frontend" },
+      "isBackground": true,
+      "presentation": { "group": "cartographer", "panel": "dedicated" },
+      "problemMatcher": {
+        "pattern": { "regexp": "^never matches$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE",
+          "endsPattern": "ready in"
+        }
+      }
+    },
+    {
+      "label": "Cartographer: Stop dev servers",
+      "type": "shell",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}/scripts/stop-cartographer.ps1\"",
+      "presentation": { "group": "cartographer", "reveal": "silent", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Edge (Debug Target)",
+      "type": "shell",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}/scripts/launch-edge-debug-target.ps1\"",
+      "dependsOn": "Start Frontend (Vite)",
+      "dependsOrder": "sequence",
+      "presentation": { "group": "cartographer", "reveal": "silent", "panel": "dedicated" },
+      "problemMatcher": []
+    }
+  ]
+}
