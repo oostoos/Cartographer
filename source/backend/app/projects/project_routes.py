@@ -1,11 +1,12 @@
 # @manualReviewRequested: 2026-07-06
 """HTTP routes for creating, listing, updating, and deleting projects."""
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
 from core.auth.login_guard import login_required
+from core.http.json_response import json_response
 from app.projects import project
-from app.tasks import subtask, task
+from app.tasks import task
 
 project_blueprint = Blueprint("projects", __name__, url_prefix="/api/projects")
 
@@ -14,7 +15,7 @@ project_blueprint = Blueprint("projects", __name__, url_prefix="/api/projects")
 @login_required
 def list_projects():
     """Lists every project."""
-    return jsonify([_serialize(block) for block in project.list_all()])
+    return json_response([_serialize(block) for block in project.list_all()])
 
 
 @project_blueprint.post("")
@@ -22,22 +23,23 @@ def list_projects():
 def create_project():
     """Creates a project.
 
-    Body: {"title": str, "description"?: str, "parentProjectId"?: str}.
+    Body: {"title": str, "description"?: str, "parentProjectId"?: str, "workspaceId"?: str}.
     """
     body = request.get_json(force=True, silent=True) or {}
     created = project.create(
         body.get("title", ""),
         description=body.get("description", ""),
         parent_project_id=body.get("parentProjectId", ""),
+        workspace_id=body.get("workspaceId", ""),
     )
-    return jsonify(_serialize(created)), 201
+    return json_response(_serialize(created), 201)
 
 
 @project_blueprint.get("/<project_id>")
 @login_required
 def get_project(project_id):
     """Reads a single project."""
-    return jsonify(_serialize(project.load(project_id)))
+    return json_response(_serialize(project.load(project_id)))
 
 
 @project_blueprint.patch("/<project_id>")
@@ -45,7 +47,8 @@ def get_project(project_id):
 def update_project(project_id):
     """Updates one or more of a project's fields.
 
-    Body: any of {"title": str, "description": str, "parentProjectId": str, "isArchived": bool}.
+    Body: any of {"title": str, "description": str, "parentProjectId": str, "workspaceId": str,
+        "isArchived": bool}.
     """
     block = project.load(project_id)
     body = request.get_json(force=True, silent=True) or {}
@@ -55,10 +58,12 @@ def update_project(project_id):
         project.set_description(body["description"], block=block)
     if "parentProjectId" in body:
         project.set_parent_project_id(body["parentProjectId"], block=block)
+    if "workspaceId" in body:
+        project.set_workspace_id(body["workspaceId"], block=block)
     if "isArchived" in body:
         project.set_is_archived(bool(body["isArchived"]), block=block)
     project.save(block)
-    return jsonify(_serialize(block))
+    return json_response(_serialize(block))
 
 
 @project_blueprint.delete("/<project_id>")
@@ -90,6 +95,7 @@ def _serialize(block) -> dict:
         "title": project.get_title(block=block),
         "description": project.get_description(block=block),
         "parentProjectId": project.get_parent_project_id(block=block),
+        "workspaceId": project.get_workspace_id(block=block),
         "isArchived": project.get_is_archived(block=block),
         "createdAt": project.get_created_at(block=block),
     }
@@ -118,6 +124,7 @@ def _delete_project_recursively(project_id: str) -> None:
         _delete_project_recursively(project.get_id(block=child_project))
     for owned_task in task.find(project_id=project_id):
         owned_task_id = task.get_id(block=owned_task)
-        subtask.delete_all_for_task(owned_task_id)
+        for subtask_block in task.find(parent_task_id=owned_task_id):
+            task.delete(task.get_id(block=subtask_block))
         task.delete(owned_task_id)
     project.delete(project_id)

@@ -6,35 +6,41 @@ import {
   createNote,
   deleteNote,
   fetchAllNotes,
-  fetchJournalEntries,
   fetchNotesForTarget,
   updateNote,
 } from "./noteApi";
 
 /** The shared prefix every notes query key is nested under, so any note mutation can invalidate
- * every view (journal entries, a target's notes, "all notes") with one invalidateQueries call —
- * TanStack Query matches query keys by prefix.
+ * every view (a target's notes, "all notes") with one invalidateQueries call — TanStack Query
+ * matches query keys by prefix.
  */
 const NOTES_QUERY_KEY = ["notes"];
 
-/** Reads every pure journal entry (no task/project target), cached and refetched whenever any
- * note changes.
+/** Reads every note attached to one task or project. options.enabled defaults to true; pass
+ * false to skip fetching (e.g. AllNotesPage calls this and useAllNotes unconditionally, per the
+ * Rules of Hooks, but only wants one of the two to actually fetch).
  */
-export function useJournalEntries() {
-  return useQuery({ queryKey: [...NOTES_QUERY_KEY, "journal"], queryFn: fetchJournalEntries });
-}
-
-/** Reads every note attached to one task or project. */
-export function useNotesForTarget(targetType: string, targetId: string) {
+export function useNotesForTarget(
+  targetType: string,
+  targetId: string,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: [...NOTES_QUERY_KEY, "target", targetType, targetId],
     queryFn: () => fetchNotesForTarget(targetType, targetId),
+    enabled: options?.enabled ?? true,
   });
 }
 
-/** Reads every note in the app, for the "view all notes" page. */
-export function useAllNotes() {
-  return useQuery({ queryKey: [...NOTES_QUERY_KEY, "all"], queryFn: fetchAllNotes });
+/** Reads every note in the app, for the unscoped "view all notes" page. See useNotesForTarget's
+ * doc for why options.enabled exists.
+ */
+export function useAllNotes(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: [...NOTES_QUERY_KEY, "all"],
+    queryFn: fetchAllNotes,
+    enabled: options?.enabled ?? true,
+  });
 }
 
 /** Creates a note, then refreshes every notes view. */

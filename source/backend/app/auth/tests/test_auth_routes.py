@@ -70,3 +70,10 @@ def test_dev_override_password_is_rejected_when_debug_is_off(client, monkeypatch
     monkeypatch.setenv(SETTING_ADMIN_PASSWORD_DEV_OVERRIDE, DEV_OVERRIDE_PASSWORD)
     response = client.post("/api/auth/login", json={"username": "admin", "password": DEV_OVERRIDE_PASSWORD})
     assert response.status_code == 401
+
+
+def test_dev_override_password_is_rejected_by_default_on_a_fresh_checkout(client, monkeypatch):
+    monkeypatch.delenv(SETTING_FLASK_DEBUG, raising=False)
+    monkeypatch.setenv(SETTING_ADMIN_PASSWORD_DEV_OVERRIDE, DEV_OVERRIDE_PASSWORD)
+    response = client.post("/api/auth/login", json={"username": "admin", "password": DEV_OVERRIDE_PASSWORD})
+    assert response.status_code == 401

@@ -1,32 +1,52 @@
 // @manualReviewRequested: 2026-07-06
-import { type FormEvent, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { Button } from "../../core/design-system/components/Button";
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
-import { TextInput } from "../../core/design-system/components/TextInput";
-import { useCreateSubtask, useDeleteSubtask, useSubtasks, useUpdateSubtask } from "./useSubtasks";
+import { useReorderableList } from "../../core/design-system/components/useReorderableList";
+import { TaskList } from "./TaskList";
+import type { Task } from "./taskApi";
+import { TASKS_QUERY_KEY, useChildTasks, useCreateTask, useUpdateTask } from "./useTasks";
 import "./SubtaskList.css";
 
 type SubtaskListProps = {
   taskId: string;
 };
 
-/** A task's checklist: each subtask can be marked complete or skipped (either one collapses to
- * a single "Undo" action), plus an inline form to add another and a delete button per row.
+const SUBTASKS_GROUP_KEY = "subtasks";
+
+/** A task's checklist: each subtask is an ordinary Task with parentTaskId set to this one
+ * (nesting is capped at a single level — a subtask can never itself gain subtasks). Complete and
+ * Skip both use the same Checkbox/icon-button toggle idiom as a top-level task (TaskRow) — the
+ * checkbox always stays visible, even once resolved, and Skip's icon swaps to "undo" instead of
+ * being replaced by a separate text button. Drag-and-drop reordering and the bottom "type a title,
+ * press Enter" create row both come from the shared List component — there is no separate "Add
+ * subtask" button, since a subtask only ever needs a title.
  */
 export function SubtaskList({ taskId }: SubtaskListProps) {
-  const { data: subtasks, isLoading } = useSubtasks(taskId);
-  const createSubtask = useCreateSubtask();
-  const updateSubtask = useUpdateSubtask();
-  const deleteSubtask = useDeleteSubtask();
-  const [title, setTitle] = useState("");
+  const { data: subtasks, isLoading } = useChildTasks(taskId);
+  const createTask = useCreateTask();
+  const updateTask = useUpdateTask();
+  const queryClient = useQueryClient();
 
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    if (!title.trim()) return;
-    createSubtask.mutate({ taskId, title });
-    setTitle("");
+  /** Persists a newly-ordered checklist, PATCHing only the subtasks whose order actually changed,
+   * and mirrors the new order into this task's own children query so the list doesn't flicker
+   * back to the old order until the PATCH round-trip resolves.
+   */
+  function persistReorder(reordered: Task[]) {
+    const reindexed = reordered.map((subtask, index) => ({ ...subtask, order: index }));
+    queryClient.setQueryData<Task[]>([...TASKS_QUERY_KEY, "children", taskId], reindexed);
+    reordered.forEach((subtask, index) => {
+      if (subtask.order !== index) {
+        updateTask.mutate({ taskId: subtask.id, changes: { order: index } });
+      }
+    });
   }
+
+  const { displayedItems, itemIds, sensors, handleDragEnd } = useReorderableList({
+    items: subtasks,
+    getId: (subtask) => subtask.id,
+    onReorder: persistReorder,
+  });
 
   return (
     <div className="cg-subtask-list">
@@ -34,81 +54,17 @@ export function SubtaskList({ taskId }: SubtaskListProps) {
         Subtasks <EmojiIcon symbol="🧩" label="Subtasks" />
       </h3>
       {isLoading && <p>Loading subtasks…</p>}
-      {subtasks?.length === 0 && <p>No subtasks yet.</p>}
-      {subtasks?.map((subtaskItem, index) => {
-        const isResolved = subtaskItem.isComplete || subtaskItem.isSkipped;
-        const isLast = index === subtasks.length - 1;
-        return (
-          <div className="cg-subtask-list__row" key={subtaskItem.id}>
-            <span className="cg-subtask-list__label">
-              <span className="cg-subtask-list__connector" aria-hidden="true">
-                {isLast ? "└" : "├"}
-              </span>
-              <span className={isResolved ? "cg-subtask-list__title--resolved" : undefined}>
-                {subtaskItem.title}
-              </span>
-            </span>
-            <div className="cg-subtask-list__actions">
-              {isResolved ? (
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    updateSubtask.mutate({
-                      subtaskId: subtaskItem.id,
-                      changes: { isComplete: false, isSkipped: false },
-                    })
-                  }
-                >
-                  Undo
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      updateSubtask.mutate({
-                        subtaskId: subtaskItem.id,
-                        changes: { isComplete: true },
-                      })
-                    }
-                  >
-                    Complete
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      updateSubtask.mutate({
-                        subtaskId: subtaskItem.id,
-                        changes: { isSkipped: true },
-                      })
-                    }
-                  >
-                    Skip
-                  </Button>
-                </>
-              )}
-              <Button
-                iconOnly
-                variant="danger"
-                onClick={() => deleteSubtask.mutate(subtaskItem.id)}
-                aria-label={`Delete ${subtaskItem.title}`}
-              >
-                <EmojiIcon symbol="🗑️" label="Delete" />
-              </Button>
-            </div>
-          </div>
-        );
-      })}
-      <form className="cg-subtask-list__form" onSubmit={handleSubmit}>
-        <TextInput
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="New subtask"
-        />
-        <Button type="submit">
-          Add subtask <EmojiIcon symbol="➕" label="Add" />
-        </Button>
-      </form>
+      <TaskList
+        tasks={displayedItems}
+        capabilities={{ allowDelete: true, allowEdit: false }}
+        newItemLine={{
+          placeholder: "New subtask",
+          ariaLabel: "New subtask title",
+          onCreateItem: (title) => createTask.mutate({ title, parentTaskId: taskId }),
+        }}
+        groupKey={SUBTASKS_GROUP_KEY}
+        reorderable={{ groupKey: SUBTASKS_GROUP_KEY, itemIds, sensors, onDragEnd: handleDragEnd }}
+      />
     </div>
   );
 }

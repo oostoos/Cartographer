@@ -10,6 +10,7 @@ export type Note = {
   journalDate: string | null;
   targetType: NoteTargetType;
   targetId: string;
+  workspaceId: string;
   createdAt: string;
   effectiveDate: string;
 };
@@ -20,12 +21,8 @@ export type CreateNoteInput = {
   journalDate?: string;
   targetType?: string;
   targetId?: string;
+  workspaceId?: string;
 };
-
-/** Reads pure journal entries (no task/project target), newest-created-first. */
-export function fetchJournalEntries(): Promise<Note[]> {
-  return apiGet<Note[]>("/api/notes?journalOnly=true");
-}
 
 /** Reads every note attached to one task or project, newest-created-first. */
 export function fetchNotesForTarget(targetType: string, targetId: string): Promise<Note[]> {

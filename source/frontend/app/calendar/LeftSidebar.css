@@ -1,0 +1,9 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-left-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 20rem;
+  flex-shrink: 0;
+  overflow-y: auto;
+}

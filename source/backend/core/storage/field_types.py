@@ -4,6 +4,10 @@ a bool/date/optional-int field is represented identically no matter which object
 """
 
 from datetime import date
+from enum import IntEnum
+from typing import TypeVar
+
+EnumT = TypeVar("EnumT", bound=IntEnum)
 
 # The two raw string values a bool field is ever stored as.
 BOOL_TRUE_RAW = "1"
@@ -48,3 +52,30 @@ def encode_optional_int(value: int | None) -> str:
 def decode_optional_int(raw: str) -> int | None:
     """Decodes an integer field previously written by encode_optional_int."""
     return int(raw) if raw else None
+
+
+def encode_enum(value: IntEnum) -> str:
+    """Encodes any IntEnum member as a record field value (its ordinal, as a string)."""
+    return str(value.value)
+
+
+def decode_enum(raw: str, enum_cls: type[EnumT]) -> EnumT:
+    """Decodes an IntEnum member previously written by encode_enum.
+
+    Raises: ValueError if raw isn't a valid ordinal for enum_cls — this is how a corrupted or
+        stale stored value is caught, since a fixed-choice field has no other way to be invalid.
+    """
+    return enum_cls(int(raw))
+
+
+def encode_optional_enum(value: IntEnum | None) -> str:
+    """Encodes an IntEnum field that may be unset (an empty string means unset)."""
+    return str(value.value) if value is not None else ""
+
+
+def decode_optional_enum(raw: str, enum_cls: type[EnumT]) -> EnumT | None:
+    """Decodes an IntEnum field previously written by encode_optional_enum.
+
+    Raises: ValueError if raw is non-empty and isn't a valid ordinal for enum_cls.
+    """
+    return enum_cls(int(raw)) if raw else None

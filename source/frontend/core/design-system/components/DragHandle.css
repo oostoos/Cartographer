@@ -1,0 +1,10 @@
+/* @manualReviewRequested: 2026-07-06 */
+.cg-drag-handle {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: grab;
+  padding: var(--space-1);
+  color: var(--color-text-muted);
+  touch-action: none;
+}

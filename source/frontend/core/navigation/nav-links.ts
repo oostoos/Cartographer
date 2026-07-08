@@ -7,9 +7,8 @@ export type NavLink = {
 };
 
 export const NAV_LINKS: NavLink[] = [
-  { path: "/", label: "Today", emoji: "🗓️" },
-  { path: "/tasks", label: "Tasks", emoji: "✅" },
+  { path: "/", label: "Calendar", emoji: "🗓️" },
   { path: "/projects", label: "Projects", emoji: "📁" },
-  { path: "/journal", label: "Journal", emoji: "📔" },
+  { path: "/workspaces", label: "Workspaces", emoji: "🗂️" },
   { path: "/settings", label: "Settings", emoji: "⚙️" },
 ];

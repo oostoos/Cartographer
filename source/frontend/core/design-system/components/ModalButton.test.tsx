@@ -2,6 +2,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { BasicIcon } from "./BasicIcon";
 import { ModalButton } from "./ModalButton";
 
 describe("ModalButton", () => {
@@ -33,7 +34,7 @@ describe("ModalButton", () => {
       <ModalButton
         label="Delete"
         iconOnly
-        icon={{ symbol: "🗑️", label: "Delete" }}
+        icon={<BasicIcon name="trash" label="Delete" />}
         renderContent={() => <p>Confirm delete</p>}
       />,
     );

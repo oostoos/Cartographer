@@ -66,13 +66,13 @@ def test_delete_project_cascade_deletes_its_tasks_and_their_subtasks(client):
         "/api/tasks", json={"title": "Owned task", "projectId": created["id"]}
     ).get_json()
     owned_subtask = client.post(
-        "/api/subtasks", json={"taskId": owned_task["id"], "title": "Owned subtask"}
+        "/api/tasks", json={"title": "Owned subtask", "parentTaskId": owned_task["id"]}
     ).get_json()
 
     delete_response = client.delete(f"/api/projects/{created['id']}")
     assert delete_response.status_code == 204
     assert client.get(f"/api/tasks/{owned_task['id']}").status_code == 404
-    assert client.get(f"/api/subtasks/{owned_subtask['id']}").status_code == 404
+    assert client.get(f"/api/tasks/{owned_subtask['id']}").status_code == 404
 
 
 def test_delete_project_can_move_its_tasks_to_another_project_instead(client):

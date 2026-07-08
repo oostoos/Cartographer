@@ -1,12 +1,15 @@
 // @manualReviewRequested: 2026-07-06
 import { type FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
 
+import { BasicIcon } from "../../core/design-system/components/BasicIcon";
 import { Button } from "../../core/design-system/components/Button";
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
+import { Field } from "../../core/design-system/components/Field";
+import { List } from "../../core/design-system/components/List";
 import { ModalButton } from "../../core/design-system/components/ModalButton";
 import { TextArea } from "../../core/design-system/components/TextArea";
 import { TextInput } from "../../core/design-system/components/TextInput";
+import type { Note } from "./noteApi";
 import { useCreateNote, useNotesForTarget } from "./useNotes";
 import "./NotesSection.css";
 
@@ -18,8 +21,8 @@ type NotesSectionProps = {
 };
 
 /** The collapsed "Notes" section embedded in a task/project's detail pane: its few most recent
- * ad-hoc notes, an "Add note" modal, and a link to the "view all notes" page for the full,
- * day-grouped history across every task and project.
+ * ad-hoc notes plus an "Add note" modal. The full, day-grouped history across every task and
+ * project lives in the calendar page's right-sidebar notes feed (app/journals/NotesFeed.tsx).
  */
 export function NotesSection({ targetType, targetId }: NotesSectionProps) {
   const { data: notes } = useNotesForTarget(targetType, targetId);
@@ -35,7 +38,7 @@ export function NotesSection({ targetType, targetId }: NotesSectionProps) {
         </h3>
         <ModalButton
           label="Add note"
-          icon={{ symbol: "➕", label: "Add note" }}
+          icon={<BasicIcon name="plus" label="Add note" />}
           renderContent={(close) => (
             <NoteCreateForm
               onCreate={(input) =>
@@ -45,16 +48,18 @@ export function NotesSection({ targetType, targetId }: NotesSectionProps) {
           )}
         />
       </div>
-      {recentNotes.length === 0 && <p>No notes yet.</p>}
-      {recentNotes.map((note) => (
-        <div className="cg-notes-section__note" key={note.id}>
-          {note.title && <p className="cg-notes-section__note-title">{note.title}</p>}
-          <p className="cg-notes-section__note-content">{note.content}</p>
-        </div>
-      ))}
-      <Link to="/notes" className="cg-notes-section__view-all">
-        View all notes
-      </Link>
+      <List
+        groups={[{ key: "recent-notes", items: recentNotes }]}
+        getId={(note) => note.id}
+        getLabel={(note: Note) => note.content}
+        renderItemLabel={(note: Note) => (
+          <>
+            {note.title && <p className="cg-notes-section__note-title">{note.title}</p>}
+            <p className="cg-notes-section__note-content">{note.content}</p>
+          </>
+        )}
+        emptyMessage="No notes yet."
+      />
     </div>
   );
 }
@@ -75,14 +80,12 @@ function NoteCreateForm({ onCreate }: NoteCreateFormProps) {
 
   return (
     <form className="cg-note-create-form" onSubmit={handleSubmit}>
-      <label className="cg-note-create-form__field">
-        Title
+      <Field label="Title">
         <TextInput value={title} onChange={(event) => setTitle(event.target.value)} />
-      </label>
-      <label className="cg-note-create-form__field">
-        Note
+      </Field>
+      <Field label="Note">
         <TextArea rows={4} value={content} onChange={(event) => setContent(event.target.value)} />
-      </label>
+      </Field>
       <Button type="submit">
         Add note <EmojiIcon symbol="➕" label="Add" />
       </Button>

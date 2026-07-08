@@ -1,10 +1,13 @@
 // @manualReviewRequested: 2026-07-06
 import { type FormEvent, useState } from "react";
 
+import { BasicIcon } from "../../core/design-system/components/BasicIcon";
 import { Button } from "../../core/design-system/components/Button";
-import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
+import { Field } from "../../core/design-system/components/Field";
 import { ModalButton } from "../../core/design-system/components/ModalButton";
+import { Select } from "../../core/design-system/components/Select";
 import { TextInput } from "../../core/design-system/components/TextInput";
+import { useWorkspaces } from "../workspaces/useWorkspaces";
 import { useCreateProject } from "./useProjects";
 import "./ProjectCreateModal.css";
 
@@ -15,6 +18,12 @@ type ProjectCreateModalProps = {
   initialParentProjectId?: string;
   onCreated?: (projectId: string) => void;
   className?: string;
+  /** Forwarded to ModalButton so a caller (e.g. an Alt+Shift+N shortcut) can open this modal
+   * externally instead of only via its own trigger button — omit to keep the default,
+   * self-contained open/close state.
+   */
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 };
 
 /** The standard "New project" trigger + modal. Reused by the top-level Projects page and by a
@@ -24,19 +33,26 @@ export function ProjectCreateModal({
   initialParentProjectId,
   onCreated,
   className,
+  isOpen,
+  onOpenChange,
 }: ProjectCreateModalProps) {
   const createProject = useCreateProject();
+  const { data: workspaces } = useWorkspaces();
 
   return (
     <ModalButton
       label={initialParentProjectId ? "New subproject" : "New project"}
-      icon={{ symbol: "➕", label: "New project" }}
+      icon={<BasicIcon name="plus" label="New project" />}
+      iconOnly
       className={className}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
       renderContent={(close) => (
         <ProjectCreateForm
-          onCreate={(title) =>
+          workspaces={workspaces ?? []}
+          onCreate={(title, workspaceId) =>
             createProject.mutate(
-              { title, parentProjectId: initialParentProjectId },
+              { title, parentProjectId: initialParentProjectId, workspaceId },
               {
                 onSuccess: (created) => {
                   onCreated?.(created.id);
@@ -52,17 +68,22 @@ export function ProjectCreateModal({
 }
 
 type ProjectCreateFormProps = {
-  onCreate: (title: string) => void;
+  workspaces: { id: string; title: string }[];
+  onCreate: (title: string, workspaceId: string) => void;
 };
 
-function ProjectCreateForm({ onCreate }: ProjectCreateFormProps) {
+const NO_WORKSPACE_VALUE = "";
+
+function ProjectCreateForm({ workspaces, onCreate }: ProjectCreateFormProps) {
   const [title, setTitle] = useState("");
+  const [workspaceId, setWorkspaceId] = useState(NO_WORKSPACE_VALUE);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (!title.trim()) return;
-    onCreate(title);
+    onCreate(title, workspaceId);
     setTitle("");
+    setWorkspaceId(NO_WORKSPACE_VALUE);
   }
 
   return (
@@ -73,8 +94,20 @@ function ProjectCreateForm({ onCreate }: ProjectCreateFormProps) {
         placeholder="New project name"
         autoFocus
       />
+      {workspaces.length > 0 && (
+        <Field label="Workspace">
+          <Select
+            value={workspaceId}
+            onChange={setWorkspaceId}
+            options={[
+              { value: NO_WORKSPACE_VALUE, label: "No workspace" },
+              ...workspaces.map((workspace) => ({ value: workspace.id, label: workspace.title })),
+            ]}
+          />
+        </Field>
+      )}
       <Button type="submit">
-        Add project <EmojiIcon symbol="➕" label="Add" />
+        Add project <BasicIcon name="plus" label="Add" />
       </Button>
     </form>
   );

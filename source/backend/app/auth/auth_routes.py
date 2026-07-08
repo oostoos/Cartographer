@@ -3,10 +3,11 @@
 login doesn't depend on the database layer being healthy.
 """
 
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, request, session
 from werkzeug.security import check_password_hash
 
 from core.auth.login_guard import SESSION_KEY_IS_LOGGED_IN
+from core.http.json_response import json_error, json_response
 from core.config.settings import (
     SETTING_ADMIN_PASSWORD_DEV_OVERRIDE,
     SETTING_ADMIN_PASSWORD_HASH,
@@ -49,21 +50,21 @@ def login():
     expected_username = get_setting(SETTING_ADMIN_USERNAME)
 
     if submitted_username != expected_username or not _password_is_correct(submitted_password):
-        return jsonify(error="Incorrect username or password."), 401
+        return json_error("Incorrect username or password.", 401)
 
     session.permanent = True
     session[SESSION_KEY_IS_LOGGED_IN] = True
-    return jsonify(loggedIn=True)
+    return json_response({"loggedIn": True})
 
 
 @auth_blueprint.post("/logout")
 def logout():
     """Logs the current user out."""
     session.pop(SESSION_KEY_IS_LOGGED_IN, None)
-    return jsonify(loggedIn=False)
+    return json_response({"loggedIn": False})
 
 
 @auth_blueprint.get("/status")
 def status():
     """Reports whether anyone is currently logged in."""
-    return jsonify(loggedIn=session.get(SESSION_KEY_IS_LOGGED_IN, False))
+    return json_response({"loggedIn": session.get(SESSION_KEY_IS_LOGGED_IN, False)})

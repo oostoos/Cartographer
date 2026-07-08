@@ -1,0 +1,61 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-workspace-detail-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.cg-workspace-detail-pane__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: var(--space-2) var(--space-3);
+  width: calc(100% - 3rem);
+}
+
+.cg-workspace-detail-pane__meta {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.cg-workspace-detail-pane__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.cg-workspace-detail-pane__delete-note {
+  margin: var(--space-2) 0 0;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+.cg-workspace-detail-pane__notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cg-workspace-detail-pane__notes-empty {
+  color: var(--color-text-muted);
+}
+
+.cg-workspace-detail-pane__note {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.cg-workspace-detail-pane__note-title {
+  margin: 0;
+  font-weight: bold;
+}
+
+.cg-workspace-detail-pane__note-content {
+  margin: 0;
+  white-space: pre-wrap;
+}

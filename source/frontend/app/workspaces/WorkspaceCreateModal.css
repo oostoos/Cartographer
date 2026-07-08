@@ -1,0 +1,6 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-workspace-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

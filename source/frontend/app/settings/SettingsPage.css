@@ -8,13 +8,6 @@
   padding: var(--space-5);
 }
 
-.cg-settings-page__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
-}
-
 .cg-settings-page__danger-zone {
   border-color: var(--color-danger);
 }

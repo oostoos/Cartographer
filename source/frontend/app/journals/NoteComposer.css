@@ -1,0 +1,35 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-note-composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-3);
+}
+
+.cg-note-composer__title.cg-text-input {
+  font-weight: bold;
+}
+
+.cg-note-composer__content {
+  resize: vertical;
+}
+
+.cg-note-composer__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.cg-note-composer__workspace {
+  margin-right: auto;
+  font-size: 0.85em;
+}
+
+.cg-note-composer__error {
+  color: var(--color-danger-strong);
+  margin: 0;
+}

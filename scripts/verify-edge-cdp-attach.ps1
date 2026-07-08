@@ -79,6 +79,14 @@ function Invoke-EdgeCdpAttachAttempt {
             "--no-first-run",
             "--no-default-browser-check",
             "--remote-allow-origins=*",
+            # Kept in sync with launch-edge-debug-target.ps1's flags (see its doc comment) so this
+            # harness reproduces the same launch behavior it's meant to be verifying.
+            "--disable-features=msEdgeStartupBoost,msEdgeNewTabPageFeed,msNewTabPageFeed,msWebFeedsShoppingList,MicrosoftEdgeFeedbackFramework,msWebFeedsForYou,EdgeFollowingFeed",
+            "--disable-component-update",
+            "--disable-background-networking",
+            "--disable-sync",
+            "--disable-default-apps",
+            "--no-service-autorun",
             $Url
         )
         $sw = [System.Diagnostics.Stopwatch]::StartNew()

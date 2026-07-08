@@ -22,14 +22,7 @@
   font-size: 1.5rem;
   font-weight: bold;
   padding: var(--space-2) var(--space-3);
-  width: 100%;
-}
-
-.cg-project-detail-pane__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
+  width: calc(100% - 3rem);
 }
 
 .cg-project-detail-pane__meta {
@@ -56,22 +49,3 @@
   gap: var(--space-3);
 }
 
-.cg-project-detail-pane__subproject-list,
-.cg-project-detail-pane__task-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.cg-project-detail-pane__subproject-list button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: var(--font-family-base);
-  font-size: 1rem;
-  color: var(--color-primary-blue-strong);
-  padding: var(--space-1) 0;
-}

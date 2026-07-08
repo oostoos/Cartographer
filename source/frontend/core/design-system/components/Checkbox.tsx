@@ -1,5 +1,5 @@
 // @manualReviewRequested: 2026-07-06
-import { EmojiIcon } from "./EmojiIcon";
+import { BasicIcon } from "./BasicIcon";
 import "./Checkbox.css";
 
 type CheckboxProps = {
@@ -8,11 +8,8 @@ type CheckboxProps = {
   label: string;
 };
 
-const CHECKED_SYMBOL = "✅";
-const UNCHECKED_SYMBOL = "⬜";
-
-/** A checkbox rendered as a tappable emoji, per the app's emoji-in-place-of-icons style, rather
- * than a native checkbox input.
+/** A checkbox rendered as a tappable traced icon rather than a native checkbox input, matching
+ * the app's button-icon idiom.
  */
 export function Checkbox({ checked, onToggle, label }: CheckboxProps) {
   return (
@@ -24,7 +21,7 @@ export function Checkbox({ checked, onToggle, label }: CheckboxProps) {
       className="cg-checkbox"
       onClick={onToggle}
     >
-      <EmojiIcon symbol={checked ? CHECKED_SYMBOL : UNCHECKED_SYMBOL} label={label} />
+      <BasicIcon name={checked ? "check" : "empty-square"} label={label} />
     </button>
   );
 }

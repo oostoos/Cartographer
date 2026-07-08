@@ -13,13 +13,6 @@
   gap: var(--space-4);
 }
 
-.cg-login-page__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-3);
-}
-
 .cg-login-page__error {
   color: var(--color-danger-strong);
 }

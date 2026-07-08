@@ -1,0 +1,68 @@
+/* @manualReviewRequested: 2026-07-06 */
+.cg-tree-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cg-tree-list__node {
+  display: flex;
+  flex-direction: column;
+}
+
+.cg-tree-list__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding-left: calc(var(--cg-tree-depth, 0) * var(--space-4));
+  min-width: 0;
+}
+
+.cg-tree-list__toggle {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.cg-tree-list__label {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cg-tree-list__label:hover {
+  background-color: var(--color-surface-muted);
+}
+
+.cg-tree-list__label--selected {
+  background-color: var(--color-surface-muted);
+  color: var(--color-primary-blue-strong);
+  font-weight: bold;
+}
+
+.cg-tree-list__label--header {
+  cursor: default;
+  font-weight: bold;
+}
+
+.cg-tree-list__label--header:hover {
+  background-color: transparent;
+}

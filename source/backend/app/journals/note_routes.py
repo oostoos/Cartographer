@@ -6,9 +6,10 @@ targetId set together).
 
 from datetime import date
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
 from core.auth.login_guard import login_required
+from core.http.json_response import json_response
 from app.journals import note
 
 note_blueprint = Blueprint("notes", __name__, url_prefix="/api/notes")
@@ -32,7 +33,7 @@ def list_notes():
     else:
         blocks = note.list_all()
     blocks.sort(key=lambda block: note.get_created_at(block=block), reverse=True)
-    return jsonify([_serialize(block) for block in blocks])
+    return json_response([_serialize(block) for block in blocks])
 
 
 @note_blueprint.post("")
@@ -41,7 +42,7 @@ def create_note():
     """Creates a note.
 
     Body: {"title"?: str, "content"?: str, "journalDate"?: "YYYY-MM-DD", "targetType"?: str,
-        "targetId"?: str}.
+        "targetId"?: str, "workspaceId"?: str}.
     Raises (as a 400 response): ValidationError if targetType/targetId are given without each
         other, or targetType isn't recognized.
     """
@@ -52,15 +53,16 @@ def create_note():
         journal_date=date.fromisoformat(body["journalDate"]) if body.get("journalDate") else None,
         target_type=body.get("targetType", ""),
         target_id=body.get("targetId", ""),
+        workspace_id=body.get("workspaceId", ""),
     )
-    return jsonify(_serialize(created)), 201
+    return json_response(_serialize(created), 201)
 
 
 @note_blueprint.get("/<note_id>")
 @login_required
 def get_note(note_id):
     """Reads a single note."""
-    return jsonify(_serialize(note.load(note_id)))
+    return json_response(_serialize(note.load(note_id)))
 
 
 @note_blueprint.patch("/<note_id>")
@@ -69,8 +71,8 @@ def update_note(note_id):
     """Updates one or more of a note's fields.
 
     Body: any of {"title": str, "content": str, "journalDate": "YYYY-MM-DD" | None,
-        "targetType": str, "targetId": str}. targetType/targetId are only ever applied together
-        (each defaults to the note's current value if only one is given).
+        "targetType": str, "targetId": str, "workspaceId": str}. targetType/targetId are only
+        ever applied together (each defaults to the note's current value if only one is given).
     """
     block = note.load(note_id)
     body = request.get_json(force=True, silent=True) or {}
@@ -82,6 +84,8 @@ def update_note(note_id):
         note.set_journal_date(
             date.fromisoformat(body["journalDate"]) if body["journalDate"] else None, block=block
         )
+    if "workspaceId" in body:
+        note.set_workspace_id(body["workspaceId"], block=block)
     if "targetType" in body or "targetId" in body:
         note.set_target(
             body.get("targetType", note.get_target_type(block=block)),
@@ -89,7 +93,7 @@ def update_note(note_id):
             block=block,
         )
     note.save(block)
-    return jsonify(_serialize(block))
+    return json_response(_serialize(block))
 
 
 @note_blueprint.delete("/<note_id>")
@@ -115,6 +119,7 @@ def _serialize(block) -> dict:
         "journalDate": journal_date.isoformat() if journal_date else None,
         "targetType": note.get_target_type(block=block),
         "targetId": note.get_target_id(block=block),
+        "workspaceId": note.get_workspace_id(block=block),
         "createdAt": created_at,
         "effectiveDate": effective_date,
     }

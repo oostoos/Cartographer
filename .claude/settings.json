@@ -27,6 +27,19 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "statusMessage": "Loading reminders",
+            "command": "try { $json = ($input | Out-String); & 'C:\\Users\\austi\\Projects\\Cartographer\\.claude\\hooks\\inject-reminders-hook.ps1' -HookJson $json } catch { }"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",

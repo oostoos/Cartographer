@@ -1,0 +1,18 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 22rem;
+  flex-shrink: 0;
+  min-height: 0;
+}
+
+.cg-right-sidebar__feed {
+  flex: 1;
+  min-height: 0;
+}
+
+.cg-right-sidebar__composer {
+  flex-shrink: 0;
+}

@@ -5,6 +5,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Button } from "../../core/design-system/components/Button";
 import { Card } from "../../core/design-system/components/Card";
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
+import { Field } from "../../core/design-system/components/Field";
 import { TextInput } from "../../core/design-system/components/TextInput";
 import { fetchSettings, purgeAllData, updateSettings } from "./settingsApi";
 import "./SettingsPage.css";
@@ -48,13 +49,12 @@ export function SettingsPage() {
       </h1>
       <Card>
         <form onSubmit={handleSubmit}>
-          <label className="cg-settings-page__field">
-            Display name
+          <Field label="Display name">
             <TextInput
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
             />
-          </label>
+          </Field>
           <Button type="submit">Save</Button>
         </form>
       </Card>

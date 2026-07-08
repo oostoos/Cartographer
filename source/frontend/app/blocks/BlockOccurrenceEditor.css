@@ -1,0 +1,69 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-block-occurrence-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.cg-block-occurrence-editor__interval-unit {
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+}
+
+.cg-block-occurrence-editor__weekdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cg-block-occurrence-editor__weekdays legend {
+  width: 100%;
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+  margin-bottom: var(--space-1);
+}
+
+.cg-block-occurrence-editor__add-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.cg-block-occurrence-editor__add-row input[type="number"] {
+  width: 4.5rem;
+}
+
+.cg-block-occurrence-editor__summary {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--color-text-muted);
+}
+
+.cg-block-occurrence-editor__shared-time {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cg-block-occurrence-editor__shared-time input[type="number"] {
+  width: 5rem;
+}
+
+.cg-block-occurrence-editor__unit {
+  color: var(--color-text-muted);
+}
+
+.cg-block-occurrence-editor__warning {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+}
+
+.cg-block-occurrence-editor__warning--guaranteed {
+  color: var(--color-danger-strong);
+}

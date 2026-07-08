@@ -20,6 +20,7 @@ FIELD_CONTENT = "content"
 FIELD_JOURNAL_DATE = "journal_date"
 FIELD_TARGET_TYPE = "target_type"
 FIELD_TARGET_ID = "target_id"
+FIELD_WORKSPACE_ID = "workspace_id"
 FIELD_CREATED_AT = "created_at"
 
 TARGET_TYPE_TASK = "Task"
@@ -38,12 +39,14 @@ def create(
     journal_date: date | None = None,
     target_type: str = TARGET_TYPE_NONE,
     target_id: str = "",
+    workspace_id: str = "",
 ) -> RecordBlock:
     """Creates a new note and saves it immediately.
 
     Inputs: title/content, optional free text; journal_date, optional — the calendar day a daily
         journal entry belongs to; target_type/target_id, optional — the task or project an
-        ad-hoc note is attached to. Must be both empty or both set together.
+        ad-hoc note is attached to. Must be both empty or both set together; workspace_id,
+        optional — empty means unassigned.
     Raises: ValidationError if title or content contains a reserved control character, or if
         exactly one of target_type/target_id is given, or target_type isn't recognized.
     """
@@ -57,6 +60,7 @@ def create(
         FIELD_JOURNAL_DATE: encode_optional_date(journal_date),
         FIELD_TARGET_TYPE: target_type,
         FIELD_TARGET_ID: target_id,
+        FIELD_WORKSPACE_ID: workspace_id,
         FIELD_CREATED_AT: datetime.now().isoformat(),
     }
     return record_store.create_record(OBJECT_TYPE, initial_fields)
@@ -186,6 +190,18 @@ def set_target(
     if block is None:
         save(target_block)
     return target_block
+
+
+def get_workspace_id(note_id: str | None = None, *, block: RecordBlock | None = None) -> str:
+    """Reads the id of the workspace a note belongs to (empty string means unassigned)."""
+    return record_store.resolve_block(OBJECT_TYPE, note_id, block).fields[FIELD_WORKSPACE_ID]
+
+
+def set_workspace_id(
+    value: str, note_id: str | None = None, *, block: RecordBlock | None = None
+) -> RecordBlock:
+    """Sets the workspace a note belongs to (empty string means unassigned)."""
+    return _set_field(FIELD_WORKSPACE_ID, value, note_id, block)
 
 
 def get_created_at(note_id: str | None = None, *, block: RecordBlock | None = None) -> str:

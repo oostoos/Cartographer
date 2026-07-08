@@ -18,6 +18,7 @@ OBJECT_TYPE = "Project"
 FIELD_TITLE = "title"
 FIELD_DESCRIPTION = "description"
 FIELD_PARENT_PROJECT_ID = "parent_project_id"
+FIELD_WORKSPACE_ID = "workspace_id"
 FIELD_IS_ARCHIVED = "is_archived"
 FIELD_CREATED_AT = "created_at"
 
@@ -26,11 +27,14 @@ FIELD_CREATED_AT = "created_at"
 # Standard functions
 
 
-def create(title: str, description: str = "", parent_project_id: str = "") -> RecordBlock:
+def create(
+    title: str, description: str = "", parent_project_id: str = "", workspace_id: str = ""
+) -> RecordBlock:
     """Creates a new project and saves it immediately.
 
     Inputs: title, required; description, optional; parent_project_id, optional — empty means a
-        top-level project, non-empty makes this a subproject of that project.
+        top-level project, non-empty makes this a subproject of that project; workspace_id,
+        optional — empty means unassigned.
     Raises: ValidationError if title or description contains a reserved control character.
     """
     raise_if_contains_control_characters(title)
@@ -39,6 +43,7 @@ def create(title: str, description: str = "", parent_project_id: str = "") -> Re
         FIELD_TITLE: title,
         FIELD_DESCRIPTION: description,
         FIELD_PARENT_PROJECT_ID: parent_project_id,
+        FIELD_WORKSPACE_ID: workspace_id,
         FIELD_IS_ARCHIVED: encode_bool(False),
         FIELD_CREATED_AT: datetime.now().isoformat(),
     }
@@ -135,6 +140,18 @@ def set_parent_project_id(
 ) -> RecordBlock:
     """Sets the project this one is a subproject of (empty string means top-level)."""
     return _set_field(FIELD_PARENT_PROJECT_ID, value, project_id, block)
+
+
+def get_workspace_id(project_id: str | None = None, *, block: RecordBlock | None = None) -> str:
+    """Reads the id of the workspace a project belongs to (empty string means unassigned)."""
+    return record_store.resolve_block(OBJECT_TYPE, project_id, block).fields[FIELD_WORKSPACE_ID]
+
+
+def set_workspace_id(
+    value: str, project_id: str | None = None, *, block: RecordBlock | None = None
+) -> RecordBlock:
+    """Sets the workspace a project belongs to (empty string means unassigned)."""
+    return _set_field(FIELD_WORKSPACE_ID, value, project_id, block)
 
 
 def get_is_archived(project_id: str | None = None, *, block: RecordBlock | None = None) -> bool:

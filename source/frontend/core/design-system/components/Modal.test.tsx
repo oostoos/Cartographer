@@ -67,4 +67,13 @@ describe("Modal", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("keeps focus on an autoFocus field inside its content instead of stealing it", () => {
+    render(
+      <Modal isOpen title="Test modal" onClose={vi.fn()}>
+        <input aria-label="Title" autoFocus />
+      </Modal>,
+    );
+    expect(screen.getByLabelText("Title")).toHaveFocus();
+  });
 });

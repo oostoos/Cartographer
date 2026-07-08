@@ -9,6 +9,8 @@ Infrastructure/plumbing only — no feature logic. Subdirectories:
   setting means adding it to `SETTINGS_REGISTRY` here, nowhere else.
 - `auth/login_guard.py` — the `@login_required` decorator every feature blueprint (except auth
   and the health check) is wrapped in.
+- `http/json_response.py` — `json_response(payload, status_code=200)` / `json_error(message,
+  status_code=400)`, the one place a route builds its `(jsonify(...), status_code)` tuple.
 - `utils/` — `clock.today()` (the one mockable place "what day is it" is read) and `ids.new_id()`.
 - `app_factory.py` — builds the Flask app: config, CORS, error-handler mapping, blueprint
   registration. `run.py` (one level up) is what actually starts it. VS Code debug wiring lives

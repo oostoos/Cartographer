@@ -1,17 +1,30 @@
-<!-- @manualReviewRequested: 2026-07-06 -->
+<!-- @manualReviewRequested: 2026-07-07 -->
 # Recurrence (backend)
 
-`recurring_task_template.py` is the object type — both the cadence fields (frequency/interval/
-start-end dates/days-of-week/day-of-month/month-of-year/is_active) and the task-shape fields
-(title/description/project_id/tags/subtask_titles) stamped onto every `Task` instance it
-generates (see `app/journals/today_engine.py`). `recurrence_engine.py` is the pure date math
-(`occurs_on`, `generate_occurrences`) that reads a template's cadence fields — keep new recurrence
-logic in the engine, not scattered into the object module or into `today_engine.py`.
+Just the shared cadence math now — `RecurringTaskTemplate` is gone, replaced entirely by
+`app/blocks/` (a recurring block of time containing nested tasks; see `app/blocks/CLAUDE.md`).
 
-Editing a template only affects instances generated after the edit — already-generated `Task`
-rows are untouched, and deleting a template doesn't cascade to them either; they just become
-ordinary standalone historical tasks once generation stops.
+`frequency.py` holds the `Frequency` enum (`DAILY`/`WEEKLY`/`MONTHLY`/`YEARLY`) and
+`DEFAULT_INTERVAL`, split into its own module so neither `recurrence_engine.py` nor any of its
+callers create an import cycle over it.
 
-Deliberate scope cut: "Nth weekday of month" (e.g. "2nd Tuesday") isn't supported — see the
-comment at the top of `recurring_task_template.py`. Date math uses `datetime.date` exclusively,
-never timezone-aware datetimes — don't introduce one, it's what makes DST a non-issue here.
+`recurrence_engine.py` (`occurs_on`, `generate_occurrences`, `clamp_day_to_month`) is the pure
+date math answering "does this occur on date D," taking every cadence field (`frequency`,
+`interval`, `start_date`, `end_date`, `days_of_week`, `day_of_month`, `month_of_year`) as a
+primitive value rather than a loaded record — this is what lets it serve two different callers
+with no duplicated logic and no coupling to either one's storage shape:
+
+- `app/blocks/block_task_template.py`'s *optional* per-task cadence override — e.g. within a
+  block, "change razor blade" weekly or "deep clean shower" monthly, layered on top of whichever
+  days the block itself occurs.
+- `app/blocks/block_template_segment.py`'s block-level occurrence — a block's own
+  daily/weekly/monthly/yearly + "every N" shape, generalized from the old fixed per-weekday
+  on/off grid. A segment calls `occurs_on` once per `InstanceRow` (translating that row's selector
+  into whichever cadence field its frequency needs — `days_of_week` for weekly, `day_of_month` for
+  monthly, `day_of_month`+`month_of_year` for yearly), so "simple" (one row per selected unit,
+  shared time) and "advanced" (several rows, each its own time) editing modes are just different
+  ways of building the same `InstanceRow` list — the engine itself doesn't know or care which mode
+  produced it.
+
+Date math uses `datetime.date` exclusively, never timezone-aware datetimes — don't introduce one,
+it's what makes DST a non-issue here.

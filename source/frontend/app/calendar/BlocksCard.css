@@ -1,0 +1,8 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-blocks-card__dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

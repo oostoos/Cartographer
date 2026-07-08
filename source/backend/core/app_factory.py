@@ -61,22 +61,24 @@ def _register_error_handlers(app: Flask) -> None:
 def _register_blueprints(app: Flask) -> None:
     """Registers every feature blueprint plus the health check."""
     from app.auth.auth_routes import auth_blueprint
+    from app.blocks.block_routes import block_blueprint
+    from app.blocks.block_template_routes import block_template_blueprint
     from app.journals.note_routes import note_blueprint
     from app.journals.today_routes import today_blueprint
     from app.projects.project_routes import project_blueprint
-    from app.recurrence.recurring_task_template_routes import recurring_task_template_blueprint
     from app.settings.settings_routes import settings_blueprint
-    from app.tasks.subtask_routes import subtask_blueprint
     from app.tasks.task_routes import task_blueprint
+    from app.workspaces.workspace_routes import workspace_blueprint
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(project_blueprint)
-    app.register_blueprint(recurring_task_template_blueprint)
+    app.register_blueprint(block_template_blueprint)
+    app.register_blueprint(block_blueprint)
     app.register_blueprint(task_blueprint)
-    app.register_blueprint(subtask_blueprint)
     app.register_blueprint(today_blueprint)
     app.register_blueprint(note_blueprint)
     app.register_blueprint(settings_blueprint)
+    app.register_blueprint(workspace_blueprint)
 
     @app.get("/api/health")
     def health_check():

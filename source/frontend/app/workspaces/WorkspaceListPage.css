@@ -1,0 +1,27 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-workspace-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+.cg-workspace-list-page .cg-sidebar {
+  width: 20rem;
+}
+
+.cg-workspace-list-page .cg-sidebar__create {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-2);
+}
+
+.cg-workspace-list-page__dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

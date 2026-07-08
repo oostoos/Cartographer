@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../core/design-system/components/Button";
 import { Card } from "../../core/design-system/components/Card";
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
+import { Field } from "../../core/design-system/components/Field";
 import { TextInput } from "../../core/design-system/components/TextInput";
 import { login } from "./authApi";
 import { AUTH_STATUS_QUERY_KEY } from "./useAuthStatus";
@@ -40,22 +41,20 @@ export function LoginPage() {
           Cartographer <EmojiIcon symbol="🧭" label="Cartographer" />
         </h1>
         <form onSubmit={handleSubmit}>
-          <label className="cg-login-page__field">
-            Username
+          <Field label="Username">
             <TextInput
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               autoFocus
             />
-          </label>
-          <label className="cg-login-page__field">
-            Password
+          </Field>
+          <Field label="Password">
             <TextInput
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
-          </label>
+          </Field>
           {errorMessage && <p className="cg-login-page__error">{errorMessage}</p>}
           <Button type="submit" emphasis="solid">
             Log in

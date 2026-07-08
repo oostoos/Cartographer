@@ -2,7 +2,6 @@
 import { useState, type ReactNode } from "react";
 
 import { Button } from "./Button";
-import { EmojiIcon } from "./EmojiIcon";
 import { Modal } from "./Modal";
 
 type ButtonVariant = "primary" | "secondary" | "danger";
@@ -12,7 +11,7 @@ type ModalButtonProps = {
   label: string;
   /** The modal's heading, if it should differ from the trigger button's label. */
   title?: string;
-  icon?: { symbol: string; label: string };
+  icon?: ReactNode;
   variant?: ButtonVariant;
   emphasis?: ButtonEmphasis;
   iconOnly?: boolean;
@@ -21,11 +20,16 @@ type ModalButtonProps = {
    * the modal itself after a successful save, without the caller managing open state.
    */
   renderContent: (close: () => void) => ReactNode;
+  /** Controls the modal's open state externally (e.g. a keyboard shortcut opening it) instead of
+   * ModalButton's own internal state — omit both to keep the default, self-contained behavior.
+   */
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 };
 
 /** The standard "trigger button + modal" idiom used by every create/edit-in-a-modal flow in the
  * app: owns its own open/close state so callers only describe the trigger and the modal's
- * content.
+ * content, unless a caller opts into controlling that state itself via isOpen/onOpenChange.
  */
 export function ModalButton({
   label,
@@ -36,8 +40,12 @@ export function ModalButton({
   iconOnly = false,
   className,
   renderContent,
+  isOpen,
+  onOpenChange,
 }: ModalButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const open = isOpen ?? internalIsOpen;
+  const setOpen = onOpenChange ?? setInternalIsOpen;
 
   return (
     <>
@@ -48,19 +56,19 @@ export function ModalButton({
         iconOnly={iconOnly}
         aria-label={iconOnly ? label : undefined}
         className={className}
-        onClick={() => setIsOpen(true)}
+        onClick={() => setOpen(true)}
       >
         {iconOnly ? (
-          icon && <EmojiIcon symbol={icon.symbol} label={icon.label} />
+          icon
         ) : (
           <>
             {label}
-            {icon && <EmojiIcon symbol={icon.symbol} label={icon.label} />}
+            {icon}
           </>
         )}
       </Button>
-      <Modal isOpen={isOpen} title={title ?? label} onClose={() => setIsOpen(false)}>
-        {renderContent(() => setIsOpen(false))}
+      <Modal isOpen={open} title={title ?? label} onClose={() => setOpen(false)}>
+        {renderContent(() => setOpen(false))}
       </Modal>
     </>
   );

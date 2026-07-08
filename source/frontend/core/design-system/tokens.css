@@ -27,6 +27,23 @@
   --color-danger-strong: #b85f52;
   --color-danger-tint: #f8e9e7;
 
+  /* A small categorical palette for color-coding blocks on the weekly calendar grid — each pair
+     is a soft fill plus a stronger border/text accent, extending the existing blue/green pastels
+     with a few more distinguishable warm/cool hues. Assigned to block templates by simple index,
+     not meant to carry any further meaning. */
+  --color-block-1: var(--color-primary-blue-tint);
+  --color-block-1-strong: var(--color-primary-blue-strong);
+  --color-block-2: var(--color-primary-green-tint);
+  --color-block-2-strong: var(--color-primary-green-strong);
+  --color-block-3: #f3e6c8;
+  --color-block-3-strong: #b8923f;
+  --color-block-4: #e6ddf0;
+  --color-block-4-strong: #8a72ad;
+  --color-block-5: #f2e0e2;
+  --color-block-5-strong: #b96e78;
+  --color-block-6: #dcf0ec;
+  --color-block-6-strong: #4f9c8c;
+
   /* Modal backdrop tint — a translucent version of the text color, not a new hue. */
   --color-overlay: rgba(58, 53, 44, 0.35);
 

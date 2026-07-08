@@ -1,0 +1,53 @@
+/* @manualReviewRequested: 2026-07-06 */
+.cg-master-detail {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.cg-master-detail__list {
+  flex: 0 1 28rem;
+  min-width: 0;
+  transition: flex-basis 0.25s ease;
+}
+
+.cg-master-detail__detail {
+  position: relative;
+  flex-basis: 0;
+  min-width: 0;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    flex-basis 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.cg-master-detail--split .cg-master-detail__list {
+  flex: 1 1 50%;
+}
+
+.cg-master-detail--split .cg-master-detail__detail {
+  flex: 1 1 50%;
+  width: auto;
+  opacity: 1;
+  overflow: visible;
+}
+
+.cg-master-detail__close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+}
+
+.cg-master-detail__close:hover {
+  background-color: var(--color-surface-muted);
+}

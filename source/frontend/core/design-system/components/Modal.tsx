@@ -2,8 +2,8 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
+import { BasicIcon } from "./BasicIcon";
 import { Card } from "./Card";
-import { EmojiIcon } from "./EmojiIcon";
 import "./Modal.css";
 
 type ModalProps = {
@@ -21,7 +21,9 @@ export function Modal({ isOpen, title, onClose, children }: ModalProps) {
 
   useEffect(() => {
     if (!isOpen) return;
-    dialogRef.current?.focus();
+    if (dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
+      dialogRef.current.focus();
+    }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
@@ -47,7 +49,7 @@ export function Modal({ isOpen, title, onClose, children }: ModalProps) {
           <div className="cg-modal__header">
             <h2 className="cg-modal__title">{title}</h2>
             <button type="button" className="cg-modal__close" aria-label="Close" onClick={onClose}>
-              <EmojiIcon symbol="✖️" label="Close" />
+              <BasicIcon name="close" label="Close" />
             </button>
           </div>
           {children}

@@ -1,9 +1,10 @@
 # @manualReviewRequested: 2026-07-06
 """HTTP routes for the single local user's in-app preferences."""
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
 from core.auth.login_guard import login_required
+from core.http.json_response import json_response
 from core.storage import record_store
 from app.settings import user_preference
 
@@ -14,7 +15,7 @@ settings_blueprint = Blueprint("settings", __name__, url_prefix="/api/settings")
 @login_required
 def get_settings():
     """Reads the user's preferences, creating them with defaults on first use."""
-    return jsonify(_serialize(user_preference.get_or_create_singleton()))
+    return json_response(_serialize(user_preference.get_or_create_singleton()))
 
 
 @settings_blueprint.patch("")
@@ -29,7 +30,7 @@ def update_settings():
     if "displayName" in body:
         user_preference.set_display_name(body["displayName"], block=block)
     user_preference.save(block)
-    return jsonify(_serialize(block))
+    return json_response(_serialize(block))
 
 
 @settings_blueprint.post("/purge-all-data")

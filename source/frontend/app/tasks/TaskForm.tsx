@@ -1,13 +1,12 @@
-// @manualReviewRequested: 2026-07-06
+// @manualReviewRequested: 2026-07-07
 import { type FormEvent, useState } from "react";
 
+import { BasicIcon } from "../../core/design-system/components/BasicIcon";
 import { Button } from "../../core/design-system/components/Button";
-import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
+import { Field } from "../../core/design-system/components/Field";
+import { Select } from "../../core/design-system/components/Select";
 import { TextInput } from "../../core/design-system/components/TextInput";
-import { RecurrencePicker } from "./RecurrencePicker";
-import type { CreateRecurringTaskTemplateInput } from "./recurrenceApi";
 import type { CreateTaskInput } from "./taskApi";
-import { useCreateRecurringTaskTemplate } from "./useRecurringTaskTemplates";
 import "./TaskForm.css";
 
 type ProjectOption = {
@@ -15,8 +14,14 @@ type ProjectOption = {
   title: string;
 };
 
+type WorkspaceOption = {
+  id: string;
+  title: string;
+};
+
 type TaskFormProps = {
   projects: ProjectOption[];
+  workspaces?: WorkspaceOption[];
   /** When given, the task is created directly in this project and the project field is hidden
    * rather than left editable — used when creating a task from within a project's own detail
    * pane.
@@ -26,54 +31,64 @@ type TaskFormProps = {
 };
 
 const NO_PROJECT_VALUE = "";
+const NO_WORKSPACE_VALUE = "";
 
-/** The form for adding a new task, including its optional project and recurrence. */
-export function TaskForm({ projects, initialProjectId, onCreate }: TaskFormProps) {
+/** The form for adding a new one-off task, including its optional project and workspace.
+ * Recurrence is no longer set from here — a task only ever recurs by being nested inside a block
+ * template (see app/blocks/CLAUDE.md's BlockTemplatesPage), not via a per-task setting at
+ * creation time.
+ */
+export function TaskForm({ projects, workspaces = [], initialProjectId, onCreate }: TaskFormProps) {
   const isProjectLocked = initialProjectId !== undefined;
   const [title, setTitle] = useState("");
   const [projectId, setProjectId] = useState(initialProjectId ?? NO_PROJECT_VALUE);
-  const [recurrence, setRecurrence] = useState<CreateRecurringTaskTemplateInput | null>(null);
-  const createRecurringTaskTemplate = useCreateRecurringTaskTemplate();
+  const [workspaceId, setWorkspaceId] = useState(NO_WORKSPACE_VALUE);
 
-  async function handleSubmit(event: FormEvent) {
+  function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (!title.trim()) return;
 
-    const recurringTemplateId = recurrence
-      ? (await createRecurringTaskTemplate.mutateAsync({ ...recurrence, title, projectId })).id
-      : "";
-    onCreate({ title, projectId, recurringTemplateId });
+    onCreate({ title, projectId, workspaceId });
 
     setTitle("");
     setProjectId(initialProjectId ?? NO_PROJECT_VALUE);
-    setRecurrence(null);
+    setWorkspaceId(NO_WORKSPACE_VALUE);
   }
 
   return (
     <form className="cg-task-form" onSubmit={handleSubmit}>
-      <label className="cg-task-form__field">
-        Title
+      <Field label="Title">
         <TextInput value={title} onChange={(event) => setTitle(event.target.value)} autoFocus />
-      </label>
+      </Field>
 
       {!isProjectLocked && projects.length > 0 && (
-        <label className="cg-task-form__field">
-          Project
-          <select value={projectId} onChange={(event) => setProjectId(event.target.value)}>
-            <option value={NO_PROJECT_VALUE}>No project</option>
-            {projects.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.title}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Field label="Project">
+          <Select
+            value={projectId}
+            onChange={setProjectId}
+            options={[
+              { value: NO_PROJECT_VALUE, label: "No project" },
+              ...projects.map((project) => ({ value: project.id, label: project.title })),
+            ]}
+          />
+        </Field>
       )}
 
-      <RecurrencePicker value={recurrence} onChange={setRecurrence} />
+      {workspaces.length > 0 && (
+        <Field label="Workspace">
+          <Select
+            value={workspaceId}
+            onChange={setWorkspaceId}
+            options={[
+              { value: NO_WORKSPACE_VALUE, label: "No workspace" },
+              ...workspaces.map((workspace) => ({ value: workspace.id, label: workspace.title })),
+            ]}
+          />
+        </Field>
+      )}
 
       <Button type="submit">
-        Add task <EmojiIcon symbol="➕" label="Add" />
+        Add task <BasicIcon name="plus" label="Add" />
       </Button>
     </form>
   );

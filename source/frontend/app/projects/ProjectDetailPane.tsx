@@ -1,14 +1,20 @@
 // @manualReviewRequested: 2026-07-06
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { BasicIcon } from "../../core/design-system/components/BasicIcon";
 import { Button } from "../../core/design-system/components/Button";
 import { Card } from "../../core/design-system/components/Card";
-import { Checkbox } from "../../core/design-system/components/Checkbox";
+import { CheckboxField } from "../../core/design-system/components/CheckboxField";
 import { EmojiIcon } from "../../core/design-system/components/EmojiIcon";
+import { Field } from "../../core/design-system/components/Field";
+import { List } from "../../core/design-system/components/List";
+import { Select } from "../../core/design-system/components/Select";
 import { TextArea } from "../../core/design-system/components/TextArea";
 import { TextInput } from "../../core/design-system/components/TextInput";
 import { NotesSection } from "../journals/NotesSection";
 import { TaskCreateModal } from "../tasks/TaskCreateModal";
+import { TaskList } from "../tasks/TaskList";
 import { useTasks } from "../tasks/useTasks";
 import { ProjectCreateModal } from "./ProjectCreateModal";
 import type { Project } from "./projectApi";
@@ -52,6 +58,7 @@ export function ProjectDetailPane({ project, onSelectProject, onDeleted }: Proje
   const deleteProject = useDeleteProject();
   const { data: tasksInProject } = useTasks(project.id);
   const { data: allProjects } = useProjects();
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState(project.title);
   const [description, setDescription] = useState(project.description);
@@ -131,46 +138,44 @@ export function ProjectDetailPane({ project, onSelectProject, onDeleted }: Proje
       <Card>
         <div className="cg-project-detail-pane__section-header">
           <h3>
-            Subprojects <EmojiIcon symbol="📁" label="Subprojects" />
+            Subprojects ({subprojects.length}) <EmojiIcon symbol="📁" label="Subprojects" />
           </h3>
           <ProjectCreateModal initialParentProjectId={project.id} onCreated={onSelectProject} />
         </div>
-        {subprojects.length === 0 && <p>No subprojects yet.</p>}
-        <ul className="cg-project-detail-pane__subproject-list">
-          {subprojects.map((subproject) => (
-            <li key={subproject.id}>
-              <button type="button" onClick={() => onSelectProject(subproject.id)}>
-                {subproject.title}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <List
+          groups={[{ key: "subprojects", items: subprojects }]}
+          getId={(subproject) => subproject.id}
+          getLabel={(subproject) => subproject.title}
+          onSelect={onSelectProject}
+          emptyMessage="No subprojects yet."
+        />
       </Card>
 
       <Card>
         <div className="cg-project-detail-pane__section-header">
           <h3>
-            Tasks in this project <EmojiIcon symbol="✅" label="Tasks" />
+            Tasks ({tasksInProject?.length ?? 0}) <EmojiIcon symbol="✅" label="Tasks" />
           </h3>
           <TaskCreateModal initialProjectId={project.id} />
         </div>
-        {tasksInProject?.length === 0 && <p>No tasks in this project yet.</p>}
-        <ul className="cg-project-detail-pane__task-list">
-          {tasksInProject?.map((taskItem) => (
-            <li key={taskItem.id}>{taskItem.title}</li>
-          ))}
-        </ul>
+        <TaskList
+          tasks={tasksInProject ?? []}
+          capabilities={{ allowDelete: false, allowEdit: true }}
+          onSelectTask={(taskId) =>
+            navigate("/", { state: { selection: { kind: "task", id: taskId } } })
+          }
+          emptyMessage="No tasks in this project yet."
+        />
       </Card>
 
       <Card>
-        <label className="cg-project-detail-pane__field">
-          Description
+        <Field label="Description">
           <TextArea
             rows={3}
             value={description}
             onChange={(event) => setDescription(event.target.value)}
           />
-        </label>
+        </Field>
         <NotesSection targetType="Project" targetId={project.id} />
       </Card>
 
@@ -178,27 +183,26 @@ export function ProjectDetailPane({ project, onSelectProject, onDeleted }: Proje
         <h3>
           Settings <EmojiIcon symbol="⚙️" label="Settings" />
         </h3>
-        <label className="cg-project-detail-pane__field">
-          Parent project
-          <select
+        <Field label="Parent project">
+          <Select
             value={parentProjectId}
-            onChange={(event) => setParentProjectId(event.target.value)}
-          >
-            <option value={NO_PARENT_VALUE}>No parent (top-level)</option>
-            {eligibleParents.map((candidate) => (
-              <option key={candidate.id} value={candidate.id}>
-                {candidate.title}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={setParentProjectId}
+            options={[
+              { value: NO_PARENT_VALUE, label: "No parent (top-level)" },
+              ...eligibleParents.map((candidate) => ({
+                value: candidate.id,
+                label: candidate.title,
+              })),
+            ]}
+          />
+        </Field>
         <p className="cg-project-detail-pane__meta">
           Created {new Date(project.createdAt).toLocaleDateString()}
         </p>
-        <Checkbox
+        <CheckboxField
+          label="Archived"
           checked={isArchived}
           onToggle={() => setIsArchived(!isArchived)}
-          label="Archived"
         />
         <div className="cg-project-detail-pane__actions">
           <Button type="button" onClick={handleSave}>
@@ -206,7 +210,7 @@ export function ProjectDetailPane({ project, onSelectProject, onDeleted }: Proje
           </Button>
           {!isConfirmingDelete && (
             <Button type="button" variant="danger" onClick={handleDeleteClick}>
-              Delete project <EmojiIcon symbol="🗑️" label="Delete" />
+              Delete project <BasicIcon name="trash" label="Delete" />
             </Button>
           )}
         </div>
@@ -217,19 +221,19 @@ export function ProjectDetailPane({ project, onSelectProject, onDeleted }: Proje
               {tasksInProject?.length === 1 ? "" : "s"} and {subprojects.length} subproject
               {subprojects.length === 1 ? "" : "s"}. What should happen to them?
             </p>
-            <label className="cg-project-detail-pane__field">
-              <select
+            <Field label="Move to">
+              <Select
                 value={moveTargetProjectId}
-                onChange={(event) => setMoveTargetProjectId(event.target.value)}
-              >
-                <option value={DELETE_CHILDREN_OPTION_VALUE}>Delete them all</option>
-                {eligibleParents.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    Move to "{candidate.title}"
-                  </option>
-                ))}
-              </select>
-            </label>
+                onChange={setMoveTargetProjectId}
+                options={[
+                  { value: DELETE_CHILDREN_OPTION_VALUE, label: "Delete them all" },
+                  ...eligibleParents.map((candidate) => ({
+                    value: candidate.id,
+                    label: `Move to "${candidate.title}"`,
+                  })),
+                ]}
+              />
+            </Field>
             <div className="cg-project-detail-pane__actions">
               <Button type="button" variant="danger" onClick={handleConfirmDelete}>
                 Confirm

@@ -1,12 +1,15 @@
 // @manualReviewRequested: 2026-07-06
-import type { InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
 import "./TextInput.css";
 
 type TextInputProps = InputHTMLAttributes<HTMLInputElement>;
 
 /** The one text input style used everywhere in the app. */
-export function TextInput({ className, ...rest }: TextInputProps) {
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(function TextInput(
+  { className, ...rest },
+  ref,
+) {
   const classes = ["cg-text-input", className].filter(Boolean).join(" ");
-  return <input className={classes} {...rest} />;
-}
+  return <input ref={ref} className={classes} {...rest} />;
+});

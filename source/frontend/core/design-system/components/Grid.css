@@ -1,0 +1,56 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cg-grid__summary {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+.cg-grid__copy-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.cg-grid__copy-bar-label {
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+.cg-grid__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cg-grid__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.cg-grid__row-label {
+  flex-shrink: 0;
+  min-width: 4rem;
+  font-weight: bold;
+}
+
+.cg-grid__row-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}

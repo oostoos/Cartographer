@@ -61,14 +61,15 @@ SETTINGS_REGISTRY: dict[str, Setting] = {
     ),
     SETTING_FLASK_DEBUG: Setting(
         SETTING_FLASK_DEBUG,
-        "Enables Flask debug mode and the auto-reloader.",
-        default="1",
+        "Enables Flask debug mode and the auto-reloader. Also gates whether "
+        "ADMIN_PASSWORD_DEV_OVERRIDE is honored — leave this off outside local development.",
+        default="0",
         is_required=False,
     ),
     SETTING_SESSION_LIFETIME_MINUTES: Setting(
         SETTING_SESSION_LIFETIME_MINUTES,
         "How long a login session stays valid, in minutes.",
-        default="43200",
+        default="720",
         is_required=False,
     ),
     SETTING_BACKEND_PORT: Setting(

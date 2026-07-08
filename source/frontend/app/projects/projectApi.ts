@@ -6,6 +6,7 @@ export type Project = {
   title: string;
   description: string;
   parentProjectId: string;
+  workspaceId: string;
   isArchived: boolean;
   createdAt: string;
 };
@@ -14,6 +15,7 @@ export type CreateProjectInput = {
   title: string;
   description?: string;
   parentProjectId?: string;
+  workspaceId?: string;
 };
 
 /** Lists every project. */

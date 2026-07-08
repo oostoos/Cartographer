@@ -1,0 +1,19 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-workspace-color-picker {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cg-workspace-color-picker__swatch {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cg-workspace-color-picker__swatch--selected {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}

@@ -1,0 +1,8 @@
+/* @manualReviewRequested: 2026-07-07 */
+.cg-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+}
