@@ -55,4 +55,38 @@ describe("RecurrencePicker", () => {
     );
     expect(screen.queryByText("Mon")).not.toBeInTheDocument();
   });
+
+  it("clears the interval to undefined instead of 0 when its field is emptied", async () => {
+    const onChange = vi.fn();
+    const value: CadenceOverride = { frequency: "daily", startDate: "2026-07-04", interval: 3 };
+    render(<RecurrencePicker value={value} onChange={onChange} />);
+    await userEvent.clear(screen.getByLabelText("Every"));
+    expect(onChange).toHaveBeenLastCalledWith({ ...value, interval: undefined });
+  });
+
+  it("clears dayOfMonth to null instead of 0 when its field is emptied", async () => {
+    const onChange = vi.fn();
+    const value: CadenceOverride = {
+      frequency: "monthly",
+      startDate: "2026-07-04",
+      interval: 1,
+      dayOfMonth: 15,
+    };
+    render(<RecurrencePicker value={value} onChange={onChange} />);
+    await userEvent.clear(screen.getByLabelText("Day of month"));
+    expect(onChange).toHaveBeenLastCalledWith({ ...value, dayOfMonth: null });
+  });
+
+  it("clears monthOfYear to null instead of 0 when its field is emptied", async () => {
+    const onChange = vi.fn();
+    const value: CadenceOverride = {
+      frequency: "yearly",
+      startDate: "2026-07-04",
+      interval: 1,
+      monthOfYear: 6,
+    };
+    render(<RecurrencePicker value={value} onChange={onChange} />);
+    await userEvent.clear(screen.getByLabelText("Month"));
+    expect(onChange).toHaveBeenLastCalledWith({ ...value, monthOfYear: null });
+  });
 });

@@ -63,6 +63,23 @@ def test_create_block_template_rejects_a_task_template_with_a_frequency_but_no_s
     assert response.status_code == 400
 
 
+def test_create_block_template_rejects_a_negative_estimated_minutes(client):
+    response = client.post(
+        "/api/block-templates",
+        json={"title": "Bad estimate", "taskTemplates": [{"title": "X", "estimatedMinutes": -1}]},
+    )
+    assert response.status_code == 400
+
+
+def test_create_block_template_accepts_a_zero_estimated_minutes(client):
+    response = client.post(
+        "/api/block-templates",
+        json={"title": "Unset estimate", "taskTemplates": [{"title": "X", "estimatedMinutes": 0}]},
+    )
+    assert response.status_code == 201
+    assert response.get_json()["taskTemplates"][0]["estimatedMinutes"] == 0
+
+
 def test_create_block_template_generates_todays_instance_immediately(client, monkeypatch):
     monkeypatch.setattr("core.utils.clock.today", lambda: date(2026, 7, 6))  # Monday
     client.post(

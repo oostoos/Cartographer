@@ -192,9 +192,9 @@ export function BlockOccurrenceEditor({
           <Field label="Duration">
             <TextInput
               type="number"
-              min={5}
+              min={0}
               step={5}
-              value={sharedDuration}
+              value={sharedDuration || ""}
               onChange={(event) => setSharedDuration(Number(event.target.value))}
             />
           </Field>
@@ -231,9 +231,9 @@ export function BlockOccurrenceEditor({
               />
               <TextInput
                 type="number"
-                min={5}
+                min={0}
                 step={5}
-                value={row.value.durationMinutes}
+                value={row.value.durationMinutes || ""}
                 onChange={(event) =>
                   updateRow(row.key, { durationMinutes: Number(event.target.value) })
                 }

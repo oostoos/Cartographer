@@ -2,6 +2,7 @@
 import type { BlockTemplate } from "../blocks/blockApi";
 import type { Project } from "../projects/projectApi";
 import type { Task } from "../tasks/taskApi";
+import type { BlockOccurrence } from "./calendarApi";
 import { BlocksCard } from "./BlocksCard";
 import { ProjectsCard } from "./ProjectsCard";
 import { TasksCard } from "./TasksCard";
@@ -18,6 +19,10 @@ type LeftSidebarProps = {
   tasksLoading: boolean;
   selectedTaskId: string | null;
   onSelectTask: (taskId: string) => void;
+  /** Today's own real block occurrences, independent of whichever range the calendar grid is
+   * currently showing — BlocksCard nests today's tasks under each block regardless of navigation.
+   */
+  todaysOccurrences: BlockOccurrence[];
   projects: Project[];
   projectsLoading: boolean;
   selectedProjectId: string | null;
@@ -40,6 +45,7 @@ export function LeftSidebar({
   tasksLoading,
   selectedTaskId,
   onSelectTask,
+  todaysOccurrences,
   projects,
   projectsLoading,
   selectedProjectId,
@@ -54,6 +60,8 @@ export function LeftSidebar({
         selectedTemplateId={selectedTemplateId}
         onSelectTemplate={onSelectTemplate}
         onCreateTemplate={onCreateTemplate}
+        tasks={tasks}
+        todaysOccurrences={todaysOccurrences}
       />
       <TasksCard
         tasks={tasks}

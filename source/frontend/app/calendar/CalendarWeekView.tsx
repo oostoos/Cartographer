@@ -68,6 +68,11 @@ type CalendarWeekViewProps = {
   occurrences: BlockOccurrence[];
   tasks: Task[];
   templateColorIndex: Map<string, number>;
+  /** Maps a real occurrence's id to its nested tasks' completed/total counts — drives the small
+   * "X/Y" corner marker on that occurrence's own box. A still-projected occurrence has no entry
+   * here (its synthetic id never appears as any task's blockId), so it renders no marker.
+   */
+  blockCompletionByOccurrenceId: Map<string, { completed: number; total: number }>;
   /** Clicking one occurrence opens its own BlockOccurrenceDetailPane (editing that one date only)
    * — a template's own shape is instead edited from the left sidebar's Blocks card.
    */
@@ -79,13 +84,17 @@ type CalendarWeekViewProps = {
  * event per block occurrence (real or projected, colored consistently per template via
  * app/blocks/blockColor.ts) plus every scheduled task, positioned the same way at its
  * scheduledAt time-of-day. A task with only a dueDate (no precise time) renders as an all-day
- * chip in a strip above the timed grid instead of being positioned within it.
+ * chip in a strip above the timed grid instead of being positioned within it. Block-nested tasks
+ * never reach this component at all (the caller excludes them) — they show nested under their
+ * block in the left sidebar's Blocks card instead, and each occurrence's own box shows a small
+ * completed/total marker in its corner in place of listing them here.
  */
 export function CalendarWeekView({
   weekStartIso,
   occurrences,
   tasks,
   templateColorIndex,
+  blockCompletionByOccurrenceId,
   onSelectOccurrence,
   onSelectTask,
 }: CalendarWeekViewProps) {
@@ -153,25 +162,35 @@ export function CalendarWeekView({
           <div className="cg-calendar-week-view__day-column" key={dateIso}>
             {occurrences
               .filter((occurrence) => occurrence.date === dateIso)
-              .map((occurrence) => (
-                <button
-                  type="button"
-                  key={occurrence.id}
-                  className={
-                    occurrence.isProjected
-                      ? "cg-calendar-week-view__event cg-calendar-week-view__event--projected"
-                      : "cg-calendar-week-view__event"
-                  }
-                  style={occurrenceStyle(
-                    occurrence,
-                    templateColorIndex.get(occurrence.templateId) ?? 0,
-                  )}
-                  onClick={() => onSelectOccurrence(occurrence)}
-                >
-                  <span className="cg-calendar-week-view__event-title">{occurrence.title}</span>
-                  <span className="cg-calendar-week-view__event-time">{occurrence.startTime}</span>
-                </button>
-              ))}
+              .map((occurrence) => {
+                const completion = blockCompletionByOccurrenceId.get(occurrence.id);
+                return (
+                  <button
+                    type="button"
+                    key={occurrence.id}
+                    className={
+                      occurrence.isProjected
+                        ? "cg-calendar-week-view__event cg-calendar-week-view__event--projected"
+                        : "cg-calendar-week-view__event"
+                    }
+                    style={occurrenceStyle(
+                      occurrence,
+                      templateColorIndex.get(occurrence.templateId) ?? 0,
+                    )}
+                    onClick={() => onSelectOccurrence(occurrence)}
+                  >
+                    <span className="cg-calendar-week-view__event-title">{occurrence.title}</span>
+                    <span className="cg-calendar-week-view__event-time">
+                      {occurrence.startTime}
+                    </span>
+                    {completion && completion.total > 0 && (
+                      <span className="cg-calendar-week-view__event-completion">
+                        {completion.completed}/{completion.total}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             {(timedByDate.get(dateIso) ?? []).map(({ task, time }) => (
               <button
                 type="button"

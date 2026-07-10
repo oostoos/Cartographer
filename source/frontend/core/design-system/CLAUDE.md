@@ -39,7 +39,7 @@ shared by every page that builds a `renderRow`.
 
 `List` is the one row-rendering primitive for every flat (non-hierarchical) collection of items
 in the app — a notes feed, a project's tasks, a task's subtasks, the calendar page's left-sidebar
-Blocks/Tasks cards. Same domain-agnostic philosophy as `TreeList`: it takes `groups`/items as
+Tasks card. Same domain-agnostic philosophy as `TreeList`: it takes `groups`/items as
 props and never interprets what a row means. Each `ListGroup` can be `collapsible` (a "Label (n)"
 toggle hiding its items, own uncontrolled expand state — a different concept from `TreeList`'s
 hierarchical expand/collapse, used for e.g. a completed-items group) and/or carry a `newItemLine`

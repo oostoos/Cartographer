@@ -60,7 +60,7 @@ def update_occurrence(occurrence_id):
     Body: any of {"title": str, "description": str, "tags": [str], "startTime": "HH:MM",
         "durationMinutes": int}.
     Raises (as a 400 response): ValueError if occurrence_id's embedded date isn't valid, or
-        durationMinutes isn't > 0. As a 404 response: if occurrence_id names a real block that
+        durationMinutes is negative. As a 404 response: if occurrence_id names a real block that
         doesn't exist, or a projected occurrence whose template doesn't exist.
     """
     body = request.get_json(force=True, silent=True) or {}
@@ -82,8 +82,8 @@ def update_occurrence(occurrence_id):
             block.set_start_time(body["startTime"], block=instance)
         if "durationMinutes" in body:
             duration_minutes = int(body["durationMinutes"])
-            if duration_minutes <= 0:
-                raise ValueError(f"durationMinutes must be > 0, got {duration_minutes!r}.")
+            if duration_minutes < 0:
+                raise ValueError(f"durationMinutes must be >= 0, got {duration_minutes!r}.")
             block.set_duration_minutes(duration_minutes, block=instance)
     except ValueError as error:
         return json_error(str(error))

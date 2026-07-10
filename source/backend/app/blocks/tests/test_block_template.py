@@ -92,6 +92,25 @@ def test_upsert_shape_effective_today_overwrites_a_same_day_edit_instead_of_stac
     assert segments[0].instance_rows == [InstanceRow("0", "08:00", 45)]
 
 
+def test_upsert_shape_effective_today_accepts_a_zero_duration_instance_row():
+    created = block_template.create("Unset duration")
+    today = date(2026, 3, 1)
+    block_template.upsert_shape_effective_today(
+        today, Frequency.DAILY, 1, False, [InstanceRow("daily", "09:00", 0)], block=created
+    )
+    segments = block_template.get_segments(block=created)
+    assert segments[0].instance_rows == [InstanceRow("daily", "09:00", 0)]
+
+
+def test_upsert_shape_effective_today_rejects_a_negative_duration_instance_row():
+    created = block_template.create("Bad duration")
+    today = date(2026, 3, 1)
+    with pytest.raises(ValueError):
+        block_template.upsert_shape_effective_today(
+            today, Frequency.DAILY, 1, False, [InstanceRow("daily", "09:00", -5)], block=created
+        )
+
+
 def test_set_title_does_not_affect_other_fields():
     created = block_template.create("Original", description="desc")
     block_template.set_title("Renamed", block=created)

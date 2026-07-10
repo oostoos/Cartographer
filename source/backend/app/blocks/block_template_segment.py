@@ -208,7 +208,7 @@ def _row_occurs_on(segment: BlockTemplateSegment, row: InstanceRow, target_date:
 
 
 def _validate_instance_rows(frequency: Frequency, instance_rows: list[InstanceRow]) -> None:
-    """Raises ValueError if any row's start_time isn't "HH:MM", duration_minutes isn't > 0, or
+    """Raises ValueError if any row's start_time isn't "HH:MM", duration_minutes is negative, or
     selector doesn't match the shape frequency expects (see InstanceRow's own docstring) — and, for
     daily specifically, if there's more than one row, since daily has no selectable sub-unit.
     """
@@ -223,8 +223,10 @@ def _validate_instance_rows(frequency: Frequency, instance_rows: list[InstanceRo
             raise ValueError(
                 f'An instance row\'s start_time must be "HH:MM", got {row.start_time!r}.'
             ) from None
-        if row.duration_minutes <= 0:
-            raise ValueError(f"An instance row's duration_minutes must be > 0, got {row.duration_minutes!r}.")
+        if row.duration_minutes < 0:
+            raise ValueError(
+                f"An instance row's duration_minutes must be >= 0, got {row.duration_minutes!r}."
+            )
         _validate_selector(frequency, row.selector)
 
 

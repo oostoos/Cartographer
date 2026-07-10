@@ -1,8 +1,80 @@
-/* @manualReviewRequested: 2026-07-07 */
+/* @manualReviewRequested: 2026-07-09 */
 .cg-blocks-card__dot {
   display: inline-block;
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.cg-blocks-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.cg-blocks-card__row {
+  display: flex;
+  flex-direction: column;
+}
+
+.cg-blocks-card__row-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.cg-blocks-card__toggle,
+.cg-blocks-card__toggle-placeholder {
+  flex-shrink: 0;
+  width: 1.25rem;
+}
+
+.cg-blocks-card__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.cg-blocks-card__title-button {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cg-blocks-card__title-button:hover {
+  background-color: var(--color-surface-muted);
+}
+
+.cg-blocks-card__title-button--selected {
+  background-color: var(--color-surface-muted);
+  color: var(--color-primary-blue-strong);
+}
+
+.cg-blocks-card__nested {
+  padding-left: 1.75rem;
+}
+
+.cg-blocks-card__empty {
+  color: var(--color-text-muted);
 }

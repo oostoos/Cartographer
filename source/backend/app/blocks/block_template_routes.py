@@ -236,15 +236,15 @@ def _parse_task_template_payloads(raw_task_templates: list[dict]) -> list[dict]:
         "startDate"?: "YYYY-MM-DD", "endDate"?: "YYYY-MM-DD"|null, "daysOfWeek"?: [int],
         "dayOfMonth"?: int, "monthOfYear"?: int}.
     Raises: ValueError if any entry's title contains a reserved control character, estimatedMinutes
-        isn't > 0, frequency isn't recognized, or frequency is given without startDate.
+        is negative, frequency isn't recognized, or frequency is given without startDate.
     """
     payloads = []
     for raw in raw_task_templates:
         title = raw.get("title", "")
         raise_if_contains_control_characters(title)
         estimated_minutes = raw.get("estimatedMinutes", 5)
-        if estimated_minutes <= 0:
-            raise ValueError(f"estimatedMinutes must be > 0, got {estimated_minutes!r}.")
+        if estimated_minutes < 0:
+            raise ValueError(f"estimatedMinutes must be >= 0, got {estimated_minutes!r}.")
         frequency = _parse_frequency(raw["frequency"]) if raw.get("frequency") else None
         start_date = date.fromisoformat(raw["startDate"]) if raw.get("startDate") else None
         if frequency is not None and start_date is None:

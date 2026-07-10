@@ -1,3 +1,4 @@
+// @manualReviewRequested: 2026-07-08
 import { useEffect, useState } from "react";
 
 import { Button } from "../../core/design-system/components/Button";
@@ -5,6 +6,7 @@ import { Card } from "../../core/design-system/components/Card";
 import { Field } from "../../core/design-system/components/Field";
 import { TextArea } from "../../core/design-system/components/TextArea";
 import { TextInput } from "../../core/design-system/components/TextInput";
+import { parseNonNegativeInt } from "../../core/utils/number";
 import type { BlockOccurrence } from "./calendarApi";
 import { useUpdateBlockOccurrence } from "./useBlockOccurrences";
 import "./BlockOccurrenceDetailPane.css";
@@ -36,13 +38,19 @@ export function BlockOccurrenceDetailPane({
   const [title, setTitle] = useState(occurrence.title);
   const [description, setDescription] = useState(occurrence.description);
   const [startTime, setStartTime] = useState(occurrence.startTime);
-  const [durationMinutes, setDurationMinutes] = useState(occurrence.durationMinutes);
+  /** Kept as text (not a number) so the field can render genuinely empty while the user is
+   * clearing/retyping it — coerced to a persisted 0-or-positive minute count only at save time,
+   * via parseNonNegativeInt (see core/utils/number.ts).
+   */
+  const [durationMinutesText, setDurationMinutesText] = useState(
+    String(occurrence.durationMinutes),
+  );
 
   useEffect(() => {
     setTitle(occurrence.title);
     setDescription(occurrence.description);
     setStartTime(occurrence.startTime);
-    setDurationMinutes(occurrence.durationMinutes);
+    setDurationMinutesText(String(occurrence.durationMinutes));
   }, [occurrence]);
 
   const dateLabel = new Date(`${occurrence.date}T00:00:00`).toLocaleDateString(undefined, {
@@ -55,7 +63,12 @@ export function BlockOccurrenceDetailPane({
     updateOccurrence.mutate(
       {
         occurrenceId: occurrence.id,
-        changes: { title, description, startTime, durationMinutes },
+        changes: {
+          title,
+          description,
+          startTime,
+          durationMinutes: parseNonNegativeInt(durationMinutesText),
+        },
       },
       { onSuccess: onClose },
     );
@@ -86,10 +99,10 @@ export function BlockOccurrenceDetailPane({
           <Field label="Duration">
             <TextInput
               type="number"
-              min={5}
+              min={0}
               step={5}
-              value={durationMinutes}
-              onChange={(event) => setDurationMinutes(Number(event.target.value))}
+              value={durationMinutesText}
+              onChange={(event) => setDurationMinutesText(event.target.value)}
             />
           </Field>
           <span className="cg-block-occurrence-detail-pane__unit">min</span>

@@ -123,7 +123,18 @@ def test_patch_a_real_block_id_directly_edits_it(client, monkeypatch):
     assert body["durationMinutes"] == 45
 
 
-def test_patch_rejects_a_non_positive_duration(client, monkeypatch):
+def test_patch_rejects_a_negative_duration(client, monkeypatch):
+    _set_today(monkeypatch, date(2026, 7, 6))
+    client.post("/api/block-templates", json={"title": "Morning Routine", "shape": _all_days_active()})
+    today_occurrence = client.get(
+        "/api/blocks/occurrences", query_string={"startDate": "2026-07-06", "endDate": "2026-07-06"}
+    ).get_json()["occurrences"][0]
+
+    response = client.patch(f"/api/blocks/{today_occurrence['id']}", json={"durationMinutes": -5})
+    assert response.status_code == 400
+
+
+def test_patch_accepts_a_zero_duration(client, monkeypatch):
     _set_today(monkeypatch, date(2026, 7, 6))
     client.post("/api/block-templates", json={"title": "Morning Routine", "shape": _all_days_active()})
     today_occurrence = client.get(
@@ -131,7 +142,8 @@ def test_patch_rejects_a_non_positive_duration(client, monkeypatch):
     ).get_json()["occurrences"][0]
 
     response = client.patch(f"/api/blocks/{today_occurrence['id']}", json={"durationMinutes": 0})
-    assert response.status_code == 400
+    assert response.status_code == 200
+    assert response.get_json()["durationMinutes"] == 0
 
 
 def test_patch_returns_404_for_a_missing_real_block(client):

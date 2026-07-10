@@ -71,12 +71,13 @@ whenever `task.subtaskCount` is non-null with `total > 0` (computed server-side,
 `formatCompletedAt` — the time if completed today, the date otherwise) once complete. An archived
 task's title is also tagged with a 🗄️ `EmojiIcon` badge in `TaskTitle` — rendered unconditionally,
 since an archived task never reaches the calendar's grid (`app/calendar/CalendarPage.tsx` filters
-both `isArchived` and `isComplete` tasks out before handing them to `CalendarWeekView`/
-`CalendarMonthView`, the spiritual successor to `today_engine`'s old due/backburner exclusion), so
-in practice the badge only ever shows up on the calendar's `TasksCard.tsx` sidebar and a project's
-task list, which are the only places `isArchived` isn't otherwise reflected in the UI (see
-`TaskDetailPane.tsx`'s Archived `CheckboxField`, whose `title` tooltip clarifies that it only
-hides the task from the calendar, not from these lists).
+`isArchived` tasks out before handing them to `CalendarWeekView`/`CalendarMonthView`, the spiritual
+successor to `today_engine`'s old due/backburner exclusion), so in practice the badge only ever
+shows up on the calendar's `TasksCard.tsx` sidebar and a project's task list, which are the only
+places `isArchived` isn't otherwise reflected in the UI (see `TaskDetailPane.tsx`'s Archived
+`CheckboxField`, whose `title` tooltip clarifies that it only hides the task from the calendar,
+not from these lists). A completed task, unlike an archived one, still reaches the calendar
+grid — it renders there via the same struck-through/muted `TaskTitle` styling as everywhere else.
 
 `TasksCard.tsx` (`app/calendar/TasksCard.tsx`) is the calendar page's left-sidebar Tasks section —
 the closest thing to the old `TaskListPage.tsx`, though simpler: a `TaskList` with
@@ -87,5 +88,6 @@ Unlike the old page, it has no drag-to-reorder (a deliberate scope cut, see `app
 and isn't paired with
 `TaskDetailPane.tsx` via `MasterDetailLayout` — selecting a task instead swaps the calendar page's
 own center pane over to `TaskDetailPane`, no split-panel animation. Block-nested tasks don't
-appear in this card at all — same treatment as subtasks — they only ever show as calendar
-occurrences nested under their block (see `app/blocks/CLAUDE.md`).
+appear in this card at all — same treatment as subtasks — they only ever show nested under their
+block in the calendar page's `BlocksCard.tsx` sidebar, for today only (see `app/blocks/CLAUDE.md`/
+`app/calendar/CLAUDE.md`).

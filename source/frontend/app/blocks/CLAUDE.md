@@ -17,7 +17,11 @@ what the calendar projects for future days).
 There is no more dedicated `/blocks` page or `BlockWeekGrid` — a block template's occurrences now
 render directly on the real calendar (`app/calendar/CalendarWeekView.tsx`/`CalendarMonthView.tsx`,
 backed by `GET /api/blocks/occurrences`, see `app/blocks/CLAUDE.md` on the backend), and templates
-themselves are browsed from the calendar page's left-sidebar `BlocksCard.tsx`. Selecting a
+themselves are browsed from the calendar page's left-sidebar `BlocksCard.tsx`, which also nests
+each template's *today's* generated tasks underneath its row (collapsible, defaulting expanded) —
+a block occurring today but with no tasks yet due gets no expand toggle at all, and its nested
+tasks' completed/total counts are the same data `CalendarWeekView.tsx` shows as a corner marker on
+the occurrence's own box (see `app/calendar/CLAUDE.md`). Selecting a
 template there, or "+ New Block", opens `BlockDetailSidebar` in the calendar page's center pane
 (`app/calendar/CalendarPage.tsx`) — editing the template's own shape there always applies "from
 today onward" (see below), never touching an already-generated or projected occurrence before

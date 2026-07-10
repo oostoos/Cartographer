@@ -129,6 +129,14 @@
   opacity: 0.75;
 }
 
+/* Reserves a little extra right-hand room (beyond the shared padding above) for the corner
+   completion marker, so a long title's ellipsis truncates before reaching it instead of the two
+   overlapping. Applied to every occurrence box, not just ones with a marker, so the title's
+   available width doesn't visibly shift depending on whether one renders. */
+.cg-calendar-week-view__event {
+  padding-right: 1.75rem;
+}
+
 .cg-calendar-week-view__event-title {
   font-weight: bold;
   overflow: hidden;
@@ -141,8 +149,24 @@
   opacity: 0.8;
 }
 
+.cg-calendar-week-view__event-completion {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.7em;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
 .cg-calendar-week-view__task-chip {
   background: var(--color-warm-neutral);
   border-color: var(--color-border);
   color: var(--color-text);
+}
+
+/* Same specificity as the chip's own `color` above, so a completed/skipped task's muted color
+   from TaskRow.css isn't left to depend on stylesheet import order. */
+.cg-calendar-week-view__task-chip .cg-task-row__title--completed,
+.cg-calendar-week-view__task-chip .cg-task-row__title--skipped {
+  color: var(--color-text-muted);
 }

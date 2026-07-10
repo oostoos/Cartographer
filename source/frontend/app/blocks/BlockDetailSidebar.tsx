@@ -10,6 +10,7 @@ import { Select } from "../../core/design-system/components/Select";
 import { TextArea } from "../../core/design-system/components/TextArea";
 import { TextInput } from "../../core/design-system/components/TextInput";
 import { todayIsoDate } from "../../core/utils/date";
+import { parseNonNegativeInt } from "../../core/utils/number";
 import { useWorkspaces } from "../workspaces/useWorkspaces";
 import { BlockOccurrenceEditor } from "./BlockOccurrenceEditor";
 import { RecurrencePicker } from "./RecurrencePicker";
@@ -31,13 +32,15 @@ const DEFAULT_ESTIMATED_MINUTES = 5;
 
 /** A task template row's editable state, plus a stable local key (its server id once saved, or a
  * freshly generated one for a not-yet-saved row) so React doesn't lose input focus/state when
- * rows are added or removed elsewhere in the list.
+ * rows are added or removed elsewhere in the list. estimatedMinutes is kept as text (not a
+ * number) so the field can render genuinely empty while being cleared/retyped — coerced via
+ * parseNonNegativeInt (core/utils/number.ts) only where a number is actually needed.
  */
 type EditableTaskTemplate = {
   key: string;
   title: string;
   isSkippable: boolean;
-  estimatedMinutes: number;
+  estimatedMinutes: string;
   cadence: CadenceOverride | null;
 };
 
@@ -50,7 +53,7 @@ function toEditable(taskTemplate: BlockTaskTemplate): EditableTaskTemplate {
     key: taskTemplate.id,
     title: taskTemplate.title,
     isSkippable: taskTemplate.isSkippable,
-    estimatedMinutes: taskTemplate.estimatedMinutes,
+    estimatedMinutes: String(taskTemplate.estimatedMinutes),
     cadence: taskTemplate.frequency
       ? {
           frequency: taskTemplate.frequency,
@@ -75,8 +78,11 @@ function computeLiveTaskTimeRange(tasks: EditableTaskTemplate[]): {
 } {
   const minMinutes = tasks
     .filter((task) => task.cadence === null)
-    .reduce((sum, task) => sum + task.estimatedMinutes, 0);
-  const maxMinutes = tasks.reduce((sum, task) => sum + task.estimatedMinutes, 0);
+    .reduce((sum, task) => sum + parseNonNegativeInt(task.estimatedMinutes), 0);
+  const maxMinutes = tasks.reduce(
+    (sum, task) => sum + parseNonNegativeInt(task.estimatedMinutes),
+    0,
+  );
   return { minMinutes, maxMinutes };
 }
 
@@ -142,7 +148,7 @@ export function BlockDetailSidebar({ template, onClose }: BlockDetailSidebarProp
         key: newLocalKey(),
         title: trimmedTitle,
         isSkippable: true,
-        estimatedMinutes: DEFAULT_ESTIMATED_MINUTES,
+        estimatedMinutes: String(DEFAULT_ESTIMATED_MINUTES),
         cadence: null,
       },
     ]);
@@ -158,7 +164,7 @@ export function BlockDetailSidebar({ template, onClose }: BlockDetailSidebarProp
       taskTemplates: tasks.map((task) => ({
         title: task.title,
         isSkippable: task.isSkippable,
-        estimatedMinutes: task.estimatedMinutes,
+        estimatedMinutes: parseNonNegativeInt(task.estimatedMinutes),
         frequency: task.cadence?.frequency ?? null,
         interval: task.cadence?.interval,
         startDate: task.cadence?.startDate,
@@ -238,10 +244,10 @@ export function BlockDetailSidebar({ template, onClose }: BlockDetailSidebarProp
                 />
                 <TextInput
                   type="number"
-                  min={1}
+                  min={0}
                   value={task.estimatedMinutes}
                   onChange={(event) =>
-                    updateTask(task.key, { estimatedMinutes: Number(event.target.value) })
+                    updateTask(task.key, { estimatedMinutes: event.target.value })
                   }
                   aria-label={`${task.title || "Task"} estimated minutes`}
                 />

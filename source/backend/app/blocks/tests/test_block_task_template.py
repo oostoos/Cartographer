@@ -26,9 +26,16 @@ def test_create_rejects_a_title_containing_a_control_character():
         block_task_template.create("tainted\x1etitle", block_template_id="t1", order=0)
 
 
-def test_create_rejects_a_non_positive_estimated_minutes():
+def test_create_rejects_a_negative_estimated_minutes():
     with pytest.raises(ValueError):
-        block_task_template.create("Bad estimate", block_template_id="t1", order=0, estimated_minutes=0)
+        block_task_template.create("Bad estimate", block_template_id="t1", order=0, estimated_minutes=-1)
+
+
+def test_create_accepts_a_zero_estimated_minutes():
+    created = block_task_template.create(
+        "Unset estimate", block_template_id="t1", order=0, estimated_minutes=0
+    )
+    assert block_task_template.get_estimated_minutes(block=created) == 0
 
 
 def test_create_rejects_a_frequency_without_a_start_date():

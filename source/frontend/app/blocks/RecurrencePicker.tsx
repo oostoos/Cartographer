@@ -64,8 +64,11 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
           <TextInput
             type="number"
             min={1}
-            value={value.interval ?? DEFAULT_INTERVAL}
-            onChange={(event) => onChange({ ...value, interval: Number(event.target.value) })}
+            value={value.interval ?? ""}
+            onChange={(event) => {
+              const raw = event.target.value;
+              onChange({ ...value, interval: raw === "" ? undefined : Number(raw) });
+            }}
           />
         </Field>
       )}
@@ -93,7 +96,10 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
             min={1}
             max={31}
             value={value.dayOfMonth ?? ""}
-            onChange={(event) => onChange({ ...value, dayOfMonth: Number(event.target.value) })}
+            onChange={(event) => {
+              const raw = event.target.value;
+              onChange({ ...value, dayOfMonth: raw === "" ? null : Number(raw) });
+            }}
           />
         </Field>
       )}
@@ -105,7 +111,10 @@ export function RecurrencePicker({ value, onChange }: RecurrencePickerProps) {
             min={1}
             max={12}
             value={value.monthOfYear ?? ""}
-            onChange={(event) => onChange({ ...value, monthOfYear: Number(event.target.value) })}
+            onChange={(event) => {
+              const raw = event.target.value;
+              onChange({ ...value, monthOfYear: raw === "" ? null : Number(raw) });
+            }}
           />
         </Field>
       )}

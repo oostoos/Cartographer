@@ -55,7 +55,15 @@ the same 5 AM–11 PM grid; a task with only a `dueDate` (no precise time) rende
 chip in a strip above the timed grid instead. `CalendarMonthView.tsx` shows each day as a cell
 with one colored dot per occurrence (capped, with a "+N" overflow) and a task count; clicking a
 day switches to the week view anchored there, since a month cell is too small to browse or open
-anything directly.
+anything directly. A completed task still counts and still renders as a chip in the week view
+(struck-through and muted, via `TaskTitle`'s `resolutionClass` — see `app/tasks/CLAUDE.md`) —
+only an archived task is excluded from the calendar grid; completion is a display state, not a
+visibility one. Block-nested tasks are excluded from the grid entirely (`CalendarPage.tsx`'s
+`calendarTasks` filters out any task with `blockId` set) — they show nested under their block in
+the left sidebar's `BlocksCard.tsx` instead, for today only, and `CalendarWeekView.tsx` shows a
+small "completed/total" marker in the corner of that block's own occurrence box in place of
+listing them (`blockCompletionByOccurrenceId`, built once in `CalendarPage.tsx` from the raw task
+list); `CalendarMonthView.tsx` shows no such marker, its day cells having no room for one.
 
 Deliberate scope cut: the left sidebar's `TasksCard` lists ad-hoc tasks but, unlike the old
 `TaskListPage`, doesn't support drag-to-reorder — a compact sidebar card wasn't judged worth the

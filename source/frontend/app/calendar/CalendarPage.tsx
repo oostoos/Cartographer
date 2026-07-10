@@ -11,6 +11,7 @@ import { useBlockTemplates } from "../blocks/useBlockTemplates";
 import { ProjectDetailPane } from "../projects/ProjectDetailPane";
 import { useProjects } from "../projects/useProjects";
 import { TaskDetailPane } from "../tasks/TaskDetailPane";
+import type { Task } from "../tasks/taskApi";
 import { useTasks } from "../tasks/useTasks";
 import { BlockOccurrenceDetailPane } from "./BlockOccurrenceDetailPane";
 import { CalendarMonthView } from "./CalendarMonthView";
@@ -45,6 +46,26 @@ function buildTemplateColorIndex(templates: BlockTemplate[]): Map<string, number
   return new Map(templates.map((template, index) => [template.id, index]));
 }
 
+/** Maps a real block occurrence's id to how many of its nested tasks are strictly complete versus
+ * how many exist in total — the data behind CalendarWeekView's per-occurrence completion marker.
+ * Built from the raw, unfiltered task list (unlike calendarTasks) since it needs exactly the
+ * block-nested tasks calendarTasks excludes. A still-projected occurrence's synthetic id never
+ * appears as any task's blockId, so it's simply absent from the result.
+ */
+function buildBlockCompletionByOccurrenceId(
+  tasks: Task[],
+): Map<string, { completed: number; total: number }> {
+  const countsByOccurrenceId = new Map<string, { completed: number; total: number }>();
+  for (const task of tasks) {
+    if (task.blockId === "" || task.isArchived) continue;
+    const counts = countsByOccurrenceId.get(task.blockId) ?? { completed: 0, total: 0 };
+    counts.total += 1;
+    if (task.isComplete) counts.completed += 1;
+    countsByOccurrenceId.set(task.blockId, counts);
+  }
+  return countsByOccurrenceId;
+}
+
 /** The app's home page (route "/"): a calendar-centered hub. Left sidebar: Blocks/Tasks/Projects,
  * each an independently collapsible card (app/calendar/LeftSidebar.tsx). Right sidebar: the
  * unified notes feed plus its always-available composer (app/calendar/RightSidebar.tsx). Center:
@@ -73,12 +94,20 @@ export function CalendarPage() {
   const { data: projects, isLoading: projectsLoading } = useProjects();
 
   const templateColorIndex = useMemo(() => buildTemplateColorIndex(templates ?? []), [templates]);
-  /** Archived or already-complete tasks stay out of the calendar grid itself (mirroring the old
-   * Today page's due/backburner buckets, which excluded both) — they're still fully browsable
-   * from the left sidebar's Tasks card, which shows every ad-hoc task regardless of either flag.
+  /** Archived tasks stay out of the calendar grid itself — they're still fully browsable from
+   * the left sidebar's Tasks card, which shows every ad-hoc task regardless of the flag.
+   * Completed tasks, unlike archived ones, do appear here: they render struck-through and muted
+   * via TaskTitle's resolutionClass (app/tasks/TaskRow.tsx), since completion is a display state,
+   * not a calendar-visibility concept. Block-nested tasks are excluded too — they show nested
+   * under their block in the left sidebar's Blocks card (today only) instead, with a completion
+   * marker on their block's own occurrence box (see blockCompletionByOccurrenceId below).
    */
   const calendarTasks = useMemo(
-    () => (tasks ?? []).filter((task) => !task.isArchived && !task.isComplete),
+    () => (tasks ?? []).filter((task) => !task.isArchived && task.blockId === ""),
+    [tasks],
+  );
+  const blockCompletionByOccurrenceId = useMemo(
+    () => buildBlockCompletionByOccurrenceId(tasks ?? []),
     [tasks],
   );
 
@@ -97,6 +126,13 @@ export function CalendarPage() {
     rangeStart,
     rangeEnd,
   );
+  /** Today's own real occurrences, fetched independently of whichever range the grid is currently
+   * showing — the left sidebar's Blocks card nests today's tasks under each block regardless of
+   * calendar navigation, so it needs today's data even when the visible week/month doesn't include
+   * it.
+   */
+  const todayIso = toIsoDate(new Date());
+  const { data: todaysOccurrences } = useBlockOccurrences(todayIso, todayIso);
 
   function goToPrevious() {
     setAnchorIso((previous) =>
@@ -154,6 +190,7 @@ export function CalendarPage() {
         tasksLoading={tasksLoading}
         selectedTaskId={selection?.kind === "task" ? selection.id : null}
         onSelectTask={(id) => setSelection({ kind: "task", id })}
+        todaysOccurrences={todaysOccurrences ?? []}
         projects={projects ?? []}
         projectsLoading={projectsLoading}
         selectedProjectId={selection?.kind === "project" ? selection.id : null}
@@ -224,6 +261,7 @@ export function CalendarPage() {
                 occurrences={occurrences ?? []}
                 tasks={calendarTasks}
                 templateColorIndex={templateColorIndex}
+                blockCompletionByOccurrenceId={blockCompletionByOccurrenceId}
                 onSelectOccurrence={(occurrence) =>
                   setSelection({ kind: "block-occurrence", id: occurrence.id })
                 }

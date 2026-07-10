@@ -70,20 +70,21 @@ def create(
         template's sort position among its siblings (assigned by the caller — block_template's
         whole-list-replace save assigns these from payload position, see
         app/blocks/block_template_routes.py); is_skippable, whether the generated Task defaults
-        to skippable (default True); estimated_minutes, required > 0, this task's time estimate,
-        used to compute the owning block's task time range (see app/blocks/block_time_estimate.py)
-        and today's scheduled-minutes readout; frequency, optional — None means "every time the
-        block occurs" (the common case); a set frequency layers recurrence_engine.occurs_on on
-        top of the block's own occurrence, and requires start_date to also be given; interval/
-        end_date/days_of_week/day_of_month/month_of_year, same meaning as recurrence_engine's
-        other cadence fields, only relevant when frequency is set.
+        to skippable (default True); estimated_minutes, must be >= 0 (0 means unset, same
+        convention as Task.estimated_minutes), this task's time estimate, used to compute the
+        owning block's task time range (see app/blocks/block_time_estimate.py) and today's
+        scheduled-minutes readout; frequency, optional — None means "every time the block occurs"
+        (the common case); a set frequency layers recurrence_engine.occurs_on on top of the
+        block's own occurrence, and requires start_date to also be given; interval/end_date/
+        days_of_week/day_of_month/month_of_year, same meaning as recurrence_engine's other cadence
+        fields, only relevant when frequency is set.
     Raises: ValidationError if title contains a reserved control character. ValueError if
-        estimated_minutes is not > 0, frequency is given and isn't a Frequency member, or
+        estimated_minutes is negative, frequency is given and isn't a Frequency member, or
         frequency is given without start_date.
     """
     raise_if_contains_control_characters(title)
-    if estimated_minutes <= 0:
-        raise ValueError(f"estimated_minutes must be > 0, got {estimated_minutes!r}.")
+    if estimated_minutes < 0:
+        raise ValueError(f"estimated_minutes must be >= 0, got {estimated_minutes!r}.")
     if frequency is not None:
         if not isinstance(frequency, Frequency):
             raise ValueError(f"frequency must be a Frequency member, got {frequency!r}.")

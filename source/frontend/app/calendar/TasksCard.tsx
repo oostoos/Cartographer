@@ -8,8 +8,8 @@ import type { Task } from "../tasks/taskApi";
 import { useCreateTask } from "../tasks/useTasks";
 
 /** An ad-hoc top-level task is the only kind this card lists — block-nested tasks show under
- * their block occurrence on the calendar, and subtasks show nested under their parent task's own
- * detail pane, matching TaskListPage's identical filtering (see app/tasks/CLAUDE.md).
+ * their block in the Blocks card sidebar instead, and subtasks show nested under their parent
+ * task's own detail pane, matching TaskListPage's identical filtering (see app/tasks/CLAUDE.md).
  */
 function isAdHocTask(task: Task): boolean {
   return task.blockId === "" && task.projectId === "" && task.parentTaskId === "";
