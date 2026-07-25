@@ -14,6 +14,7 @@ function buildTask(overrides: Partial<TTask>): TTask {
     created_at: NOW.toISOString(),
     updated_at: NOW.toISOString(),
     completed_at: null,
+    order: 0,
     ...overrides,
   };
 }

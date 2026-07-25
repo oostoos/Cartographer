@@ -35,6 +35,7 @@ reaching into individual modules directly.
 
 - **`isString(value) -> bool`** — true if `value` is a `str`.
 - **`isDict(value) -> bool`** — true if `value` is a `dict`.
+- **`isList(value) -> bool`** — true if `value` is a `list`.
 
 ## strings — generic string constants and encoding helpers
 

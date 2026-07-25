@@ -158,3 +158,38 @@ def test_patch_task_complete_unknown_id_returns_404_envelope(client):
 
     assert response.status_code == 404
     assert response.get_json()["success"] is False
+
+
+def test_patch_tasks_reorder_reassigns_order(client):
+    first = _create(client, title="Task one")
+    second = _create(client, title="Task two")
+
+    response = client.patch("/api/tasks/reorder", json={"task_ids": [second["id"], first["id"]]})
+
+    assert response.status_code == 200
+    body = response.get_json()["data"]
+    assert [task["id"] for task in body] == [second["id"], first["id"]]
+
+
+def test_patch_tasks_reorder_persists_across_subsequent_list(client):
+    first = _create(client, title="Task one")
+    second = _create(client, title="Task two")
+
+    client.patch("/api/tasks/reorder", json={"task_ids": [second["id"], first["id"]]})
+    response = client.get("/api/tasks")
+
+    assert [task["id"] for task in response.get_json()["data"]] == [second["id"], first["id"]]
+
+
+def test_patch_tasks_reorder_missing_task_ids_returns_400_envelope(client):
+    response = client.patch("/api/tasks/reorder", json={})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False
+
+
+def test_patch_tasks_reorder_non_list_task_ids_returns_400_envelope(client):
+    response = client.patch("/api/tasks/reorder", json={"task_ids": "not-a-list"})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False

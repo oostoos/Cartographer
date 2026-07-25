@@ -9,6 +9,7 @@ from src.main.backend.database.task import (
     deleteAllTasks,
     getAllTasks,
     getTask,
+    reorderTasks,
     setTaskCompleted,
     updateTask,
 )
@@ -136,6 +137,68 @@ def test_decode_task_defaults_completed_at_to_none_for_legacy_six_field_record()
 
     assert fetched.completed is True
     assert fetched.completed_at is None
+
+
+def test_decode_task_defaults_order_to_zero_for_legacy_seven_field_record():
+    task = createTask("Buy milk")
+    legacy_fields = [
+        task.id,
+        task.title,
+        task.description,
+        "false",
+        task.created_at,
+        task.updated_at,
+        "",
+    ]
+    writePage(record_store_module.DATA_ROOT, TASK_OBJECT_TYPE, task.id, legacy_fields)
+
+    fetched = getTask(task.id)
+
+    assert fetched.order == 0.0
+
+
+def test_create_task_assigns_increasing_order():
+    first = createTask("Task one")
+    second = createTask("Task two")
+    third = createTask("Task three")
+
+    assert first.order < second.order < third.order
+
+
+def test_get_all_tasks_sorts_by_order():
+    first = createTask("Task one")
+    second = createTask("Task two")
+
+    all_tasks = getAllTasks()
+
+    assert [task.id for task in all_tasks] == [first.id, second.id]
+
+
+def test_reorder_tasks_reassigns_order_to_match_given_sequence():
+    first = createTask("Task one")
+    second = createTask("Task two")
+
+    reordered = reorderTasks([second.id, first.id])
+
+    assert [task.id for task in reordered] == [second.id, first.id]
+
+
+def test_reorder_tasks_skips_unknown_ids():
+    first = createTask("Task one")
+    second = createTask("Task two")
+
+    reordered = reorderTasks([second.id, "does-not-exist", first.id])
+
+    assert [task.id for task in reordered] == [second.id, first.id]
+
+
+def test_reorder_tasks_persists_across_reads():
+    first = createTask("Task one")
+    second = createTask("Task two")
+
+    reorderTasks([second.id, first.id])
+
+    assert [task.id for task in getAllTasks()] == [second.id, first.id]
 
 
 def test_get_all_tasks_returns_every_created_task():

@@ -13,6 +13,7 @@ class Task:
     created_at: str
     updated_at: str
     completed_at: str | None = None
+    order: float = 0.0
 
 
 @dataclass

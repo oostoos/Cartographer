@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { Card } from "@common/design-language/card";
 import { Link } from "react-router-dom";
 
@@ -9,13 +11,16 @@ import type { TTask } from "./types";
 export interface ITaskListItemProps {
   task: TTask;
   onToggleCompleted: (completed: boolean) => void;
+  /** Optional drag handle rendered at the start of the row, e.g. for drag-to-reorder. */
+  dragHandle?: ReactNode;
 }
 
 /** A single row in the task list: checkbox + title, linking through to the task's detail page. */
-export function TaskListItem({ task, onToggleCompleted }: ITaskListItemProps) {
+export function TaskListItem({ task, onToggleCompleted, dragHandle }: ITaskListItemProps) {
   return (
     <Card>
       <div className="task-list-item" data-completed={task.completed}>
+        {dragHandle}
         <input
           type="checkbox"
           checked={task.completed}

@@ -13,6 +13,7 @@ const TASK: TTask = {
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
+  order: 0,
 };
 
 describe("useTasks", () => {
@@ -93,5 +94,41 @@ describe("useTasks", () => {
     });
 
     expect(result.current.tasks).toEqual([TASK]);
+  });
+
+  it("reorderActiveTasks immediately reflects the given order, then syncs to the server response", async () => {
+    const first = { ...TASK, id: "1", order: 0 };
+    const second = { ...TASK, id: "2", order: 1 };
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([first, second]);
+    const reorderSpy = vi
+      .spyOn(tasksApi, "reorderTasks")
+      .mockResolvedValue([{ ...second, order: 0 }, { ...first, order: 1 }]);
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    await act(async () => {
+      await result.current.reorderActiveTasks(["2", "1"]);
+    });
+
+    expect(reorderSpy).toHaveBeenCalledWith(["2", "1"]);
+    expect(result.current.tasks.map((task) => task.id)).toEqual(["2", "1"]);
+  });
+
+  it("reorderActiveTasks leaves completed tasks in place, ordered after the reordered active ones", async () => {
+    const active1 = { ...TASK, id: "active-1", completed: false };
+    const active2 = { ...TASK, id: "active-2", completed: false };
+    const completed = { ...TASK, id: "completed-1", completed: true, completed_at: "2026-01-01T00:00:00Z" };
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([active1, active2, completed]);
+    vi.spyOn(tasksApi, "reorderTasks").mockResolvedValue([active2, active1, completed]);
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    await act(async () => {
+      await result.current.reorderActiveTasks(["active-2", "active-1"]);
+    });
+
+    expect(result.current.tasks.map((task) => task.id)).toEqual(["active-2", "active-1", "completed-1"]);
   });
 });

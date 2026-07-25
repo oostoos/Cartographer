@@ -1,3 +1,5 @@
+import { createRef } from "react";
+
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -39,5 +41,16 @@ describe("IconButton", () => {
     const button = screen.getByRole("button", { name: "Close" });
     expect(button).toHaveClass("icon-button");
     expect(button).toHaveClass("extra");
+  });
+
+  it("forwards its ref to the underlying button element", () => {
+    const ref = createRef<HTMLButtonElement>();
+    render(
+      <IconButton aria-label="Close" ref={ref}>
+        <CloseIcon />
+      </IconButton>,
+    );
+
+    expect(ref.current).toBe(screen.getByRole("button", { name: "Close" }));
   });
 });

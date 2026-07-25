@@ -19,7 +19,7 @@ from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
 from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 
 # validation — generic type-check predicates
-from lib.python.validation.type_checks import isDict, isString
+from lib.python.validation.type_checks import isDict, isList, isString
 
 # strings — generic string constants and encoding helpers
 from lib.python.strings.constants import EMPTY_STRING
@@ -34,6 +34,7 @@ __all__ = [
     "currentUtcIsoTimestamp",
     "buildDictFromKeysAndValues",
     "isDict",
+    "isList",
     "isString",
     "EMPTY_STRING",
     "encodeBoolAsString",

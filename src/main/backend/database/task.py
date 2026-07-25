@@ -21,6 +21,7 @@ TASK_FIELD_ORDER = [
     "created_at",
     "updated_at",
     "completed_at",
+    "order",
 ]
 
 class EmptyTaskTitleError(ValueError):
@@ -38,6 +39,7 @@ def createTask(title: str, description: str = "") -> Task:
         completed=False,
         created_at=now,
         updated_at=now,
+        order=_nextTaskOrder(),
     )
     writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
@@ -90,13 +92,29 @@ def setTaskCompleted(task_id: str, completed: bool) -> Task | None:
     return task
 
 
+def reorderTasks(task_ids: list[str]) -> list[Task]:
+    """Reassign order so tasks sort in the given id sequence. Unknown ids are skipped.
+
+    Returns every task, freshly sorted by order.
+    """
+    for index, task_id in enumerate(task_ids):
+        task = getTask(task_id)
+        if task is None:
+            continue
+        task.order = float(index)
+        task.updated_at = currentUtcIsoTimestamp()
+        writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
+    return getAllTasks()
+
+
 def getAllTasks() -> list[Task]:
-    """Fetch every task, in no particular order."""
+    """Fetch every task, ordered by its persisted position (ascending)."""
     tasks = []
     for task_id in listRecordIds(TASK_OBJECT_TYPE):
         task = getTask(task_id)
         if task is not None:
             tasks.append(task)
+    tasks.sort(key=lambda task: task.order)
     return tasks
 
 
@@ -111,6 +129,12 @@ def _requireNonEmptyTitle(title: str) -> None:
         raise EmptyTaskTitleError("Task title must not be empty")
 
 
+def _nextTaskOrder() -> float:
+    """The order value a newly created task should get: one past the current highest."""
+    existing_orders = [task.order for task in getAllTasks()]
+    return max(existing_orders, default=-1.0) + 1
+
+
 def _encodeTask(task: Task) -> list[str]:
     """Encode a Task into the field list page_store expects, in TASK_FIELD_ORDER."""
     values = {
@@ -121,6 +145,7 @@ def _encodeTask(task: Task) -> list[str]:
         "created_at": task.created_at,
         "updated_at": task.updated_at,
         "completed_at": task.completed_at if task.completed_at is not None else EMPTY_STRING,
+        "order": str(task.order),
     }
     return [values[field] for field in TASK_FIELD_ORDER]
 
@@ -128,8 +153,9 @@ def _encodeTask(task: Task) -> list[str]:
 def _decodeTask(fields: list[str]) -> Task:
     """Decode a page_store field list (in TASK_FIELD_ORDER) back into a Task.
 
-    completed_at is read defensively since legacy records written before this field
-    existed only have 6 fields on disk; zip() simply omits the key in that case.
+    completed_at and order are read defensively since legacy records written before
+    those fields existed have fewer fields on disk; zip() simply omits the key in that
+    case, so missing ones default to None (completed_at) and 0.0 (order).
     """
     values = buildDictFromKeysAndValues(TASK_FIELD_ORDER, fields)
     return Task(
@@ -140,4 +166,5 @@ def _decodeTask(fields: list[str]) -> Task:
         created_at=values["created_at"],
         updated_at=values["updated_at"],
         completed_at=values.get("completed_at", EMPTY_STRING) or None,
+        order=float(values.get("order") or 0.0),
     )

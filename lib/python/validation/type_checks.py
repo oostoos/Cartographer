@@ -9,3 +9,8 @@ def isString(value: object) -> bool:
 def isDict(value: object) -> bool:
     """True if value is a dict."""
     return isinstance(value, dict)
+
+
+def isList(value: object) -> bool:
+    """True if value is a list."""
+    return isinstance(value, list)

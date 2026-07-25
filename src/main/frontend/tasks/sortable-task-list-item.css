@@ -1,0 +1,3 @@
+.sortable-task-list-item[data-dragging="true"] {
+  opacity: 0.5;
+}

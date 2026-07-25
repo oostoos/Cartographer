@@ -10,12 +10,14 @@ from src.main.backend.database.task import (
     createTask,
     getAllTasks,
     getTask,
+    reorderTasks,
     setTaskCompleted,
     updateTask,
 )
 from src.main.backend.tasks.schemas import (
     InvalidPayloadError,
     parseTaskCreatePayload,
+    parseTaskReorderPayload,
     parseTaskUpdatePayload,
 )
 
@@ -42,6 +44,18 @@ def createTaskRoute():
     except (InvalidPayloadError, EmptyTaskTitleError) as error:
         return buildErrorResponse(str(error))
     return buildSuccessResponse(asdict(task), CREATED_STATUS_CODE)
+
+
+@tasks_blueprint.patch("/reorder")
+def reorderTasksRoute():
+    """Reorder tasks to match the given id sequence."""
+    try:
+        payload = _requireJsonObjectBody()
+        reorder_payload = parseTaskReorderPayload(payload)
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+    tasks = reorderTasks(reorder_payload.task_ids)
+    return buildSuccessResponse([asdict(task) for task in tasks])
 
 
 @tasks_blueprint.get("/<task_id>")

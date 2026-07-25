@@ -4,7 +4,7 @@ Mirrored on the frontend by src/main/frontend/tasks/tasks-api.ts.
 """
 from dataclasses import dataclass
 
-from lib.python.validation.type_checks import isDict, isString
+from lib.python.validation.type_checks import isDict, isList, isString
 
 
 class InvalidPayloadError(ValueError):
@@ -57,3 +57,22 @@ def parseTaskUpdatePayload(data: object) -> TaskUpdatePayload:
         raise InvalidPayloadError("'description' must be a string")
 
     return TaskUpdatePayload(title=title, description=description)
+
+
+@dataclass
+class TaskReorderPayload:
+    """Body shape for PATCH /api/tasks/reorder."""
+
+    task_ids: list[str]
+
+
+def parseTaskReorderPayload(data: object) -> TaskReorderPayload:
+    """Parse and validate a task-reorder request body. Raises InvalidPayloadError if malformed."""
+    if not isDict(data):
+        raise InvalidPayloadError("Request body must be a JSON object")
+
+    task_ids = data.get("task_ids")
+    if not isList(task_ids) or not all(isString(task_id) for task_id in task_ids):
+        raise InvalidPayloadError("'task_ids' is required and must be a list of strings")
+
+    return TaskReorderPayload(task_ids=task_ids)

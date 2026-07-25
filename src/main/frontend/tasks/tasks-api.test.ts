@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as httpClient from "@common/api/http-client";
 
-import { createTask, fetchTask, fetchTasks, setTaskCompleted, updateTask } from "./tasks-api";
+import { createTask, fetchTask, fetchTasks, reorderTasks, setTaskCompleted, updateTask } from "./tasks-api";
 
 describe("tasks-api", () => {
   afterEach(() => {
@@ -47,5 +47,13 @@ describe("tasks-api", () => {
     await setTaskCompleted("abc", true);
 
     expect(spy).toHaveBeenCalledWith("/tasks/abc/complete", { completed: true });
+  });
+
+  it("reorderTasks calls PATCH /tasks/reorder with the ordered task ids", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue([]);
+
+    await reorderTasks(["b", "a"]);
+
+    expect(spy).toHaveBeenCalledWith("/tasks/reorder", { task_ids: ["b", "a"] });
   });
 });

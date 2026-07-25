@@ -59,3 +59,17 @@ export function ChevronDownIcon(props: IIconProps) {
     </IconSvg>
   );
 }
+
+/** Vertical six-dot grip icon, e.g. for a drag handle. */
+export function GripIcon(props: IIconProps) {
+  return (
+    <IconSvg {...props}>
+      <circle cx="9" cy="6" r="1" />
+      <circle cx="15" cy="6" r="1" />
+      <circle cx="9" cy="12" r="1" />
+      <circle cx="15" cy="12" r="1" />
+      <circle cx="9" cy="18" r="1" />
+      <circle cx="15" cy="18" r="1" />
+    </IconSvg>
+  );
+}

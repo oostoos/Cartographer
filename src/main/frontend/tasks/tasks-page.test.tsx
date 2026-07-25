@@ -15,6 +15,7 @@ const TASK: TTask = {
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
+  order: 0,
 };
 
 function buildTask(overrides: Partial<TTask>): TTask {
@@ -120,5 +121,23 @@ describe("TasksPage", () => {
 
     await waitFor(() => expect(container.querySelector(".tasks-layout--detail-open")).not.toBeNull());
     expect(screen.getByRole("button", { name: "Close task detail" })).toBeInTheDocument();
+  });
+
+  it("renders a drag handle for an active task but not for a task completed today", async () => {
+    const activeTask = buildTask({ id: "active", title: "Active task" });
+    const todayTask = buildTask({
+      id: "today",
+      title: "Completed today",
+      completed: true,
+      completed_at: new Date().toISOString(),
+    });
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([activeTask, todayTask]);
+
+    renderPage();
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: 'Reorder "Active task"' })).toBeInTheDocument(),
+    );
+    expect(screen.queryByRole("button", { name: 'Reorder "Completed today"' })).not.toBeInTheDocument();
   });
 });

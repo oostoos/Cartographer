@@ -1,12 +1,13 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { ChevronDownIcon, CloseIcon, PlusIcon } from "./icons";
+import { ChevronDownIcon, CloseIcon, GripIcon, PlusIcon } from "./icons";
 
 describe.each([
   ["PlusIcon", PlusIcon],
   ["CloseIcon", CloseIcon],
   ["ChevronDownIcon", ChevronDownIcon],
+  ["GripIcon", GripIcon],
 ])("%s", (_name, Icon) => {
   it("renders an svg that is hidden from assistive tech", () => {
     const { container } = render(<Icon />);

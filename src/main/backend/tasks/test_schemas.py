@@ -3,6 +3,7 @@ import pytest
 from src.main.backend.tasks.schemas import (
     InvalidPayloadError,
     parseTaskCreatePayload,
+    parseTaskReorderPayload,
     parseTaskUpdatePayload,
 )
 
@@ -62,3 +63,35 @@ def test_parse_task_update_payload_non_string_title_raises():
 def test_parse_task_update_payload_non_dict_body_raises():
     with pytest.raises(InvalidPayloadError):
         parseTaskUpdatePayload(None)
+
+
+def test_parse_task_reorder_payload_happy_path():
+    payload = parseTaskReorderPayload({"task_ids": ["b", "a"]})
+
+    assert payload.task_ids == ["b", "a"]
+
+
+def test_parse_task_reorder_payload_allows_empty_list():
+    payload = parseTaskReorderPayload({"task_ids": []})
+
+    assert payload.task_ids == []
+
+
+def test_parse_task_reorder_payload_missing_task_ids_raises():
+    with pytest.raises(InvalidPayloadError):
+        parseTaskReorderPayload({})
+
+
+def test_parse_task_reorder_payload_non_list_task_ids_raises():
+    with pytest.raises(InvalidPayloadError):
+        parseTaskReorderPayload({"task_ids": "a"})
+
+
+def test_parse_task_reorder_payload_non_string_item_raises():
+    with pytest.raises(InvalidPayloadError):
+        parseTaskReorderPayload({"task_ids": ["a", 123]})
+
+
+def test_parse_task_reorder_payload_non_dict_body_raises():
+    with pytest.raises(InvalidPayloadError):
+        parseTaskReorderPayload(["not", "a", "dict"])

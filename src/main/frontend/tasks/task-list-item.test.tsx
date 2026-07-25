@@ -13,6 +13,7 @@ const TASK: TTask = {
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
+  order: 0,
 };
 
 function renderItem(task: TTask, onToggleCompleted = vi.fn()) {
@@ -76,5 +77,21 @@ describe("TaskListItem", () => {
     renderItem(TASK);
 
     expect(screen.queryByText(/^(today at|on)/)).not.toBeInTheDocument();
+  });
+
+  it("renders a given dragHandle", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} dragHandle={<button>Drag me</button>} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("button", { name: "Drag me" })).toBeInTheDocument();
+  });
+
+  it("renders no drag handle when none is given", () => {
+    renderItem(TASK);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });

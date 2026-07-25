@@ -31,3 +31,12 @@
   color: var(--color-text-secondary);
   font-size: 0.8rem;
 }
+
+.task-list-item__drag-handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.task-list-item__drag-handle:active {
+  cursor: grabbing;
+}
