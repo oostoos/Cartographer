@@ -1,6 +1,4 @@
 """Cartographer Flask entrypoint. Launch with `python -m src.main.backend.app`."""
-from flask import jsonify
-
 from src.common.backend.app_factory import createApp
 from src.common.backend.config import loadSharedConfig
 from src.common.backend.responses import buildSuccessResponse
@@ -15,7 +13,7 @@ app.register_blueprint(profile_blueprint)
 @app.get("/api/health")
 def getHealth():
     """Trivial liveness check confirming the backend process is up and responding."""
-    return jsonify(buildSuccessResponse({"status": "ok"}))
+    return buildSuccessResponse({"status": "ok"})
 
 
 if __name__ == "__main__":

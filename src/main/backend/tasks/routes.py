@@ -1,7 +1,7 @@
 """HTTP routes for the /api/tasks resource."""
 from dataclasses import asdict
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
 from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
 from src.main.backend.database.task import (
@@ -20,12 +20,15 @@ from src.main.backend.tasks.schemas import (
 
 tasks_blueprint = Blueprint("tasks", __name__, url_prefix="/api/tasks")
 
+CREATED_STATUS_CODE = 201
+NOT_FOUND_STATUS_CODE = 404
+
 
 @tasks_blueprint.get("")
 def listTasks():
     """List every task."""
     tasks = getAllTasks()
-    return jsonify(buildSuccessResponse([asdict(task) for task in tasks]))
+    return buildSuccessResponse([asdict(task) for task in tasks])
 
 
 @tasks_blueprint.post("")
@@ -36,8 +39,8 @@ def createTaskRoute():
         create_payload = parseTaskCreatePayload(payload)
         task = createTask(create_payload.title, create_payload.description)
     except (InvalidPayloadError, EmptyTaskTitleError) as error:
-        return jsonify(buildErrorResponse(str(error))), 400
-    return jsonify(buildSuccessResponse(asdict(task))), 201
+        return buildErrorResponse(str(error))
+    return buildSuccessResponse(asdict(task), CREATED_STATUS_CODE)
 
 
 @tasks_blueprint.get("/<task_id>")
@@ -45,8 +48,8 @@ def getTaskRoute(task_id: str):
     """Fetch a single task by id."""
     task = getTask(task_id)
     if task is None:
-        return jsonify(buildErrorResponse(f"No task with id '{task_id}'")), 404
-    return jsonify(buildSuccessResponse(asdict(task)))
+        return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse(asdict(task))
 
 
 @tasks_blueprint.patch("/<task_id>")
@@ -57,10 +60,10 @@ def updateTaskRoute(task_id: str):
         update_payload = parseTaskUpdatePayload(payload)
         task = updateTask(task_id, title=update_payload.title, description=update_payload.description)
     except (InvalidPayloadError, EmptyTaskTitleError) as error:
-        return jsonify(buildErrorResponse(str(error))), 400
+        return buildErrorResponse(str(error))
     if task is None:
-        return jsonify(buildErrorResponse(f"No task with id '{task_id}'")), 404
-    return jsonify(buildSuccessResponse(asdict(task)))
+        return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse(asdict(task))
 
 
 @tasks_blueprint.patch("/<task_id>/complete")
@@ -72,12 +75,12 @@ def completeTaskRoute(task_id: str):
         if not isinstance(completed, bool):
             raise InvalidPayloadError("'completed' is required and must be a boolean")
     except InvalidPayloadError as error:
-        return jsonify(buildErrorResponse(str(error))), 400
+        return buildErrorResponse(str(error))
 
     task = setTaskCompleted(task_id, completed)
     if task is None:
-        return jsonify(buildErrorResponse(f"No task with id '{task_id}'")), 404
-    return jsonify(buildSuccessResponse(asdict(task)))
+        return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse(asdict(task))
 
 
 def _requireJsonObjectBody() -> dict:

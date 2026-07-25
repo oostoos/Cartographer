@@ -1,8 +1,10 @@
 """Bare Flask app factory: JSON error handling only, no business routes."""
-from flask import Flask, jsonify
+from flask import Flask
 from werkzeug.exceptions import HTTPException
 
 from src.common.backend.responses import buildErrorResponse
+
+UNEXPECTED_EXCEPTION_STATUS_CODE = 500
 
 
 def createApp() -> Flask:
@@ -17,10 +19,8 @@ def _registerErrorHandlers(app: Flask) -> None:
 
     @app.errorhandler(HTTPException)
     def _handleHttpException(error: HTTPException):
-        response = buildErrorResponse(error.description or error.name)
-        return jsonify(response), error.code or 500
+        return buildErrorResponse(error.description or error.name, error.code or UNEXPECTED_EXCEPTION_STATUS_CODE)
 
     @app.errorhandler(Exception)
     def _handleUnexpectedException(error: Exception):
-        response = buildErrorResponse(str(error))
-        return jsonify(response), 500
+        return buildErrorResponse(str(error), UNEXPECTED_EXCEPTION_STATUS_CODE)

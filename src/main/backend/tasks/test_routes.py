@@ -1,13 +1,13 @@
 import pytest
 
 from src.common.backend.app_factory import createApp
-from src.main.backend.database import task as task_module
+from src.main.backend.database import record_store as record_store_module
 from src.main.backend.tasks.routes import tasks_blueprint
 
 
 @pytest.fixture(autouse=True)
 def _use_tmp_data_root(tmp_path, monkeypatch):
-    monkeypatch.setattr(task_module, "DATA_ROOT", tmp_path)
+    monkeypatch.setattr(record_store_module, "DATA_ROOT", tmp_path)
 
 
 @pytest.fixture
