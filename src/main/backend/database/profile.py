@@ -2,6 +2,7 @@
 
 Models a singleton record — there's no auth/multi-user concept yet.
 """
+from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 from src.main.backend.database.models import Profile
 from src.main.backend.database.record_store import clearObjectType, readRecord, writeRecord
 from src.main.backend.database.task import TASK_OBJECT_TYPE
@@ -42,5 +43,5 @@ def _encodeProfile(profile: Profile) -> list[str]:
 
 def _decodeProfile(fields: list[str]) -> Profile:
     """Decode a page_store field list (in PROFILE_FIELD_ORDER) back into a Profile."""
-    values = dict(zip(PROFILE_FIELD_ORDER, fields))
+    values = buildDictFromKeysAndValues(PROFILE_FIELD_ORDER, fields)
     return Profile(display_name=values["display_name"])

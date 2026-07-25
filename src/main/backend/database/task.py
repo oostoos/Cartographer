@@ -1,4 +1,5 @@
 """Task records: business-facing wrapper around the common page_store engine."""
+from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
 from src.common.backend.database.ids import generateRecordId
 from src.main.backend.database.models import Task
@@ -133,7 +134,7 @@ def _decodeTask(fields: list[str]) -> Task:
     completed_at is read defensively since legacy records written before this field
     existed only have 6 fields on disk; zip() simply omits the key in that case.
     """
-    values = dict(zip(TASK_FIELD_ORDER, fields))
+    values = buildDictFromKeysAndValues(TASK_FIELD_ORDER, fields)
     return Task(
         id=values["id"],
         title=values["title"],

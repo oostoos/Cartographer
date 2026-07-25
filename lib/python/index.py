@@ -15,6 +15,9 @@ from lib.python.file_io.file_lock import (
 # date — generic date/time formatting helpers
 from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
 
+# collections — generic dict/list-building helpers
+from lib.python.collections.dict_utils import buildDictFromKeysAndValues
+
 __all__ = [
     "atomicWriteText",
     "LockHandle",
@@ -22,4 +25,5 @@ __all__ = [
     "acquireExclusiveLock",
     "releaseExclusiveLock",
     "currentUtcIsoTimestamp",
+    "buildDictFromKeysAndValues",
 ]

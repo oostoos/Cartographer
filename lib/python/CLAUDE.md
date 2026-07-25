@@ -23,3 +23,10 @@ reaching into individual modules directly.
 
 - **`currentUtcIsoTimestamp() -> str`** — current UTC time as an ISO 8601
   string.
+
+## collections — generic dict/list-building helpers
+
+- **`buildDictFromKeysAndValues(keys, values) -> dict`** — zips `keys` and
+  `values` into a dict, paired by position. If the lists differ in length,
+  extra items in the longer one are dropped (same truncate-to-shorter
+  behavior as the underlying `zip()`).
