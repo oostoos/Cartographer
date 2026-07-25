@@ -28,7 +28,7 @@
       // If you change that value in your local .env, update this task to match.
       "label": "Stop Vite",
       "type": "shell",
-      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}/lib/powershell/kill-process-on-port.ps1\" -Port 5173",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5173\"",
       "problemMatcher": []
     }
   ]
