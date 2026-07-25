@@ -32,4 +32,6 @@ jobs:
 
       - run: npm ci
 
+      - run: npm run build --workspace=src/main/frontend
+
       - run: npm run test --workspace=src/main/frontend
