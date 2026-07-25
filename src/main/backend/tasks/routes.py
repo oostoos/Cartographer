@@ -3,6 +3,7 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
+from lib.python.validation.type_checks import isDict
 from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
 from src.main.backend.database.task import (
     EmptyTaskTitleError,
@@ -89,6 +90,6 @@ def _requireJsonObjectBody() -> dict:
     Malformed JSON itself surfaces as a 400 via Flask/app_factory's HTTPException handling.
     """
     payload = request.get_json()
-    if not isinstance(payload, dict):
+    if not isDict(payload):
         raise InvalidPayloadError("Request body must be a JSON object")
     return payload

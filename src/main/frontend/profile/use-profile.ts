@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+
+import { useAsyncResource } from "@common/hooks/use-async-resource";
 
 import {
   deleteAllData as deleteAllDataRequest,
@@ -17,42 +19,26 @@ export interface IUseProfileResult {
 
 /** Loads the profile on mount and exposes actions to update the display name or wipe all data. */
 export function useProfile(): IUseProfileResult {
-  const [profile, setProfile] = useState<TProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    value: profile,
+    setValue: setProfile,
+    isLoading,
+    error,
+  } = useAsyncResource<TProfile | null>(fetchProfile, null, "Failed to load profile.");
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadProfile() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const loaded = await fetchProfile();
-        if (!isCancelled) setProfile(loaded);
-      } catch {
-        if (!isCancelled) setError("Failed to load profile.");
-      } finally {
-        if (!isCancelled) setIsLoading(false);
-      }
-    }
-
-    loadProfile();
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
-
-  const updateDisplayName = useCallback(async (displayName: string) => {
-    const updated = await setDisplayNameRequest(displayName);
-    setProfile(updated);
-  }, []);
+  const updateDisplayName = useCallback(
+    async (displayName: string) => {
+      const updated = await setDisplayNameRequest(displayName);
+      setProfile(updated);
+    },
+    [setProfile],
+  );
 
   const deleteAllData = useCallback(async () => {
     await deleteAllDataRequest();
     const refreshed = await fetchProfile();
     setProfile(refreshed);
-  }, []);
+  }, [setProfile]);
 
   return { profile, isLoading, error, updateDisplayName, deleteAllData };
 }

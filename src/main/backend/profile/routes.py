@@ -3,6 +3,7 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
+from lib.python.validation.type_checks import isDict, isString
 from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
 from src.main.backend.database.profile import deleteAllData, getProfile, setDisplayName
 
@@ -19,11 +20,11 @@ def getProfileRoute():
 def putProfileRoute():
     """Set the profile's display name."""
     payload = request.get_json()
-    if not isinstance(payload, dict):
+    if not isDict(payload):
         return buildErrorResponse("Request body must be a JSON object")
 
     display_name = payload.get("display_name")
-    if not isinstance(display_name, str):
+    if not isString(display_name):
         return buildErrorResponse("'display_name' is required and must be a string")
 
     profile = setDisplayName(display_name)

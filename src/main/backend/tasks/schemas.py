@@ -4,6 +4,8 @@ Mirrored on the frontend by src/main/frontend/tasks/tasks-api.ts.
 """
 from dataclasses import dataclass
 
+from lib.python.validation.type_checks import isDict, isString
+
 
 class InvalidPayloadError(ValueError):
     """Raised when a request payload is malformed or missing a required field."""
@@ -27,15 +29,15 @@ class TaskUpdatePayload:
 
 def parseTaskCreatePayload(data: object) -> TaskCreatePayload:
     """Parse and validate a task-create request body. Raises InvalidPayloadError if malformed."""
-    if not isinstance(data, dict):
+    if not isDict(data):
         raise InvalidPayloadError("Request body must be a JSON object")
 
     title = data.get("title")
-    if not isinstance(title, str):
+    if not isString(title):
         raise InvalidPayloadError("'title' is required and must be a string")
 
     description = data.get("description", "")
-    if not isinstance(description, str):
+    if not isString(description):
         raise InvalidPayloadError("'description' must be a string")
 
     return TaskCreatePayload(title=title, description=description)
@@ -43,15 +45,15 @@ def parseTaskCreatePayload(data: object) -> TaskCreatePayload:
 
 def parseTaskUpdatePayload(data: object) -> TaskUpdatePayload:
     """Parse and validate a task-update request body. Raises InvalidPayloadError if malformed."""
-    if not isinstance(data, dict):
+    if not isDict(data):
         raise InvalidPayloadError("Request body must be a JSON object")
 
     title = data.get("title")
-    if title is not None and not isinstance(title, str):
+    if title is not None and not isString(title):
         raise InvalidPayloadError("'title' must be a string")
 
     description = data.get("description")
-    if description is not None and not isinstance(description, str):
+    if description is not None and not isString(description):
         raise InvalidPayloadError("'description' must be a string")
 
     return TaskUpdatePayload(title=title, description=description)

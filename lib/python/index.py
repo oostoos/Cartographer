@@ -18,6 +18,9 @@ from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
 # collections — generic dict/list-building helpers
 from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 
+# validation — generic type-check predicates
+from lib.python.validation.type_checks import isDict, isString
+
 __all__ = [
     "atomicWriteText",
     "LockHandle",
@@ -26,4 +29,6 @@ __all__ = [
     "releaseExclusiveLock",
     "currentUtcIsoTimestamp",
     "buildDictFromKeysAndValues",
+    "isDict",
+    "isString",
 ]

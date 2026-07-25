@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
+
+import { useAsyncResource } from "@common/hooks/use-async-resource";
 
 import {
   createTask as createTaskRequest,
@@ -18,40 +20,27 @@ export interface IUseTasksResult {
 
 /** Loads the task list on mount and exposes create/toggle actions that keep it in sync. */
 export function useTasks(): IUseTasksResult {
-  const [tasks, setTasks] = useState<TTask[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    value: tasks,
+    setValue: setTasks,
+    isLoading,
+    error,
+  } = useAsyncResource<TTask[]>(fetchTasks, [], "Failed to load tasks.");
 
-  useEffect(() => {
-    let isCancelled = false;
+  const createTask = useCallback(
+    async (title: string, description: string) => {
+      const task = await createTaskRequest({ title, description });
+      setTasks((current) => [...current, task]);
+    },
+    [setTasks],
+  );
 
-    async function loadTasks() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const loadedTasks = await fetchTasks();
-        if (!isCancelled) setTasks(loadedTasks);
-      } catch {
-        if (!isCancelled) setError("Failed to load tasks.");
-      } finally {
-        if (!isCancelled) setIsLoading(false);
-      }
-    }
-
-    loadTasks();
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
-
-  const createTask = useCallback(async (title: string, description: string) => {
-    const task = await createTaskRequest({ title, description });
-    setTasks((current) => [...current, task]);
-  }, []);
-
-  const applyTaskUpdate = useCallback((updated: TTask) => {
-    setTasks((current) => current.map((task) => (task.id === updated.id ? updated : task)));
-  }, []);
+  const applyTaskUpdate = useCallback(
+    (updated: TTask) => {
+      setTasks((current) => current.map((task) => (task.id === updated.id ? updated : task)));
+    },
+    [setTasks],
+  );
 
   const toggleTaskCompleted = useCallback(
     async (taskId: string, completed: boolean) => {

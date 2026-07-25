@@ -30,3 +30,8 @@ reaching into individual modules directly.
   `values` into a dict, paired by position. If the lists differ in length,
   extra items in the longer one are dropped (same truncate-to-shorter
   behavior as the underlying `zip()`).
+
+## validation — generic type-check predicates
+
+- **`isString(value) -> bool`** — true if `value` is a `str`.
+- **`isDict(value) -> bool`** — true if `value` is a `dict`.
