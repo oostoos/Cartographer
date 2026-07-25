@@ -1,0 +1,24 @@
+# Secrets - never commit
+.env
+.env.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node / TypeScript
+node_modules/
+dist/
+.vite/
+
+# Editor / OS
+.vscode/*.local.json
+.DS_Store
+Thumbs.db
+
+# Claude Code local overrides (personal, not shared)
+.claude/settings.local.json
