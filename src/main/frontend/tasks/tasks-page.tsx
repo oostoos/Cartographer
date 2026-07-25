@@ -18,7 +18,7 @@ export function TasksPage() {
   const visibleTasks = [...grouped.active, ...grouped.completedToday];
 
   return (
-    <>
+    <div className="tasks-page">
       <h1>Tasks</h1>
       <TaskCreateForm onCreate={createTask} />
       {isLoading && <p>Loading tasks…</p>}
@@ -49,6 +49,6 @@ export function TasksPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

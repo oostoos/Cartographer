@@ -1,7 +1,7 @@
 .top-nav-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: var(--space-md) var(--space-lg);
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -9,8 +9,6 @@
 }
 
 .top-nav-bar__brand {
-  display: flex;
-  flex-direction: column;
   text-decoration: none;
   color: var(--color-text-primary);
 }
@@ -20,22 +18,24 @@
   font-weight: bold;
 }
 
-.top-nav-bar__tagline {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-
 .top-nav-bar__links {
   display: flex;
   gap: var(--space-md);
+  justify-self: center;
 }
 
 .top-nav-bar__link {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-small);
   text-decoration: none;
   color: var(--color-text-primary);
   font-weight: 500;
 }
 
 .top-nav-bar__link:hover {
-  color: var(--color-accent);
+  background-color: var(--color-surface-muted);
+}
+
+.top-nav-bar__trailing {
+  justify-self: end;
 }

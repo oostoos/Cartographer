@@ -19,3 +19,9 @@ than reaching into individual modules directly.
   `date` as a short local date, e.g. `"Jul 20"`. Appends the year
   (`"Jul 20, 2025"`) if `date`'s year differs from `now`'s (`now` defaults
   to the current time).
+
+## string — generic string helpers
+
+- **`getInitials(name: string, maxInitials?: number) -> string`** — uppercase
+  initials from a name's first `maxInitials` words (default `2`), e.g.
+  `"Austin Shank"` -> `"AS"`. Returns `""` for a blank name.

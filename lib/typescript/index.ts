@@ -6,3 +6,6 @@ export { requestJson } from "./http/json-client";
 
 // date — generic date/time formatting helpers
 export { formatLocalClockTime, formatShortLocalDate, isSameLocalDay } from "./date/local-day";
+
+// string — generic string helpers
+export { getInitials } from "./string/initials";

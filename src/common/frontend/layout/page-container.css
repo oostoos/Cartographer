@@ -4,6 +4,9 @@
   margin: 0 auto;
   box-sizing: border-box;
   padding: var(--space-lg) var(--space-md);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 @media (max-width: 640px) {

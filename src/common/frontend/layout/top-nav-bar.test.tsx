@@ -10,21 +10,20 @@ const LINKS = [
 ];
 
 describe("TopNavBar", () => {
-  it("renders the brand name and tagline", () => {
+  it("renders the brand name", () => {
     render(
       <MemoryRouter>
-        <TopNavBar brand="Cartographer" tagline="helping you map your life" links={LINKS} />
+        <TopNavBar brand="Cartographer" links={LINKS} />
       </MemoryRouter>,
     );
 
     expect(screen.getByText("Cartographer")).toBeInTheDocument();
-    expect(screen.getByText("helping you map your life")).toBeInTheDocument();
   });
 
   it("renders a link for every entry in links, pointing at the right path", () => {
     render(
       <MemoryRouter>
-        <TopNavBar brand="Cartographer" tagline="helping you map your life" links={LINKS} />
+        <TopNavBar brand="Cartographer" links={LINKS} />
       </MemoryRouter>,
     );
 
@@ -35,10 +34,20 @@ describe("TopNavBar", () => {
   it("renders no nav links when given an empty list", () => {
     render(
       <MemoryRouter>
-        <TopNavBar brand="Cartographer" tagline="helping you map your life" links={[]} />
+        <TopNavBar brand="Cartographer" links={[]} />
       </MemoryRouter>,
     );
 
     expect(screen.queryAllByRole("link")).toHaveLength(1);
+  });
+
+  it("renders trailing content on the right", () => {
+    render(
+      <MemoryRouter>
+        <TopNavBar brand="Cartographer" links={[]} trailing={<span>AS</span>} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("AS")).toBeInTheDocument();
   });
 });

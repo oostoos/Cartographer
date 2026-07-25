@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 import "./top-nav-bar.css";
@@ -9,17 +10,17 @@ export interface ITopNavBarLink {
 
 export interface ITopNavBarProps {
   brand: string;
-  tagline: string;
   links: ITopNavBarLink[];
+  /** Optional content rendered on the right, e.g. a profile chip. */
+  trailing?: ReactNode;
 }
 
-/** Persistent top navigation bar: brand + tagline on the left, nav links on the right. Presentational only. */
-export function TopNavBar({ brand, tagline, links }: ITopNavBarProps) {
+/** Persistent top navigation bar: brand on the left, centered nav links, optional trailing content on the right. Presentational only. */
+export function TopNavBar({ brand, links, trailing }: ITopNavBarProps) {
   return (
     <header className="top-nav-bar">
       <Link to="/" className="top-nav-bar__brand">
         <span className="top-nav-bar__brand-name">{brand}</span>
-        <span className="top-nav-bar__tagline">{tagline}</span>
       </Link>
       <nav className="top-nav-bar__links">
         {links.map((link) => (
@@ -28,6 +29,7 @@ export function TopNavBar({ brand, tagline, links }: ITopNavBarProps) {
           </Link>
         ))}
       </nav>
+      <div className="top-nav-bar__trailing">{trailing}</div>
     </header>
   );
 }
