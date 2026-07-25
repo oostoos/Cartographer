@@ -1,6 +1,0 @@
-/* @manualReviewRequested: 2026-07-06 */
-.cg-task-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}

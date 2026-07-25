@@ -1,6 +1,0 @@
-/* @manualReviewRequested: 2026-07-06 */
-.cg-project-create-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}

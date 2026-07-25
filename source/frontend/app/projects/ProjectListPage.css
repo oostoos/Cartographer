@@ -1,9 +1,0 @@
-/* @manualReviewRequested: 2026-07-06 */
-.cg-project-list-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  max-width: 75rem;
-  margin: 0 auto;
-  padding: var(--space-5);
-}
