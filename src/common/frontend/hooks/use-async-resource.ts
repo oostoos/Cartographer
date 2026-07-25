@@ -1,5 +1,7 @@
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
+import { useLoadingState } from "./use-loading-state";
+
 export interface IUseAsyncResourceResult<T> {
   value: T;
   setValue: Dispatch<SetStateAction<T>>;
@@ -20,22 +22,19 @@ export function useAsyncResource<T>(
   errorMessage: string,
 ): IUseAsyncResourceResult<T> {
   const [value, setValue] = useState<T>(initialValue);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isLoading, withLoading } = useLoadingState(true);
 
   useEffect(() => {
     let isCancelled = false;
 
     async function runLoad() {
-      setIsLoading(true);
       setError(null);
       try {
-        const loaded = await load();
+        const loaded = await withLoading(load);
         if (!isCancelled) setValue(loaded);
       } catch {
         if (!isCancelled) setError(errorMessage);
-      } finally {
-        if (!isCancelled) setIsLoading(false);
       }
     }
 

@@ -21,6 +21,10 @@ from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 # validation — generic type-check predicates
 from lib.python.validation.type_checks import isDict, isString
 
+# strings — generic string constants and encoding helpers
+from lib.python.strings.constants import EMPTY_STRING
+from lib.python.strings.bool_codec import decodeBoolFromString, encodeBoolAsString
+
 __all__ = [
     "atomicWriteText",
     "LockHandle",
@@ -31,4 +35,7 @@ __all__ = [
     "buildDictFromKeysAndValues",
     "isDict",
     "isString",
+    "EMPTY_STRING",
+    "encodeBoolAsString",
+    "decodeBoolFromString",
 ]

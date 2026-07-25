@@ -35,3 +35,11 @@ reaching into individual modules directly.
 
 - **`isString(value) -> bool`** — true if `value` is a `str`.
 - **`isDict(value) -> bool`** — true if `value` is a `dict`.
+
+## strings — generic string constants and encoding helpers
+
+- **`EMPTY_STRING`** — `""`.
+- **`encodeBoolAsString(value: bool) -> str`** — encodes a bool as
+  `"true"`/`"false"`.
+- **`decodeBoolFromString(value: str) -> bool`** — decodes `"true"`/`"false"`
+  back into a bool. Any value other than `"true"` decodes to `False`.

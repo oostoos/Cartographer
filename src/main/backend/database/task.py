@@ -1,6 +1,8 @@
 """Task records: business-facing wrapper around the common page_store engine."""
 from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
+from lib.python.strings.bool_codec import decodeBoolFromString, encodeBoolAsString
+from lib.python.strings.constants import EMPTY_STRING
 from src.common.backend.database.ids import generateRecordId
 from src.main.backend.database.models import Task
 from src.main.backend.database.record_store import (
@@ -20,11 +22,6 @@ TASK_FIELD_ORDER = [
     "updated_at",
     "completed_at",
 ]
-
-COMPLETED_TRUE_VALUE = "true"
-COMPLETED_FALSE_VALUE = "false"
-EMPTY_COMPLETED_AT_VALUE = ""
-
 
 class EmptyTaskTitleError(ValueError):
     """Raised when creating or updating a task with a blank title."""
@@ -120,10 +117,10 @@ def _encodeTask(task: Task) -> list[str]:
         "id": task.id,
         "title": task.title,
         "description": task.description,
-        "completed": COMPLETED_TRUE_VALUE if task.completed else COMPLETED_FALSE_VALUE,
+        "completed": encodeBoolAsString(task.completed),
         "created_at": task.created_at,
         "updated_at": task.updated_at,
-        "completed_at": task.completed_at if task.completed_at is not None else EMPTY_COMPLETED_AT_VALUE,
+        "completed_at": task.completed_at if task.completed_at is not None else EMPTY_STRING,
     }
     return [values[field] for field in TASK_FIELD_ORDER]
 
@@ -139,8 +136,8 @@ def _decodeTask(fields: list[str]) -> Task:
         id=values["id"],
         title=values["title"],
         description=values["description"],
-        completed=values["completed"] == COMPLETED_TRUE_VALUE,
+        completed=decodeBoolFromString(values["completed"]),
         created_at=values["created_at"],
         updated_at=values["updated_at"],
-        completed_at=values.get("completed_at", EMPTY_COMPLETED_AT_VALUE) or None,
+        completed_at=values.get("completed_at", EMPTY_STRING) or None,
     )
