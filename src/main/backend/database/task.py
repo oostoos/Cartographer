@@ -1,15 +1,13 @@
 """Task records: business-facing wrapper around the common page_store engine."""
-from datetime import datetime, timezone
-
+from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
 from src.common.backend.database.ids import generateRecordId
-from src.common.backend.database.page_store import (
+from src.main.backend.database.models import Task
+from src.main.backend.database.record_store import (
     clearObjectType,
     listRecordIds,
     readRecord,
     writeRecord,
 )
-from src.main.backend.database.models import Task
-from src.main.backend.database.paths import DATA_ROOT
 
 TASK_OBJECT_TYPE = "task"
 TASK_FIELD_ORDER = [
@@ -34,7 +32,7 @@ class EmptyTaskTitleError(ValueError):
 def createTask(title: str, description: str = "") -> Task:
     """Create and persist a new task. Raises EmptyTaskTitleError if title is blank."""
     _requireNonEmptyTitle(title)
-    now = _currentTimestamp()
+    now = currentUtcIsoTimestamp()
     task = Task(
         id=generateRecordId(),
         title=title,
@@ -43,13 +41,13 @@ def createTask(title: str, description: str = "") -> Task:
         created_at=now,
         updated_at=now,
     )
-    writeRecord(DATA_ROOT, TASK_OBJECT_TYPE, task.id, _encodeTask(task))
+    writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
 
 
 def getTask(task_id: str) -> Task | None:
     """Fetch a task by id, or None if no task with that id exists."""
-    fields = readRecord(DATA_ROOT, TASK_OBJECT_TYPE, task_id)
+    fields = readRecord(TASK_OBJECT_TYPE, task_id)
     if fields is None:
         return None
     return _decodeTask(fields)
@@ -68,8 +66,8 @@ def updateTask(task_id: str, title: str | None = None, description: str | None =
         task.title = title
     if description is not None:
         task.description = description
-    task.updated_at = _currentTimestamp()
-    writeRecord(DATA_ROOT, TASK_OBJECT_TYPE, task.id, _encodeTask(task))
+    task.updated_at = currentUtcIsoTimestamp()
+    writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
 
 
@@ -86,18 +84,18 @@ def setTaskCompleted(task_id: str, completed: bool) -> Task | None:
     task.completed = completed
     if completed:
         if task.completed_at is None:
-            task.completed_at = _currentTimestamp()
+            task.completed_at = currentUtcIsoTimestamp()
     else:
         task.completed_at = None
-    task.updated_at = _currentTimestamp()
-    writeRecord(DATA_ROOT, TASK_OBJECT_TYPE, task.id, _encodeTask(task))
+    task.updated_at = currentUtcIsoTimestamp()
+    writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
 
 
 def getAllTasks() -> list[Task]:
     """Fetch every task, in no particular order."""
     tasks = []
-    for task_id in listRecordIds(DATA_ROOT, TASK_OBJECT_TYPE):
+    for task_id in listRecordIds(TASK_OBJECT_TYPE):
         task = getTask(task_id)
         if task is not None:
             tasks.append(task)
@@ -106,18 +104,13 @@ def getAllTasks() -> list[Task]:
 
 def deleteAllTasks() -> None:
     """Delete every task record."""
-    clearObjectType(DATA_ROOT, TASK_OBJECT_TYPE)
+    clearObjectType(TASK_OBJECT_TYPE)
 
 
 def _requireNonEmptyTitle(title: str) -> None:
     """Raise EmptyTaskTitleError if title is blank (empty or whitespace-only)."""
     if not title.strip():
         raise EmptyTaskTitleError("Task title must not be empty")
-
-
-def _currentTimestamp() -> str:
-    """Current UTC time as an ISO 8601 string, used for created_at/updated_at."""
-    return datetime.now(timezone.utc).isoformat()
 
 
 def _encodeTask(task: Task) -> list[str]:

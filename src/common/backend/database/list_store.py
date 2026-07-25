@@ -8,17 +8,17 @@ can namespace their own kinds of lists.
 """
 from pathlib import Path
 
-from src.common.backend.database.page_store import deleteRecord, readRecord, writeRecord
+from src.common.backend.database.page_store import deletePage, readPage, writePage
 
 
 def createList(data_root: Path, object_type: str, list_id: str, elements: list[str]) -> None:
     """Create (or overwrite) a list record with the given elements, in order."""
-    writeRecord(data_root, object_type, list_id, _encodeList(elements))
+    writePage(data_root, object_type, list_id, _encodeList(elements))
 
 
 def readList(data_root: Path, object_type: str, list_id: str) -> list[str] | None:
     """Read a list's elements in order, or None if no list exists with that id."""
-    fields = readRecord(data_root, object_type, list_id)
+    fields = readPage(data_root, object_type, list_id)
     if fields is None:
         return None
     return _decodeList(fields)
@@ -26,7 +26,7 @@ def readList(data_root: Path, object_type: str, list_id: str) -> list[str] | Non
 
 def deleteList(data_root: Path, object_type: str, list_id: str) -> None:
     """Delete a list if it exists. A no-op if it doesn't."""
-    deleteRecord(data_root, object_type, list_id)
+    deletePage(data_root, object_type, list_id)
 
 
 def appendToList(data_root: Path, object_type: str, list_id: str, element: str) -> list[str]:

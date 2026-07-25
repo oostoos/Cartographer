@@ -12,10 +12,14 @@ from lib.python.file_io.file_lock import (
     releaseExclusiveLock,
 )
 
+# date — generic date/time formatting helpers
+from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
+
 __all__ = [
     "atomicWriteText",
     "LockHandle",
     "LockTimeoutError",
     "acquireExclusiveLock",
     "releaseExclusiveLock",
+    "currentUtcIsoTimestamp",
 ]

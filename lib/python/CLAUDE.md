@@ -18,3 +18,8 @@ reaching into individual modules directly.
   `lock_path`.
 - **`LockTimeoutError`** — raised by `acquireExclusiveLock` when the timeout
   elapses before the lock could be acquired.
+
+## date — generic date/time formatting helpers
+
+- **`currentUtcIsoTimestamp() -> str`** — current UTC time as an ISO 8601
+  string.

@@ -1,7 +1,7 @@
-"""Cartographer's flat-file storage engine: one .page file per record, line-per-field.
+"""Cartographer's flat-file storage engine: one .page file per page, line-per-field.
 
 Knows this app's storage format (the .page extension, the escaping scheme, one file
-per record) but nothing about what a record represents (Task, Profile, ...) — that
+per page) but nothing about what a page represents (Task, Profile, ...) — that
 knowledge belongs to src/main/backend/database.
 """
 from pathlib import Path
@@ -17,36 +17,52 @@ _ESCAPED_BACKSLASH = "\\\\"
 _ESCAPED_NEWLINE = "\\n"
 
 
-def buildRecordPath(data_root: Path, object_type: str, record_id: str) -> Path:
-    """Build the on-disk path for a record of the given object type and id."""
-    return Path(data_root) / object_type / f"{record_id}{PAGE_FILE_EXTENSION}"
+def buildPagePath(data_root: Path, page_key: str, page_id: str) -> Path:
+    """Build the on-disk path for a page with the given key and id."""
+    return Path(data_root) / page_key / f"{page_id}{PAGE_FILE_EXTENSION}"
 
 
-def writeRecord(data_root: Path, object_type: str, record_id: str, fields: list[str]) -> None:
-    """Write a record's fields (one per line) to disk, atomically and under an exclusive lock."""
-    path = buildRecordPath(data_root, object_type, record_id)
+def writePage(data_root: Path, page_key: str, page_id: str, fields: list[str]) -> None:
+    """Write a page's fields (one per line) to disk, atomically and under an exclusive lock."""
+    path = buildPagePath(data_root, page_key, page_id)
+    content = "\n".join(_escapeFieldValue(field) for field in fields)
+    writePath(path, content)
+
+
+def readPage(data_root: Path, page_key: str, page_id: str) -> list[str] | None:
+    """Read a page's fields, or None if no page exists for that id."""
+    path = buildPagePath(data_root, page_key, page_id)
+    content = readPath(path)
+    if content is None:
+        return None
+    return [_unescapeFieldValue(line) for line in content.split("\n")]
+
+
+def writePath(path: Path, content: str) -> None:
+    """Write raw content to path, atomically and under an exclusive lock.
+
+    No knowledge of what the content represents or how it's structured — that's
+    readPage/writePage's job. This is just the target path this content lands at.
+    """
     lock = acquireExclusiveLock(
         path, timeout_seconds=LOCK_TIMEOUT_SECONDS, retry_delay_seconds=LOCK_RETRY_DELAY_SECONDS
     )
     try:
-        content = "\n".join(_escapeFieldValue(field) for field in fields)
         atomicWriteText(path, content)
     finally:
         releaseExclusiveLock(lock)
 
 
-def readRecord(data_root: Path, object_type: str, record_id: str) -> list[str] | None:
-    """Read a record's fields, or None if no record exists for that id."""
-    path = buildRecordPath(data_root, object_type, record_id)
+def readPath(path: Path) -> str | None:
+    """Read raw content from path, or None if it doesn't exist."""
     if not path.exists():
         return None
-    content = path.read_text(encoding="utf-8")
-    return [_unescapeFieldValue(line) for line in content.split("\n")]
+    return path.read_text(encoding="utf-8")
 
 
-def deleteRecord(data_root: Path, object_type: str, record_id: str) -> None:
-    """Delete a record if it exists. A no-op if it doesn't."""
-    path = buildRecordPath(data_root, object_type, record_id)
+def deletePage(data_root: Path, page_key: str, page_id: str) -> None:
+    """Delete a page if it exists. A no-op if it doesn't."""
+    path = buildPagePath(data_root, page_key, page_id)
     lock = acquireExclusiveLock(
         path, timeout_seconds=LOCK_TIMEOUT_SECONDS, retry_delay_seconds=LOCK_RETRY_DELAY_SECONDS
     )
@@ -56,18 +72,18 @@ def deleteRecord(data_root: Path, object_type: str, record_id: str) -> None:
         releaseExclusiveLock(lock)
 
 
-def listRecordIds(data_root: Path, object_type: str) -> list[str]:
-    """List the ids of every record currently stored for the given object type."""
-    directory = Path(data_root) / object_type
+def listPageIds(data_root: Path, page_key: str) -> list[str]:
+    """List the ids of every page currently stored under the given key."""
+    directory = Path(data_root) / page_key
     if not directory.exists():
         return []
     return [entry.stem for entry in directory.glob(f"*{PAGE_FILE_EXTENSION}")]
 
 
-def clearObjectType(data_root: Path, object_type: str) -> None:
-    """Delete every record of the given object type."""
-    for record_id in listRecordIds(data_root, object_type):
-        deleteRecord(data_root, object_type, record_id)
+def clearPageKey(data_root: Path, page_key: str) -> None:
+    """Delete every page stored under the given key."""
+    for page_id in listPageIds(data_root, page_key):
+        deletePage(data_root, page_key, page_id)
 
 
 def _escapeFieldValue(value: str) -> str:

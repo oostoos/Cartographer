@@ -1,7 +1,7 @@
 import pytest
 
-from src.common.backend.database.page_store import writeRecord
-from src.main.backend.database import task as task_module
+from src.common.backend.database.page_store import writePage
+from src.main.backend.database import record_store as record_store_module
 from src.main.backend.database.task import (
     TASK_OBJECT_TYPE,
     EmptyTaskTitleError,
@@ -16,7 +16,7 @@ from src.main.backend.database.task import (
 
 @pytest.fixture(autouse=True)
 def _use_tmp_data_root(tmp_path, monkeypatch):
-    monkeypatch.setattr(task_module, "DATA_ROOT", tmp_path)
+    monkeypatch.setattr(record_store_module, "DATA_ROOT", tmp_path)
 
 
 def test_create_task_persists_and_is_retrievable():
@@ -130,7 +130,7 @@ def test_set_task_completed_does_not_overwrite_existing_completed_at():
 def test_decode_task_defaults_completed_at_to_none_for_legacy_six_field_record():
     task = createTask("Buy milk")
     legacy_fields = [task.id, task.title, task.description, "true", task.created_at, task.updated_at]
-    writeRecord(task_module.DATA_ROOT, TASK_OBJECT_TYPE, task.id, legacy_fields)
+    writePage(record_store_module.DATA_ROOT, TASK_OBJECT_TYPE, task.id, legacy_fields)
 
     fetched = getTask(task.id)
 
