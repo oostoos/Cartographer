@@ -1,3 +1,8 @@
-# Code style
+General style
+- TODO
 
-(fill in with concrete conventions — naming, formatting, linting rules, etc.)
+Python
+- TODO
+
+Typescript
+- TODO
