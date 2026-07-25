@@ -18,29 +18,26 @@ export function getJson<T>(path: string): Promise<T> {
   return requestApiJson<T>(path);
 }
 
-/** POST a JSON body to a Cartographer API endpoint and return its unwrapped response data. */
-export function postJson<T>(path: string, body: unknown): Promise<T> {
+/** Send a JSON body to a Cartographer API endpoint via the given method and return its unwrapped response data. */
+function requestApiJsonWithBody<T>(method: string, path: string, body: unknown): Promise<T> {
   return requestApiJson<T>(path, {
-    method: "POST",
+    method,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+/** POST a JSON body to a Cartographer API endpoint and return its unwrapped response data. */
+export function postJson<T>(path: string, body: unknown): Promise<T> {
+  return requestApiJsonWithBody<T>("POST", path, body);
 }
 
 /** PATCH a JSON body to a Cartographer API endpoint and return its unwrapped response data. */
 export function patchJson<T>(path: string, body: unknown): Promise<T> {
-  return requestApiJson<T>(path, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  return requestApiJsonWithBody<T>("PATCH", path, body);
 }
 
 /** PUT a JSON body to a Cartographer API endpoint and return its unwrapped response data. */
 export function putJson<T>(path: string, body: unknown): Promise<T> {
-  return requestApiJson<T>(path, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  return requestApiJsonWithBody<T>("PUT", path, body);
 }
