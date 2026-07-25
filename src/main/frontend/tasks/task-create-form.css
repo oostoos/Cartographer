@@ -1,0 +1,18 @@
+.task-create-form {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.task-create-form input {
+  border: 1px solid var(--color-border);
+  padding: var(--space-sm);
+}
+
+.task-create-form input[name="title"] {
+  flex: 1;
+}
+
+.task-create-form input[name="description"] {
+  flex: 2;
+}

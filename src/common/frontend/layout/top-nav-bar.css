@@ -1,0 +1,41 @@
+.top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.top-nav-bar__brand {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+.top-nav-bar__brand-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.top-nav-bar__tagline {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.top-nav-bar__links {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.top-nav-bar__link {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.top-nav-bar__link:hover {
+  color: var(--color-accent);
+}

@@ -4,3 +4,5 @@
 
 Libraries:
 @lib/CLAUDE.md
+@lib/python/CLAUDE.md
+@lib/typescript/CLAUDE.md

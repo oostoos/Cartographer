@@ -1,0 +1,26 @@
+:root {
+  --font-family-serif: Georgia, "Times New Roman", serif;
+
+  --color-background: #faf6ef;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1ead9;
+  --color-border: #e0d6c3;
+  --color-text-primary: #2e2a24;
+  --color-text-secondary: #6b6255;
+  --color-accent: #8c6a4f;
+  --color-accent-hover: #74563f;
+  --color-success: #5b7a5a;
+  --color-danger: #a65b4b;
+
+  --radius-small: 6px;
+  --radius-medium: 12px;
+  --radius-large: 20px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  --shadow-card: 0 1px 3px rgba(46, 42, 36, 0.08);
+}

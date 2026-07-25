@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flask: Cartographer Backend",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.main.backend.app",
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
+      // Tracks and terminates Werkzeug's reloader child process too — without this,
+      // stopping the debug session orphans the reloader child on Windows.
+      "subProcess": true,
+      "justMyCode": true
+    },
+    {
+      // Port matches .env.example's CARTOGRAPHER_FRONTEND_PORT default; update if your
+      // local .env overrides it.
+      "name": "Edge: Cartographer Frontend",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src/main/frontend",
+      "preLaunchTask": "Start Vite",
+      "postDebugTask": "Stop Vite"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "F5: Cartographer (Flask + Vite + Edge)",
+      "configurations": ["Flask: Cartographer Backend", "Edge: Cartographer Frontend"],
+      "stopAll": true
+    }
+  ]
+}

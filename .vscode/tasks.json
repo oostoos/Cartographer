@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Vite",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/src/main/frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          // Vite's dev-server output has no file/line info to match against;
+          // this pattern exists only so the background/readiness watcher below works.
+          "regexp": "^(.*)$",
+          "file": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE v",
+          "endsPattern": "ready in"
+        }
+      }
+    },
+    {
+      // Port is hardcoded to match .env.example's CARTOGRAPHER_FRONTEND_PORT default.
+      // If you change that value in your local .env, update this task to match.
+      "label": "Stop Vite",
+      "type": "shell",
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"${workspaceFolder}/lib/powershell/kill-process-on-port.ps1\" -Port 5173",
+      "problemMatcher": []
+    }
+  ]
+}

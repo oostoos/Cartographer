@@ -1,0 +1,43 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-serif);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-accent);
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+.card,
+button,
+input,
+textarea,
+select {
+  border-radius: var(--radius-medium);
+}

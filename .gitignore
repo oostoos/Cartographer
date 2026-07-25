@@ -10,6 +10,9 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
+# Cartographer flat-file database
+.data/
+
 # Node / TypeScript
 node_modules/
 dist/

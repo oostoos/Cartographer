@@ -38,6 +38,7 @@ from the library itself.
    `.ajx/AustinsSweManifesto.md` ("Libraries") for the grouping convention.
 
 4. **Update `lib/<language>/CLAUDE.md`** to match:
+   - If a CLAUDE.md doesn't exist yet, create it and add a `TODO: ...` placeholder at the top.
    - New definition → add a concise entry: one-line description, parameters,
      return value/type, and any errors it throws directly.
    - Renamed/changed signature → update the existing entry.
