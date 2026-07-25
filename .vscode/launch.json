@@ -9,19 +9,48 @@
       "cwd": "${workspaceFolder}",
       "envFile": "${workspaceFolder}/.env",
       // Tracks and terminates Werkzeug's reloader child process too — without this,
-      // stopping the debug session orphans the reloader child on Windows.
+      // stopping the debug session orphans the reloader child on Windows. This
+      // depends on the debug adapter staying alive long enough to walk the chain,
+      // which isn't guaranteed on an abrupt window close — "preLaunchTask"/
+      // "postDebugTask" below are the deterministic fallback for that case.
       "subProcess": true,
-      "justMyCode": true
+      "justMyCode": true,
+      "preLaunchTask": "Free Ports",
+      "postDebugTask": "Stop Flask"
     },
     {
-      // Port matches .env.example's CARTOGRAPHER_FRONTEND_PORT default; update if your
-      // local .env overrides it.
+      // Attaches to the Edge instance the "Start Edge (Debug)" task launches
+      // and owns (via .vscode/scripts/start-edge-debug-session.ps1), rather
+      // than this session launching+owning the browser process itself. This
+      // is what lets teardown work when the browser window is closed
+      // directly instead of stopped from VS Code — see the comment on the
+      // "Start Edge (Debug)" task in tasks.json for why. This session is
+      // solely for DevTools/breakpoints; it isn't what tears anything down.
+      //
+      // Ports match .env.example's CARTOGRAPHER_FRONTEND_PORT /
+      // CARTOGRAPHER_EDGE_DEBUG_PORT defaults; update here and in
+      // start-edge-debug-session.ps1 if your local .env overrides them.
+      //
+      // "address" is explicit rather than left to default to "localhost":
+      // Windows can resolve "localhost" to the IPv6 loopback (::1) ahead of
+      // 127.0.0.1, while Edge's --remote-debugging-port only ever binds
+      // IPv4.
+      //
+      // "urlFilter" (glob) instead of "url" (plain match): the app's React
+      // Router lands on http://localhost:5173/tasks, not the bare root, and
+      // js-debug's own trace log (captured via the "trace" setting below)
+      // showed it never actually issuing a Target.attachToTarget for that
+      // page with plain "url" set — no debug thread ever registered for the
+      // whole session. That's almost certainly also why teardown wasn't
+      // being detected: there was never a real attached debuggee to lose.
       "name": "Edge: Cartographer Frontend",
       "type": "msedge",
-      "request": "launch",
-      "url": "http://localhost:5173",
+      "request": "attach",
+      "address": "127.0.0.1",
+      "port": 9222,
+      "urlFilter": "http://localhost:5173/*",
       "webRoot": "${workspaceFolder}/src/main/frontend",
-      "preLaunchTask": "Start Vite",
+      "preLaunchTask": "Free Ports Then Start Vite Then Wait For Backend Then Start Edge",
       "postDebugTask": "Stop Vite"
     }
   ],

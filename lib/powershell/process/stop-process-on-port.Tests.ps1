@@ -31,4 +31,14 @@ Describe "Stop-ProcessOnPort" {
 
         Should -Invoke Stop-Process -Times 0
     }
+
+    It "only queries Listen-state connections, excluding TIME_WAIT/stale rows like PID 0" {
+        Mock Get-NetTCPConnection { [pscustomobject]@{ OwningProcess = 4242 } } -ParameterFilter { $State -eq "Listen" }
+        Mock Get-Process { [pscustomobject]@{ Id = 4242; ProcessName = "node" } }
+        Mock Stop-Process {}
+
+        Stop-ProcessOnPort -Port 5173
+
+        Should -Invoke Get-NetTCPConnection -Times 1 -ParameterFilter { $State -eq "Listen" }
+    }
 }

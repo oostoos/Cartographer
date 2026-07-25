@@ -2,18 +2,26 @@
   "version": "2.0.0",
   "tasks": [
     {
+      // "process" (not "shell") — calls node.exe directly with no intermediate
+      // shell, so there's no PowerShell script-execution policy and no VSCode
+      // shell-integration script injection to trip over. This invokes Vite's
+      // real entrypoint directly, one hop shorter than going through npm.cmd.
       "label": "Start Vite",
-      "type": "shell",
-      "command": "npm run dev",
+      "type": "process",
+      "command": "node",
+      "args": ["${workspaceFolder}/node_modules/vite/bin/vite.js"],
       "options": {
         "cwd": "${workspaceFolder}/src/main/frontend"
       },
       "isBackground": true,
       "problemMatcher": {
         "pattern": {
-          // Vite's dev-server output has no file/line info to match against;
-          // this pattern exists only so the background/readiness watcher below works.
-          "regexp": "^(.*)$",
+          // Vite's plain dev-server stdout has no real file/line error format
+          // to match, and this pattern's only job is to let the background
+          // watcher below track readiness — written to intentionally never
+          // match anything, so normal output (Local:, Network:, press h +
+          // enter) doesn't turn into fake Problems-panel entries.
+          "regexp": "(?!x)x",
           "file": 1
         },
         "background": {
@@ -26,9 +34,125 @@
     {
       // Port is hardcoded to match .env.example's CARTOGRAPHER_FRONTEND_PORT default.
       // If you change that value in your local .env, update this task to match.
+      // "process" (not "shell") — invokes powershell.exe directly, once, instead
+      // of through VSCode's default shell wrapping an inner powershell call.
       "label": "Stop Vite",
-      "type": "shell",
-      "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5173\"",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5173"
+      ],
+      "problemMatcher": []
+    },
+    {
+      // Port is hardcoded to match .env.example's CARTOGRAPHER_BACKEND_PORT default.
+      // If you change that value in your local .env, update this task to match.
+      // Mirrors "Stop Vite" — debugpy's own "subProcess"/"--multiprocess" child
+      // tracking depends on the debug adapter staying alive long enough to walk
+      // Flask's multi-hop reloader chain and kill it; this is a deterministic
+      // fallback that doesn't depend on that.
+      "label": "Stop Flask",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5000"
+      ],
+      "problemMatcher": []
+    },
+    {
+      // Force-frees both dev ports before a fresh launch. Defense in depth for
+      // when a previous session's window was closed abruptly (rather than
+      // stopped normally) and left orphaned Flask/Vite processes behind —
+      // guarantees a clean slate on the next F5 regardless of what the last
+      // session's teardown actually managed to clean up.
+      "label": "Free Ports",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5000; Stop-ProcessOnPort -Port 5173"
+      ],
+      "problemMatcher": []
+    },
+    {
+      // Sequences the port cleanup before Vite actually starts, so Edge's
+      // preLaunchTask does both steps in order.
+      "label": "Free Ports Then Start Vite",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Free Ports", "Start Vite"],
+      "problemMatcher": []
+    },
+    {
+      // Launches Edge ourselves (isolated profile + remote-debugging port)
+      // instead of letting the "Edge: Cartographer Frontend" launch config
+      // spawn and own the browser process, then hands off to a *detached*
+      // watchdog (watch-edge-and-free-ports.ps1, started but not awaited)
+      // that frees ports 5000/5173 once Edge actually exits, for any reason
+      // — including the user just closing the window.
+      //
+      // This task itself completes promptly once Edge is CDP-ready, rather
+      // than blocking for the rest of the dev session: a never-completing
+      // preLaunchTask is a plausible way for VS Code's own debug-session
+      // bookkeeping to end up unable to cleanly mark the "Edge: Cartographer
+      // Frontend" session as ended, independent of whether the browser
+      // itself is actually gone — matching the one prior implementation of
+      // this exact setup known to not have that lingering-session problem,
+      // whose equivalent task also completed rather than blocking.
+      //
+      // This is what makes teardown work when the browser window is closed
+      // directly: VS Code's compound "stopAll" only governs *manually*
+      // terminating a session, and "postDebugTask" is separately known to
+      // not fire when a session ends any other way (microsoft/vscode issues
+      // #162745, #46688, #46677) — so closing the window never tells the
+      // Flask debug session to stop at all. Owning the Edge process (via the
+      // detached watchdog) sidesteps that VS Code debug-session lifecycle
+      // entirely.
+      "label": "Start Edge (Debug)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/.vscode/scripts/start-edge-debug-session.ps1"
+      ],
+      "problemMatcher": []
+    },
+    {
+      // Blocks until Flask's /api/health responds, so the page doesn't load
+      // (and fire its first API calls) before Flask has finished starting.
+      // Flask runs in a separate, parallel compound session and, due to
+      // debugpy's startup overhead, can take noticeably longer to bind its
+      // port than Vite does — without this wait, the first load's API calls
+      // fail with ECONNREFUSED through Vite's proxy.
+      //
+      // Port/path hardcoded to match .env.example's CARTOGRAPHER_BACKEND_PORT
+      // default and app.py's health route; update both if either changes.
+      "label": "Wait For Backend Ready",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; if (-not (Wait-HttpEndpointReady -Uri 'http://localhost:5000/api/health' -TimeoutSeconds 30)) { throw 'Backend did not become ready in time.' }"
+      ],
+      "problemMatcher": []
+    },
+    {
+      // Sequences port cleanup -> Vite -> backend readiness -> Edge, so the
+      // Edge debug session's preLaunchTask does all steps in order before
+      // attaching and the page loads only once the backend can serve it.
+      "label": "Free Ports Then Start Vite Then Wait For Backend Then Start Edge",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Free Ports Then Start Vite", "Wait For Backend Ready", "Start Edge (Debug)"],
       "problemMatcher": []
     }
   ]

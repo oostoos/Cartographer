@@ -1,4 +1,13 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  // VSCode injects a shell-integration init script into every new PowerShell
+  // terminal/task, including background tasks like "Start Vite"/"Stop Vite".
+  // That injection is itself a script load, so it's blocked by this machine's
+  // Restricted execution policy (throws PSSecurityException /
+  // FullyQualifiedErrorId: UnauthorizedAccess) before the task's own command
+  // even runs. The failure is non-fatal — the task's command still executes
+  // afterward — but it shows up as a false "problem." Disabled workspace-wide
+  // rather than changing the system execution policy.
+  "terminal.integrated.shellIntegration.enabled": false
 }

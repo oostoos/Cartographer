@@ -20,6 +20,7 @@ dist/
 
 # Editor / OS
 .vscode/*.local.json
+.vscode/edge-debug-trace.log
 .DS_Store
 Thumbs.db
 

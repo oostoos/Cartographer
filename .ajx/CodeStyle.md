@@ -1,5 +1,5 @@
 General style
-- TODO
+- Prefer reducing cyclomatic complexity over reducing lines of code.
 
 Python
 - Use snake_case for variables, definitions, and file/directory names.
