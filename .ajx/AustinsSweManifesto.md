@@ -23,7 +23,7 @@ Modularization and building blocks
 
 Libraries
 - There should always be a library directory defined with barrels for the various languages being used in the stack at the top of the repo.
-- Libraries should contain code that requires no business or stack knowledege -- these are functions that provide the basis on top of which common business and stack specific building blocks can be built on.
+- Libraries should contain code that requires no business or stack knowledege -- these are functions that provide the basis on top of which common business and stack specific building blocks can be built on. For example, a library function that takes a string and returns the string with the first letter capitalized is a good example of a library function -- it requires no knowledge of the stack or business logic to understand what it does and how it works. An example of a non-library function might be an implementation of a database that reads and writes to a file -- this involves knowledge of the stack, though the implementation of the logic that reads and writes to a file could be a library function if it is implemented in a way that does not require knowledge of the stack or business logic.
 - Each language within a repo should get its own library directory.
 - Split library files and functions out by what that library function or group of functions aims to solve. For example, functions related to strings could be split into a "string library" file that maintains functions and constants associated with string use.
 - Libraries should have a barrel that exposes all of the various defintions within that library alongside a short description of that library definition. Within the barrel, library definitions should be grouped with whitespace and comments to visually distinguish various sections of the library.
@@ -32,6 +32,10 @@ Libraries
 Magic numbers and raw strings
 - You should never use a magic number in code -- a numeric value being used should always be defined with some name that it can be referenced by.
 - Raw strings should never be used in code either -- raw strings should be defined with some name that they can be referenced by.
+
+Testing
+- Automated tests -- especially simple unit tests -- should be written for ALL code that is written. If a function is written, it should be tested -- not just happy path, but edge and error cases as well. If a function is written that is not tested, it should be considered a bug and fixed immediately.
+- If a developer makes a change and does not manually test their change, you're going to developer jail. Do not pass go, do not collect $200.
 
 Generally applicable code style
 - Always prefer simple code syntax over complex or fancy solutions. The ONLY case to deviate is when there is a clear benefit to a more complex syntax -- better performance, less disk or memory use, etc.
@@ -51,3 +55,9 @@ Code organization
 
 Database
 - For database structures, there should always be a file (or files) defined in the language that interacts with the database that maintains getters/setters for that database structure's information as well as common functions that involve that database structure. For example, if I have a User defined in my database, I should have getters and setters for all of the information that is accessible in the User structure (whatever database implementation that might be) and I should have things like "find me all of this user's tasks" and "find me all of this user's messages" and "find me all of the accounts that this user is associated with" as definitions within this file.
+
+Maintaining datastructures across the stack
+- If a datastructure is defined in one language, it should be defined in all languages that interact with that datastructure. For example, if I have a User structure defined in my database and I have a User structure defined in my React app, I should also have a User structure defined in my Python backend that interacts with the database and the React app. This ensures that we have a single source of truth for the definition of the User structure across the stack.
+
+Fetch requests
+- Payload structure should be defined in a single location and shared across the stack. For example, if I have a fetch request that sends a payload to my backend, the structure of that payload should be defined in a single location and shared across the stack so that we have a single source of truth for the structure of that payload. This ensures that we don't have different definitions of the same payload structure across the stack and that we can validate the payload structure in a single location.
