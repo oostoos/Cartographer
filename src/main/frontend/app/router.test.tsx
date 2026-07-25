@@ -1,10 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as profileApi from "../profile/profile-api";
 import * as tasksApi from "../tasks/tasks-api";
+import type { TTask } from "../tasks/types";
 import { AppRoutes } from "./router";
+
+const TASK: TTask = {
+  id: "abc123",
+  title: "Buy milk",
+  description: "",
+  completed: false,
+  created_at: "2026-01-01T00:00:00Z",
+  updated_at: "2026-01-01T00:00:00Z",
+  completed_at: null,
+};
 
 function renderAtPath(path: string) {
   return render(
@@ -16,9 +27,9 @@ function renderAtPath(path: string) {
 
 describe("AppRoutes", () => {
   beforeEach(() => {
-    // TasksPage/TaskDetailPage/ProfilePage fetch on mount; stub them so route tests don't fire real network calls.
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
-    vi.spyOn(tasksApi, "fetchTask").mockRejectedValue(new Error("not mocked for this route test"));
+    // TasksPage/TaskDetailPanel/ProfilePage fetch on mount; stub them so route tests don't fire real network calls.
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
+    vi.spyOn(tasksApi, "fetchTask").mockResolvedValue(TASK);
     vi.spyOn(profileApi, "fetchProfile").mockResolvedValue({ display_name: "Explorer" });
   });
 
@@ -38,10 +49,11 @@ describe("AppRoutes", () => {
     expect(screen.getByRole("heading", { name: "Tasks" })).toBeInTheDocument();
   });
 
-  it("renders the task detail page at /tasks/:taskId", () => {
+  it("renders the task detail panel beside the list at /tasks/:taskId", async () => {
     renderAtPath("/tasks/abc123");
 
-    expect(screen.getByRole("heading", { name: "Task detail" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Tasks" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Close task detail" })).toBeInTheDocument());
   });
 
   it("renders the profile page at /profile", () => {

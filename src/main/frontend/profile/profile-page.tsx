@@ -41,24 +41,24 @@ export function ProfilePage() {
 
   if (isLoading) {
     return (
-      <main>
+      <>
         <h1>Profile</h1>
         <p>Loading profile…</p>
-      </main>
+      </>
     );
   }
 
   if (error) {
     return (
-      <main>
+      <>
         <h1>Profile</h1>
         <p role="alert">{error}</p>
-      </main>
+      </>
     );
   }
 
   return (
-    <main>
+    <>
       <h1>Profile</h1>
 
       <form onSubmit={handleSubmit} className="profile-form">
@@ -98,6 +98,6 @@ export function ProfilePage() {
           </div>
         )}
       </section>
-    </main>
+    </>
   );
 }

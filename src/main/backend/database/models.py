@@ -12,6 +12,7 @@ class Task:
     completed: bool
     created_at: str
     updated_at: str
+    completed_at: str | None = None
 
 
 @dataclass

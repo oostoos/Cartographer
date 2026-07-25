@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 
 import { Button } from "@common/design-language/button";
+import { PlusIcon } from "@common/design-language/icons";
 
 import "./task-create-form.css";
 
@@ -49,7 +50,7 @@ export function TaskCreateForm({ onCreate }: ITaskCreateFormProps) {
         aria-label="Task description"
       />
       <Button type="submit" disabled={isSubmitting || !title.trim()}>
-        Add task
+        <PlusIcon /> Add task
       </Button>
     </form>
   );

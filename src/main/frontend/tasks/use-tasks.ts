@@ -13,6 +13,7 @@ export interface IUseTasksResult {
   error: string | null;
   createTask: (title: string, description: string) => Promise<void>;
   toggleTaskCompleted: (taskId: string, completed: boolean) => Promise<void>;
+  applyTaskUpdate: (updated: TTask) => void;
 }
 
 /** Loads the task list on mount and exposes create/toggle actions that keep it in sync. */
@@ -48,10 +49,17 @@ export function useTasks(): IUseTasksResult {
     setTasks((current) => [...current, task]);
   }, []);
 
-  const toggleTaskCompleted = useCallback(async (taskId: string, completed: boolean) => {
-    const updated = await setTaskCompletedRequest(taskId, completed);
+  const applyTaskUpdate = useCallback((updated: TTask) => {
     setTasks((current) => current.map((task) => (task.id === updated.id ? updated : task)));
   }, []);
 
-  return { tasks, isLoading, error, createTask, toggleTaskCompleted };
+  const toggleTaskCompleted = useCallback(
+    async (taskId: string, completed: boolean) => {
+      const updated = await setTaskCompletedRequest(taskId, completed);
+      applyTaskUpdate(updated);
+    },
+    [applyTaskUpdate],
+  );
+
+  return { tasks, isLoading, error, createTask, toggleTaskCompleted, applyTaskUpdate };
 }

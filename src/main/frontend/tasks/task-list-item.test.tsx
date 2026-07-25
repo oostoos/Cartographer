@@ -12,6 +12,7 @@ const TASK: TTask = {
   completed: false,
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
+  completed_at: null,
 };
 
 function renderItem(task: TTask, onToggleCompleted = vi.fn()) {
@@ -57,5 +58,23 @@ describe("TaskListItem", () => {
     fireEvent.click(screen.getByRole("link", { name: "Buy milk" }));
 
     expect(onToggleCompleted).not.toHaveBeenCalled();
+  });
+
+  it("shows a completion label next to the title when the task is completed with a timestamp", () => {
+    renderItem({ ...TASK, completed: true, completed_at: "2026-01-01T15:45:00Z" });
+
+    expect(screen.getByText(/^(today at|on)/)).toBeInTheDocument();
+  });
+
+  it("shows no completion label when the task is completed but has no timestamp (legacy record)", () => {
+    renderItem({ ...TASK, completed: true, completed_at: null });
+
+    expect(screen.queryByText(/^(today at|on)/)).not.toBeInTheDocument();
+  });
+
+  it("shows no completion label for an incomplete task", () => {
+    renderItem(TASK);
+
+    expect(screen.queryByText(/^(today at|on)/)).not.toBeInTheDocument();
   });
 });

@@ -1,7 +1,9 @@
 import pytest
 
+from src.common.backend.database.page_store import writeRecord
 from src.main.backend.database import task as task_module
 from src.main.backend.database.task import (
+    TASK_OBJECT_TYPE,
     EmptyTaskTitleError,
     createTask,
     deleteAllTasks,
@@ -90,6 +92,50 @@ def test_set_task_completed_toggles_flag():
 
 def test_set_task_completed_on_unknown_id_returns_none():
     assert setTaskCompleted("does-not-exist", True) is None
+
+
+def test_create_task_defaults_completed_at_to_none():
+    task = createTask("Buy milk")
+
+    assert task.completed_at is None
+
+
+def test_set_task_completed_stamps_completed_at_when_completing():
+    task = createTask("Buy milk")
+    assert task.completed_at is None
+
+    completed = setTaskCompleted(task.id, True)
+
+    assert completed.completed_at is not None
+
+
+def test_set_task_completed_clears_completed_at_when_uncompleting():
+    task = createTask("Buy milk")
+    setTaskCompleted(task.id, True)
+
+    reverted = setTaskCompleted(task.id, False)
+
+    assert reverted.completed_at is None
+
+
+def test_set_task_completed_does_not_overwrite_existing_completed_at():
+    task = createTask("Buy milk")
+
+    first = setTaskCompleted(task.id, True)
+    second = setTaskCompleted(task.id, True)
+
+    assert second.completed_at == first.completed_at
+
+
+def test_decode_task_defaults_completed_at_to_none_for_legacy_six_field_record():
+    task = createTask("Buy milk")
+    legacy_fields = [task.id, task.title, task.description, "true", task.created_at, task.updated_at]
+    writeRecord(task_module.DATA_ROOT, TASK_OBJECT_TYPE, task.id, legacy_fields)
+
+    fetched = getTask(task.id)
+
+    assert fetched.completed is True
+    assert fetched.completed_at is None
 
 
 def test_get_all_tasks_returns_every_created_task():

@@ -127,6 +127,24 @@ def test_patch_task_complete_toggles_flag(client):
     assert response.get_json()["data"]["completed"] is True
 
 
+def test_patch_task_complete_sets_completed_at(client):
+    created = _create(client)
+    assert created["completed_at"] is None
+
+    response = client.patch(f"/api/tasks/{created['id']}/complete", json={"completed": True})
+
+    assert response.get_json()["data"]["completed_at"] is not None
+
+
+def test_patch_task_complete_false_clears_completed_at(client):
+    created = _create(client)
+    client.patch(f"/api/tasks/{created['id']}/complete", json={"completed": True})
+
+    response = client.patch(f"/api/tasks/{created['id']}/complete", json={"completed": False})
+
+    assert response.get_json()["data"]["completed_at"] is None
+
+
 def test_patch_task_complete_missing_field_returns_400_envelope(client):
     created = _create(client)
 

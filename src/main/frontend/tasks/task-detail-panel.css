@@ -1,0 +1,33 @@
+.task-detail-panel {
+  position: relative;
+}
+
+.task-detail-panel__close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+}
+
+.task-detail-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.task-detail-edit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.task-detail-edit input,
+.task-detail-edit textarea {
+  border: 1px solid var(--color-border);
+  padding: var(--space-sm);
+  font-family: inherit;
+}
+
+.task-detail-actions {
+  display: flex;
+  gap: var(--space-sm);
+}

@@ -26,3 +26,8 @@
   color: var(--color-text-secondary);
   text-decoration: line-through;
 }
+
+.task-list-item__completed-at {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}

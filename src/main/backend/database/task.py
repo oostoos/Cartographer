@@ -12,10 +12,19 @@ from src.main.backend.database.models import Task
 from src.main.backend.database.paths import DATA_ROOT
 
 TASK_OBJECT_TYPE = "task"
-TASK_FIELD_ORDER = ["id", "title", "description", "completed", "created_at", "updated_at"]
+TASK_FIELD_ORDER = [
+    "id",
+    "title",
+    "description",
+    "completed",
+    "created_at",
+    "updated_at",
+    "completed_at",
+]
 
 COMPLETED_TRUE_VALUE = "true"
 COMPLETED_FALSE_VALUE = "false"
+EMPTY_COMPLETED_AT_VALUE = ""
 
 
 class EmptyTaskTitleError(ValueError):
@@ -65,11 +74,21 @@ def updateTask(task_id: str, title: str | None = None, description: str | None =
 
 
 def setTaskCompleted(task_id: str, completed: bool) -> Task | None:
-    """Set a task's completed flag. Returns None if the task doesn't exist."""
+    """Set a task's completed flag. Returns None if the task doesn't exist.
+
+    Stamps completed_at with the current time on the False->True transition (left
+    unchanged if the task is already completed, so re-completing doesn't lose the
+    original completion moment), and clears it back to None whenever completed is False.
+    """
     task = getTask(task_id)
     if task is None:
         return None
     task.completed = completed
+    if completed:
+        if task.completed_at is None:
+            task.completed_at = _currentTimestamp()
+    else:
+        task.completed_at = None
     task.updated_at = _currentTimestamp()
     writeRecord(DATA_ROOT, TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
@@ -110,12 +129,17 @@ def _encodeTask(task: Task) -> list[str]:
         "completed": COMPLETED_TRUE_VALUE if task.completed else COMPLETED_FALSE_VALUE,
         "created_at": task.created_at,
         "updated_at": task.updated_at,
+        "completed_at": task.completed_at if task.completed_at is not None else EMPTY_COMPLETED_AT_VALUE,
     }
     return [values[field] for field in TASK_FIELD_ORDER]
 
 
 def _decodeTask(fields: list[str]) -> Task:
-    """Decode a page_store field list (in TASK_FIELD_ORDER) back into a Task."""
+    """Decode a page_store field list (in TASK_FIELD_ORDER) back into a Task.
+
+    completed_at is read defensively since legacy records written before this field
+    existed only have 6 fields on disk; zip() simply omits the key in that case.
+    """
     values = dict(zip(TASK_FIELD_ORDER, fields))
     return Task(
         id=values["id"],
@@ -124,4 +148,5 @@ def _decodeTask(fields: list[str]) -> Task:
         completed=values["completed"] == COMPLETED_TRUE_VALUE,
         created_at=values["created_at"],
         updated_at=values["updated_at"],
+        completed_at=values.get("completed_at", EMPTY_COMPLETED_AT_VALUE) or None,
     )

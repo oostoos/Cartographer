@@ -1,5 +1,6 @@
 .task-create-form {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
 }
@@ -7,6 +8,7 @@
 .task-create-form input {
   border: 1px solid var(--color-border);
   padding: var(--space-sm);
+  min-width: 0;
 }
 
 .task-create-form input[name="title"] {
@@ -15,4 +17,11 @@
 
 .task-create-form input[name="description"] {
   flex: 2;
+}
+
+@media (max-width: 640px) {
+  .task-create-form input[name="title"],
+  .task-create-form input[name="description"] {
+    flex-basis: 100%;
+  }
 }

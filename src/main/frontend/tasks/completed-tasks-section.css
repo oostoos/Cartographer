@@ -1,0 +1,33 @@
+.completed-tasks-section {
+  margin-top: var(--space-md);
+}
+
+.completed-tasks-section__header {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.completed-tasks-section__header:hover {
+  color: var(--color-text-primary);
+}
+
+.completed-tasks-section__chevron {
+  transition: transform 0.15s ease;
+  transform: rotate(-90deg);
+}
+
+.completed-tasks-section__chevron--expanded {
+  transform: rotate(0deg);
+}
+
+.completed-tasks-section .task-list {
+  margin-top: var(--space-sm);
+}

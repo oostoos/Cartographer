@@ -12,6 +12,7 @@ const TASK: TTask = {
   completed: false,
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
+  completed_at: null,
 };
 
 describe("useTasks", () => {
@@ -66,5 +67,31 @@ describe("useTasks", () => {
     });
 
     expect(result.current.tasks[0].completed).toBe(true);
+  });
+
+  it("applyTaskUpdate replaces a matching task in state", async () => {
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    act(() => {
+      result.current.applyTaskUpdate({ ...TASK, title: "Buy oat milk" });
+    });
+
+    expect(result.current.tasks[0].title).toBe("Buy oat milk");
+  });
+
+  it("applyTaskUpdate is a no-op for an unknown task id", async () => {
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    act(() => {
+      result.current.applyTaskUpdate({ ...TASK, id: "unknown", title: "Ghost task" });
+    });
+
+    expect(result.current.tasks).toEqual([TASK]);
   });
 });

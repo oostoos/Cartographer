@@ -8,3 +8,14 @@ than reaching into individual modules directly.
 - **`requestJson<T>(url: string, options?: RequestInit) -> Promise<T>`** —
   fetch `url` and parse the response as JSON. Rejects if the response status
   isn't 2xx. No knowledge of any specific app, API prefix, or endpoint.
+
+## date — generic date/time formatting helpers
+
+- **`isSameLocalDay(a: Date, b: Date) -> boolean`** — true if `a` and `b`
+  fall on the same calendar day in the local timezone.
+- **`formatLocalClockTime(date: Date) -> string`** — formats `date` as a
+  local clock time, e.g. `"3:45 PM"`.
+- **`formatShortLocalDate(date: Date, now?: Date) -> string`** — formats
+  `date` as a short local date, e.g. `"Jul 20"`. Appends the year
+  (`"Jul 20, 2025"`) if `date`'s year differs from `now`'s (`now` defaults
+  to the current time).

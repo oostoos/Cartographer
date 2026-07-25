@@ -1,0 +1,40 @@
+.tasks-layout {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.tasks-layout__list {
+  flex: 1 1 100%;
+  min-width: 0;
+  transition: flex-basis 0.2s ease;
+}
+
+.tasks-layout--detail-open .tasks-layout__list {
+  flex: 0 1 22rem;
+}
+
+.tasks-layout__detail {
+  flex: 1 1 28rem;
+  min-width: 0;
+}
+
+.tasks-layout:not(.tasks-layout--detail-open) .tasks-layout__detail {
+  display: none;
+}
+
+/* Side-by-side doesn't work on a phone-width viewport: the open detail panel takes over the full screen. */
+@media (max-width: 640px) {
+  .tasks-layout--detail-open .tasks-layout__list {
+    display: none;
+  }
+
+  .tasks-layout--detail-open .tasks-layout__detail {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    overflow-y: auto;
+    background-color: var(--color-background);
+    padding: var(--space-md);
+  }
+}

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import "./task-list-item.css";
 
+import { formatCompletionLabel } from "./format-completion-label";
 import type { TTask } from "./types";
 
 export interface ITaskListItemProps {
@@ -22,6 +23,9 @@ export function TaskListItem({ task, onToggleCompleted }: ITaskListItemProps) {
           aria-label={`Mark "${task.title}" as ${task.completed ? "not completed" : "completed"}`}
         />
         <Link to={`/tasks/${task.id}`}>{task.title}</Link>
+        {task.completed && task.completed_at && (
+          <span className="task-list-item__completed-at">{formatCompletionLabel(task.completed_at)}</span>
+        )}
       </div>
     </Card>
   );
