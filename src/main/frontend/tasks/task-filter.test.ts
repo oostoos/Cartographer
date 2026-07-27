@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildTaskFilterParam, filterTasksByProject, parseTaskFilter } from "./task-filter";
+import { buildTaskFilterParam, filterTasksByGroup, parseTaskFilter } from "./task-filter";
 import type { TTask } from "./types";
 
 function buildTask(overrides: Partial<TTask>): TTask {
@@ -13,24 +13,24 @@ function buildTask(overrides: Partial<TTask>): TTask {
     updated_at: "2026-01-01T00:00:00Z",
     completed_at: null,
     order: 0,
-    project_id: null,
+    group_id: null,
     ...overrides,
   };
 }
 
 describe("parseTaskFilter", () => {
-  it("returns 'all' when the project param is absent", () => {
+  it("returns 'all' when the group param is absent", () => {
     expect(parseTaskFilter(new URLSearchParams())).toEqual({ type: "all" });
   });
 
-  it("returns 'no-project' when the project param is 'none'", () => {
-    expect(parseTaskFilter(new URLSearchParams("project=none"))).toEqual({ type: "no-project" });
+  it("returns 'no-group' when the group param is 'none'", () => {
+    expect(parseTaskFilter(new URLSearchParams("group=none"))).toEqual({ type: "no-group" });
   });
 
-  it("returns a project filter for any other project param value", () => {
-    expect(parseTaskFilter(new URLSearchParams("project=proj-1"))).toEqual({
-      type: "project",
-      projectId: "proj-1",
+  it("returns a group filter for any other group param value", () => {
+    expect(parseTaskFilter(new URLSearchParams("group=group-1"))).toEqual({
+      type: "group",
+      groupId: "group-1",
     });
   });
 });
@@ -40,36 +40,36 @@ describe("buildTaskFilterParam", () => {
     expect(buildTaskFilterParam({ type: "all" })).toBeUndefined();
   });
 
-  it("returns 'none' for 'no-project'", () => {
-    expect(buildTaskFilterParam({ type: "no-project" })).toBe("none");
+  it("returns 'none' for 'no-group'", () => {
+    expect(buildTaskFilterParam({ type: "no-group" })).toBe("none");
   });
 
-  it("returns the project id for a project filter", () => {
-    expect(buildTaskFilterParam({ type: "project", projectId: "proj-1" })).toBe("proj-1");
+  it("returns the group id for a group filter", () => {
+    expect(buildTaskFilterParam({ type: "group", groupId: "group-1" })).toBe("group-1");
   });
 
   it("round-trips through parseTaskFilter", () => {
-    const filter = { type: "project" as const, projectId: "proj-1" };
+    const filter = { type: "group" as const, groupId: "group-1" };
     const param = buildTaskFilterParam(filter);
-    expect(parseTaskFilter(new URLSearchParams({ project: param! }))).toEqual(filter);
+    expect(parseTaskFilter(new URLSearchParams({ group: param! }))).toEqual(filter);
   });
 });
 
-describe("filterTasksByProject", () => {
-  const projectTask = buildTask({ id: "1", project_id: "proj-1" });
-  const otherProjectTask = buildTask({ id: "2", project_id: "proj-2" });
-  const unassignedTask = buildTask({ id: "3", project_id: null });
-  const tasks = [projectTask, otherProjectTask, unassignedTask];
+describe("filterTasksByGroup", () => {
+  const groupTask = buildTask({ id: "1", group_id: "group-1" });
+  const otherGroupTask = buildTask({ id: "2", group_id: "group-2" });
+  const unassignedTask = buildTask({ id: "3", group_id: null });
+  const tasks = [groupTask, otherGroupTask, unassignedTask];
 
   it("returns every task for 'all'", () => {
-    expect(filterTasksByProject(tasks, { type: "all" })).toEqual(tasks);
+    expect(filterTasksByGroup(tasks, { type: "all" })).toEqual(tasks);
   });
 
-  it("returns only unassigned tasks for 'no-project'", () => {
-    expect(filterTasksByProject(tasks, { type: "no-project" })).toEqual([unassignedTask]);
+  it("returns only unassigned tasks for 'no-group'", () => {
+    expect(filterTasksByGroup(tasks, { type: "no-group" })).toEqual([unassignedTask]);
   });
 
-  it("returns only tasks in the given project for a project filter", () => {
-    expect(filterTasksByProject(tasks, { type: "project", projectId: "proj-1" })).toEqual([projectTask]);
+  it("returns only tasks in the given group for a group filter", () => {
+    expect(filterTasksByGroup(tasks, { type: "group", groupId: "group-1" })).toEqual([groupTask]);
   });
 });

@@ -3,10 +3,12 @@ import { Outlet, useMatch, useSearchParams } from "react-router-dom";
 
 import {
   DndContext,
+  type CollisionDetection,
   type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -14,19 +16,27 @@ import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrate
 
 import "./tasks-page.css";
 
-import { ProjectSidebar } from "../projects/project-sidebar";
-import { useProjects } from "../projects/use-projects";
+import { GroupSidebar } from "../groups/group-sidebar";
+import { useGroups } from "../groups/use-groups";
 import { CompletedTasksSection } from "./completed-tasks-section";
 import { computeDragOutcome } from "./compute-drag-outcome";
 import { groupTasks } from "./group-tasks";
 import { SortableTaskListItem } from "./sortable-task-list-item";
-import { buildTaskFilterParam, filterTasksByProject, parseTaskFilter } from "./task-filter";
+import { buildTaskFilterParam, filterTasksByGroup, parseTaskFilter } from "./task-filter";
 import { TaskCreateForm } from "./task-create-form";
 import { TaskDetailEmptyState } from "./task-detail-empty-state";
 import { TaskListItem } from "./task-list-item";
 import type { ITasksOutletContext } from "./tasks-outlet-context";
 import type { TTask } from "./types";
 import { useTasks } from "./use-tasks";
+
+/** Prefers whatever droppable the pointer is literally over (so a small, distant drop target
+ * like a group card registers reliably), falling back to nearest-center for in-list reordering
+ * when the pointer isn't precisely over any droppable. */
+const resolveDragCollisions: CollisionDetection = (args) => {
+  const pointerCollisions = pointerWithin(args);
+  return pointerCollisions.length > 0 ? pointerCollisions : closestCenter(args);
+};
 
 export function TasksPage() {
   const {
@@ -37,21 +47,22 @@ export function TasksPage() {
     toggleTaskCompleted,
     applyTaskUpdate,
     reorderActiveTasks,
-    assignTaskProject,
-    unassignTasksFromProject,
+    assignTaskGroup,
+    unassignTasksFromGroup,
     deleteTask,
   } = useTasks();
-  const { projects, createProject, deleteProject } = useProjects();
+  const { groups, createGroup, renameGroup, reorderGroups, deleteGroup } = useGroups();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filter = useMemo(() => parseTaskFilter(searchParams), [searchParams]);
-  const filteredTasks = useMemo(() => filterTasksByProject(tasks, filter), [tasks, filter]);
+  const filteredTasks = useMemo(() => filterTasksByGroup(tasks, filter), [tasks, filter]);
   const grouped = useMemo(() => groupTasks(filteredTasks), [filteredTasks]);
-  const projectsById = useMemo(() => new Map(projects.map((project) => [project.id, project])), [projects]);
+  const groupsById = useMemo(() => new Map(groups.map((group) => [group.id, group])), [groups]);
 
   const taskIdMatch = useMatch("/tasks/:taskId");
 
   const activeTaskIds = useMemo(() => grouped.active.map((task) => task.id), [grouped.active]);
+  const activeGroupIds = useMemo(() => groups.map((group) => group.id), [groups]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -59,35 +70,36 @@ export function TasksPage() {
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      const outcome = computeDragOutcome(activeTaskIds, event);
+      const outcome = computeDragOutcome(activeTaskIds, activeGroupIds, event);
       if (!outcome) return;
-      if (outcome.type === "reorder") reorderActiveTasks(outcome.taskIds);
-      else assignTaskProject(outcome.taskId, outcome.projectId);
+      if (outcome.type === "reorder-tasks") reorderActiveTasks(outcome.taskIds);
+      else if (outcome.type === "reorder-groups") reorderGroups(outcome.groupIds);
+      else assignTaskGroup(outcome.taskId, outcome.groupId);
     },
-    [activeTaskIds, reorderActiveTasks, assignTaskProject],
+    [activeTaskIds, activeGroupIds, reorderActiveTasks, reorderGroups, assignTaskGroup],
   );
 
   function handleSelectFilter(nextFilter: typeof filter) {
     const value = buildTaskFilterParam(nextFilter);
-    setSearchParams(value ? { project: value } : {});
+    setSearchParams(value ? { group: value } : {});
   }
 
   async function handleCreateTask(title: string, description: string) {
-    const projectId = filter.type === "project" ? filter.projectId : null;
-    await createTask(title, description, projectId);
+    const groupId = filter.type === "group" ? filter.groupId : null;
+    await createTask(title, description, groupId);
   }
 
-  async function handleDeleteProject(projectId: string) {
-    const project = projectsById.get(projectId);
-    if (!window.confirm(`Delete "${project?.name ?? "this project"}"? Its tasks will become unassigned.`)) {
+  async function handleDeleteGroup(groupId: string) {
+    const group = groupsById.get(groupId);
+    if (!window.confirm(`Delete "${group?.name ?? "this group"}"? Its tasks will become unassigned.`)) {
       return;
     }
-    await deleteProject(projectId);
-    unassignTasksFromProject(projectId);
+    await deleteGroup(groupId);
+    unassignTasksFromGroup(groupId);
   }
 
-  function getProjectName(projectId: string): string | null {
-    return projectsById.get(projectId)?.name ?? null;
+  function getGroupName(groupId: string): string | null {
+    return groupsById.get(groupId)?.name ?? null;
   }
 
   async function handleDeleteTask(task: TTask) {
@@ -99,16 +111,17 @@ export function TasksPage() {
       <h1>Tasks</h1>
       {isLoading && <p>Loading tasks…</p>}
       {error && <p role="alert">{error}</p>}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={resolveDragCollisions} onDragEnd={handleDragEnd}>
         <div className="tasks-layout">
-          <div className="tasks-layout__sidebar-projects">
-            <ProjectSidebar
-              projects={projects}
+          <div className="tasks-layout__sidebar-groups">
+            <GroupSidebar
+              groups={groups}
               tasks={tasks}
               activeFilter={filter}
               onSelectFilter={handleSelectFilter}
-              onCreateProject={createProject}
-              onDeleteProject={handleDeleteProject}
+              onCreateGroup={createGroup}
+              onRenameGroup={renameGroup}
+              onDeleteGroup={handleDeleteGroup}
             />
           </div>
 
@@ -129,8 +142,8 @@ export function TasksPage() {
                           key={task.id}
                           task={task}
                           onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
-                          projectName={task.project_id ? getProjectName(task.project_id) : null}
-                          onRemoveProject={() => assignTaskProject(task.id, null)}
+                          groupName={task.group_id ? getGroupName(task.group_id) : null}
+                          onRemoveGroup={() => assignTaskGroup(task.id, null)}
                           onDelete={() => handleDeleteTask(task)}
                         />
                       ))}
@@ -140,8 +153,8 @@ export function TasksPage() {
                         <TaskListItem
                           task={task}
                           onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
-                          projectName={task.project_id ? getProjectName(task.project_id) : null}
-                          onRemoveProject={() => assignTaskProject(task.id, null)}
+                          groupName={task.group_id ? getGroupName(task.group_id) : null}
+                          onRemoveGroup={() => assignTaskGroup(task.id, null)}
                           onDelete={() => handleDeleteTask(task)}
                         />
                       </li>
@@ -150,8 +163,8 @@ export function TasksPage() {
                   <CompletedTasksSection
                     tasks={grouped.completedPrior}
                     onToggleCompleted={toggleTaskCompleted}
-                    getProjectName={getProjectName}
-                    onRemoveProject={(taskId) => assignTaskProject(taskId, null)}
+                    getGroupName={getGroupName}
+                    onRemoveGroup={(taskId) => assignTaskGroup(taskId, null)}
                     onDelete={(taskId) => {
                       const task = grouped.completedPrior.find((candidate) => candidate.id === taskId);
                       if (task) handleDeleteTask(task);

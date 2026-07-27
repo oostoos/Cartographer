@@ -1,7 +1,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { describe, expect, it } from "vitest";
 
-import { computeReorderedTaskIds } from "./compute-reordered-task-ids";
+import { computeReorderedIds } from "./compute-reordered-task-ids";
 
 function buildDragEndEvent(activeId: string, overId: string | null): DragEndEvent {
   return {
@@ -10,39 +10,39 @@ function buildDragEndEvent(activeId: string, overId: string | null): DragEndEven
   } as unknown as DragEndEvent;
 }
 
-describe("computeReorderedTaskIds", () => {
+describe("computeReorderedIds", () => {
   it("moves the dragged id to sit where it was dropped", () => {
-    const result = computeReorderedTaskIds(["a", "b", "c"], buildDragEndEvent("a", "c"));
+    const result = computeReorderedIds(["a", "b", "c"], buildDragEndEvent("a", "c"));
 
     expect(result).toEqual(["b", "c", "a"]);
   });
 
   it("moves an id backward when dropped earlier in the list", () => {
-    const result = computeReorderedTaskIds(["a", "b", "c"], buildDragEndEvent("c", "a"));
+    const result = computeReorderedIds(["a", "b", "c"], buildDragEndEvent("c", "a"));
 
     expect(result).toEqual(["c", "a", "b"]);
   });
 
   it("returns null when dropped outside any droppable", () => {
-    const result = computeReorderedTaskIds(["a", "b", "c"], buildDragEndEvent("a", null));
+    const result = computeReorderedIds(["a", "b", "c"], buildDragEndEvent("a", null));
 
     expect(result).toBeNull();
   });
 
   it("returns null when dropped back on its own starting slot", () => {
-    const result = computeReorderedTaskIds(["a", "b", "c"], buildDragEndEvent("a", "a"));
+    const result = computeReorderedIds(["a", "b", "c"], buildDragEndEvent("a", "a"));
 
     expect(result).toBeNull();
   });
 
   it("returns null when the dragged id is unknown", () => {
-    const result = computeReorderedTaskIds(["a", "b", "c"], buildDragEndEvent("unknown", "a"));
+    const result = computeReorderedIds(["a", "b", "c"], buildDragEndEvent("unknown", "a"));
 
     expect(result).toBeNull();
   });
 
   it("returns null when the drop target id is unknown", () => {
-    const result = computeReorderedTaskIds(["a", "b", "c"], buildDragEndEvent("a", "unknown"));
+    const result = computeReorderedIds(["a", "b", "c"], buildDragEndEvent("a", "unknown"));
 
     expect(result).toBeNull();
   });

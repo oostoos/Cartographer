@@ -1,50 +1,83 @@
-"""HTTP routes for the /api/projects resource."""
+"""HTTP routes for the /api/groups resource."""
 from dataclasses import asdict
 
 from flask import Blueprint, request
 
 from lib.python.validation.type_checks import isDict
 from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
-from src.main.backend.database.project import (
-    EmptyProjectNameError,
-    createProject,
-    deleteProject,
-    getAllProjects,
+from src.main.backend.database.group import (
+    EmptyGroupNameError,
+    createGroup,
+    deleteGroup,
+    getAllGroups,
+    reorderGroups,
+    updateGroup,
 )
-from src.main.backend.projects.schemas import InvalidPayloadError, parseProjectCreatePayload
+from src.main.backend.groups.schemas import (
+    InvalidPayloadError,
+    parseGroupCreatePayload,
+    parseGroupReorderPayload,
+    parseGroupUpdatePayload,
+)
 
-projects_blueprint = Blueprint("projects", __name__, url_prefix="/api/projects")
+groups_blueprint = Blueprint("groups", __name__, url_prefix="/api/groups")
 
 CREATED_STATUS_CODE = 201
 NOT_FOUND_STATUS_CODE = 404
 
 
-@projects_blueprint.get("")
-def listProjects():
-    """List every project."""
-    projects = getAllProjects()
-    return buildSuccessResponse([asdict(project) for project in projects])
+@groups_blueprint.get("")
+def listGroups():
+    """List every group."""
+    groups = getAllGroups()
+    return buildSuccessResponse([asdict(group) for group in groups])
 
 
-@projects_blueprint.post("")
-def createProjectRoute():
-    """Create a new project."""
+@groups_blueprint.post("")
+def createGroupRoute():
+    """Create a new group."""
     try:
         payload = _requireJsonObjectBody()
-        create_payload = parseProjectCreatePayload(payload)
-        project = createProject(create_payload.name)
-    except (InvalidPayloadError, EmptyProjectNameError) as error:
+        create_payload = parseGroupCreatePayload(payload)
+        group = createGroup(create_payload.name)
+    except (InvalidPayloadError, EmptyGroupNameError) as error:
         return buildErrorResponse(str(error))
-    return buildSuccessResponse(asdict(project), CREATED_STATUS_CODE)
+    return buildSuccessResponse(asdict(group), CREATED_STATUS_CODE)
 
 
-@projects_blueprint.delete("/<project_id>")
-def deleteProjectRoute(project_id: str):
-    """Delete a project, unassigning every task in it."""
-    deleted = deleteProject(project_id)
+@groups_blueprint.patch("/reorder")
+def reorderGroupsRoute():
+    """Reorder groups to match the given id sequence."""
+    try:
+        payload = _requireJsonObjectBody()
+        reorder_payload = parseGroupReorderPayload(payload)
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+    groups = reorderGroups(reorder_payload.group_ids)
+    return buildSuccessResponse([asdict(group) for group in groups])
+
+
+@groups_blueprint.patch("/<group_id>")
+def updateGroupRoute(group_id: str):
+    """Rename a group."""
+    try:
+        payload = _requireJsonObjectBody()
+        update_payload = parseGroupUpdatePayload(payload)
+        group = updateGroup(group_id, update_payload.name)
+    except (InvalidPayloadError, EmptyGroupNameError) as error:
+        return buildErrorResponse(str(error))
+    if group is None:
+        return buildErrorResponse(f"No group with id '{group_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse(asdict(group))
+
+
+@groups_blueprint.delete("/<group_id>")
+def deleteGroupRoute(group_id: str):
+    """Delete a group, unassigning every task in it."""
+    deleted = deleteGroup(group_id)
     if not deleted:
-        return buildErrorResponse(f"No project with id '{project_id}'", NOT_FOUND_STATUS_CODE)
-    return buildSuccessResponse({"id": project_id})
+        return buildErrorResponse(f"No group with id '{group_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse({"id": group_id})
 
 
 def _requireJsonObjectBody() -> dict:

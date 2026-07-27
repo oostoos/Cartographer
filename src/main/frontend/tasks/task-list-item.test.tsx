@@ -14,7 +14,7 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
-  project_id: null,
+  group_id: null,
 };
 
 function renderItem(task: TTask, onToggleCompleted = vi.fn()) {
@@ -96,35 +96,35 @@ describe("TaskListItem", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("renders a project pill when projectName and onRemoveProject are given", () => {
+  it("renders a group pill when groupName and onRemoveGroup are given", () => {
     render(
       <MemoryRouter>
-        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} projectName="Home renovation" onRemoveProject={vi.fn()} />
+        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} groupName="Home renovation" onRemoveGroup={vi.fn()} />
       </MemoryRouter>,
     );
 
     expect(screen.getByText("Home renovation")).toBeInTheDocument();
   });
 
-  it("calls onRemoveProject when the pill's remove button is clicked", () => {
-    const onRemoveProject = vi.fn();
+  it("calls onRemoveGroup when the pill's remove button is clicked", () => {
+    const onRemoveGroup = vi.fn();
     render(
       <MemoryRouter>
         <TaskListItem
           task={TASK}
           onToggleCompleted={vi.fn()}
-          projectName="Home renovation"
-          onRemoveProject={onRemoveProject}
+          groupName="Home renovation"
+          onRemoveGroup={onRemoveGroup}
         />
       </MemoryRouter>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Remove from Home renovation" }));
 
-    expect(onRemoveProject).toHaveBeenCalled();
+    expect(onRemoveGroup).toHaveBeenCalled();
   });
 
-  it("renders no project pill when projectName is not given", () => {
+  it("renders no group pill when groupName is not given", () => {
     renderItem(TASK);
 
     expect(screen.queryByText("Home renovation")).not.toBeInTheDocument();

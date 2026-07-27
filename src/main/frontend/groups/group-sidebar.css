@@ -1,10 +1,10 @@
-.project-sidebar {
+.group-sidebar {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
 
-.project-sidebar__filters {
+.group-sidebar__filters {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -12,7 +12,7 @@
   gap: var(--space-sm);
 }
 
-.project-sidebar__list {
+.group-sidebar__list {
   list-style: none;
   margin: 0;
   padding: 0;

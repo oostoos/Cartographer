@@ -68,9 +68,9 @@ describe("http-client", () => {
   it("deleteJson sends the correct method and unwraps the response", async () => {
     const mockFetch = stubFetchResolving({ success: true, data: { id: "1" } });
 
-    const result = await deleteJson<{ id: string }>("/projects/1");
+    const result = await deleteJson<{ id: string }>("/groups/1");
 
     expect(result).toEqual({ id: "1" });
-    expect(mockFetch).toHaveBeenCalledWith("/api/projects/1", { method: "DELETE" });
+    expect(mockFetch).toHaveBeenCalledWith("/api/groups/1", { method: "DELETE" });
   });
 });

@@ -8,7 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 import "./task-list-item.css";
 
 import { formatCompletionLabel } from "./format-completion-label";
-import { TaskProjectPill } from "./task-project-pill";
+import { TaskGroupPill } from "./task-group-pill";
 import type { TTask } from "./types";
 
 export interface ITaskListItemProps {
@@ -16,10 +16,10 @@ export interface ITaskListItemProps {
   onToggleCompleted: (completed: boolean) => void;
   /** Optional drag handle rendered at the start of the row, e.g. for drag-to-reorder. */
   dragHandle?: ReactNode;
-  /** Name of the project this task belongs to, if any. Resolved by the parent from the id. */
-  projectName?: string | null;
-  /** Called when the project pill's remove button is clicked. Required whenever projectName is set. */
-  onRemoveProject?: () => void;
+  /** Name of the group this task belongs to, if any. Resolved by the parent from the id. */
+  groupName?: string | null;
+  /** Called when the group pill's remove button is clicked. Required whenever groupName is set. */
+  onRemoveGroup?: () => void;
   /** Called when the row's delete button is clicked. Omit to hide the delete button. */
   onDelete?: () => void;
 }
@@ -29,8 +29,8 @@ export function TaskListItem({
   task,
   onToggleCompleted,
   dragHandle,
-  projectName,
-  onRemoveProject,
+  groupName,
+  onRemoveGroup,
   onDelete,
 }: ITaskListItemProps) {
   const location = useLocation();
@@ -46,10 +46,10 @@ export function TaskListItem({
           aria-label={`Mark "${task.title}" as ${task.completed ? "not completed" : "completed"}`}
         />
         <div className="task-list-item__content">
-          {/* Preserves the active ?project= filter so opening a task's details doesn't reset it to "All tasks". */}
+          {/* Preserves the active ?group= filter so opening a task's details doesn't reset it to "All tasks". */}
           <Link to={{ pathname: `/tasks/${task.id}`, search: location.search }}>{task.title}</Link>
-          {projectName && onRemoveProject && (
-            <TaskProjectPill projectName={projectName} onRemove={onRemoveProject} />
+          {groupName && onRemoveGroup && (
+            <TaskGroupPill groupName={groupName} onRemove={onRemoveGroup} />
           )}
         </div>
         {task.completed && task.completed_at && (

@@ -2,13 +2,35 @@
   outline: 2px dashed var(--color-accent);
 }
 
-.project-card {
+[data-dragging="true"] {
+  opacity: 0.5;
+}
+
+.group-card {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
-.project-card__select {
+.group-card__drag-handle {
+  cursor: grab;
+  touch-action: none;
+  flex: 0 0 auto;
+}
+
+.group-card__drag-handle:active {
+  cursor: grabbing;
+}
+
+.group-card__rename-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  padding: var(--space-xs) var(--space-sm);
+  font: inherit;
+}
+
+.group-card__select {
   flex: 1;
   display: flex;
   align-items: center;
@@ -23,12 +45,12 @@
   color: var(--color-text-primary);
 }
 
-.project-card[data-active="true"] .project-card__name {
+.group-card[data-active="true"] .group-card__name {
   font-weight: bold;
   color: var(--color-accent);
 }
 
-.project-card__count {
+.group-card__count {
   color: var(--color-text-secondary);
   font-size: 0.8rem;
 }

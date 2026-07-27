@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TTask } from "../tasks/types";
-import { computeProjectTaskCounts } from "./compute-project-task-counts";
+import { computeGroupTaskCounts } from "./compute-group-task-counts";
 
 function buildTask(overrides: Partial<TTask>): TTask {
   return {
@@ -13,33 +13,33 @@ function buildTask(overrides: Partial<TTask>): TTask {
     updated_at: "2026-01-01T00:00:00Z",
     completed_at: null,
     order: 0,
-    project_id: null,
+    group_id: null,
     ...overrides,
   };
 }
 
-describe("computeProjectTaskCounts", () => {
-  it("returns zero/zero when no tasks belong to the project", () => {
-    expect(computeProjectTaskCounts([], "proj-1")).toEqual({ completed: 0, total: 0 });
+describe("computeGroupTaskCounts", () => {
+  it("returns zero/zero when no tasks belong to the group", () => {
+    expect(computeGroupTaskCounts([], "group-1")).toEqual({ completed: 0, total: 0 });
   });
 
-  it("counts only tasks belonging to the given project", () => {
+  it("counts only tasks belonging to the given group", () => {
     const tasks = [
-      buildTask({ id: "1", project_id: "proj-1" }),
-      buildTask({ id: "2", project_id: "proj-2" }),
-      buildTask({ id: "3", project_id: null }),
+      buildTask({ id: "1", group_id: "group-1" }),
+      buildTask({ id: "2", group_id: "group-2" }),
+      buildTask({ id: "3", group_id: null }),
     ];
 
-    expect(computeProjectTaskCounts(tasks, "proj-1")).toEqual({ completed: 0, total: 1 });
+    expect(computeGroupTaskCounts(tasks, "group-1")).toEqual({ completed: 0, total: 1 });
   });
 
-  it("counts how many of the project's tasks are completed", () => {
+  it("counts how many of the group's tasks are completed", () => {
     const tasks = [
-      buildTask({ id: "1", project_id: "proj-1", completed: true }),
-      buildTask({ id: "2", project_id: "proj-1", completed: false }),
-      buildTask({ id: "3", project_id: "proj-1", completed: true }),
+      buildTask({ id: "1", group_id: "group-1", completed: true }),
+      buildTask({ id: "2", group_id: "group-1", completed: false }),
+      buildTask({ id: "3", group_id: "group-1", completed: true }),
     ];
 
-    expect(computeProjectTaskCounts(tasks, "proj-1")).toEqual({ completed: 2, total: 3 });
+    expect(computeGroupTaskCounts(tasks, "group-1")).toEqual({ completed: 2, total: 3 });
   });
 });

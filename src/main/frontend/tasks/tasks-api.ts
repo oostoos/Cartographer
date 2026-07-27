@@ -6,7 +6,7 @@ import type { TTask } from "./types";
 export type TTaskCreatePayload = {
   title: string;
   description: string;
-  project_id?: string | null;
+  group_id?: string | null;
 };
 
 export type TTaskUpdatePayload = {
@@ -49,9 +49,9 @@ export function reorderTasks(taskIds: string[]): Promise<TTask[]> {
   return patchJson<TTask[]>("/tasks/reorder", { task_ids: taskIds } satisfies TTaskReorderPayload);
 }
 
-/** Assign a task to a project, or clear its project by passing null. */
-export function setTaskProject(taskId: string, projectId: string | null): Promise<TTask> {
-  return patchJson<TTask>(`/tasks/${taskId}/project`, { project_id: projectId });
+/** Assign a task to a group, or clear its group by passing null. */
+export function setTaskGroup(taskId: string, groupId: string | null): Promise<TTask> {
+  return patchJson<TTask>(`/tasks/${taskId}/group`, { group_id: groupId });
 }
 
 /** Delete a task. */

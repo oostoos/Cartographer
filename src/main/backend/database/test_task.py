@@ -12,8 +12,8 @@ from src.main.backend.database.task import (
     getTask,
     reorderTasks,
     setTaskCompleted,
-    setTaskProject,
-    unassignTasksFromProject,
+    setTaskGroup,
+    unassignTasksFromGroup,
     updateTask,
 )
 
@@ -243,52 +243,52 @@ def test_delete_all_tasks_clears_every_task():
     assert getAllTasks() == []
 
 
-def test_create_task_defaults_project_id_to_none():
+def test_create_task_defaults_group_id_to_none():
     task = createTask("Buy milk")
 
-    assert task.project_id is None
+    assert task.group_id is None
 
 
-def test_create_task_with_project_id_persists_it():
-    task = createTask("Buy milk", project_id="proj-1")
+def test_create_task_with_group_id_persists_it():
+    task = createTask("Buy milk", group_id="group-1")
 
-    assert task.project_id == "proj-1"
-    assert getTask(task.id).project_id == "proj-1"
+    assert task.group_id == "group-1"
+    assert getTask(task.id).group_id == "group-1"
 
 
-def test_set_task_project_assigns_project():
+def test_set_task_group_assigns_group():
     task = createTask("Buy milk")
 
-    updated = setTaskProject(task.id, "proj-1")
+    updated = setTaskGroup(task.id, "group-1")
 
-    assert updated.project_id == "proj-1"
-
-
-def test_set_task_project_clears_with_none():
-    task = createTask("Buy milk", project_id="proj-1")
-
-    updated = setTaskProject(task.id, None)
-
-    assert updated.project_id is None
+    assert updated.group_id == "group-1"
 
 
-def test_set_task_project_on_unknown_id_returns_none():
-    assert setTaskProject("does-not-exist", "proj-1") is None
+def test_set_task_group_clears_with_none():
+    task = createTask("Buy milk", group_id="group-1")
+
+    updated = setTaskGroup(task.id, None)
+
+    assert updated.group_id is None
 
 
-def test_unassign_tasks_from_project_clears_matching_tasks_only():
-    in_project = createTask("Task in project", project_id="proj-1")
-    other_project = createTask("Task in other project", project_id="proj-2")
+def test_set_task_group_on_unknown_id_returns_none():
+    assert setTaskGroup("does-not-exist", "group-1") is None
+
+
+def test_unassign_tasks_from_group_clears_matching_tasks_only():
+    in_group = createTask("Task in group", group_id="group-1")
+    other_group = createTask("Task in other group", group_id="group-2")
     unassigned = createTask("Unassigned task")
 
-    unassignTasksFromProject("proj-1")
+    unassignTasksFromGroup("group-1")
 
-    assert getTask(in_project.id).project_id is None
-    assert getTask(other_project.id).project_id == "proj-2"
-    assert getTask(unassigned.id).project_id is None
+    assert getTask(in_group.id).group_id is None
+    assert getTask(other_group.id).group_id == "group-2"
+    assert getTask(unassigned.id).group_id is None
 
 
-def test_decode_task_defaults_project_id_to_none_for_legacy_eight_field_record():
+def test_decode_task_defaults_group_id_to_none_for_legacy_eight_field_record():
     task = createTask("Buy milk")
     legacy_fields = [
         task.id,
@@ -304,4 +304,4 @@ def test_decode_task_defaults_project_id_to_none_for_legacy_eight_field_record()
 
     fetched = getTask(task.id)
 
-    assert fetched.project_id is None
+    assert fetched.group_id is None

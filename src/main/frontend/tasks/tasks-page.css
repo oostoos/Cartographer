@@ -13,7 +13,7 @@
   min-height: 0;
 }
 
-.tasks-layout__sidebar-projects {
+.tasks-layout__sidebar-groups {
   flex: 1 1 0;
   min-width: 0;
   overflow-y: auto;
@@ -47,7 +47,7 @@
     flex-direction: column;
   }
 
-  .tasks-layout__sidebar-projects,
+  .tasks-layout__sidebar-groups,
   .tasks-layout__list,
   .tasks-layout__detail {
     flex: 1 1 auto;

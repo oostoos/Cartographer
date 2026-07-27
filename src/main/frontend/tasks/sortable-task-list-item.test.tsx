@@ -17,7 +17,7 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
-  project_id: null,
+  group_id: null,
 };
 
 function renderItem(overrides: Partial<Parameters<typeof SortableTaskListItem>[0]> = {}) {
@@ -57,19 +57,19 @@ describe("SortableTaskListItem", () => {
     expect(onToggleCompleted).toHaveBeenCalledWith(true);
   });
 
-  it("renders a project pill when given projectName and onRemoveProject", () => {
-    renderItem({ projectName: "Home renovation", onRemoveProject: vi.fn() });
+  it("renders a group pill when given groupName and onRemoveGroup", () => {
+    renderItem({ groupName: "Home renovation", onRemoveGroup: vi.fn() });
 
     expect(screen.getByText("Home renovation")).toBeInTheDocument();
   });
 
-  it("calls onRemoveProject when the pill's remove button is clicked", () => {
-    const onRemoveProject = vi.fn();
-    renderItem({ projectName: "Home renovation", onRemoveProject });
+  it("calls onRemoveGroup when the pill's remove button is clicked", () => {
+    const onRemoveGroup = vi.fn();
+    renderItem({ groupName: "Home renovation", onRemoveGroup });
 
     screen.getByRole("button", { name: "Remove from Home renovation" }).click();
 
-    expect(onRemoveProject).toHaveBeenCalled();
+    expect(onRemoveGroup).toHaveBeenCalled();
   });
 
   it("calls onDelete when the delete button is clicked", () => {

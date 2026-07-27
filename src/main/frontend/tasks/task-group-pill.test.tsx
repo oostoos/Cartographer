@@ -1,18 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { TaskProjectPill } from "./task-project-pill";
+import { TaskGroupPill } from "./task-group-pill";
 
-describe("TaskProjectPill", () => {
-  it("renders the project name", () => {
-    render(<TaskProjectPill projectName="Home renovation" onRemove={vi.fn()} />);
+describe("TaskGroupPill", () => {
+  it("renders the group name", () => {
+    render(<TaskGroupPill groupName="Home renovation" onRemove={vi.fn()} />);
 
     expect(screen.getByText("Home renovation")).toBeInTheDocument();
   });
 
   it("calls onRemove when the remove button is clicked", () => {
     const onRemove = vi.fn();
-    render(<TaskProjectPill projectName="Home renovation" onRemove={onRemove} />);
+    render(<TaskGroupPill groupName="Home renovation" onRemove={onRemove} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Remove from Home renovation" }));
 

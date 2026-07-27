@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="15" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-07-27" time="17:00:03">
+  <environment clr-version="4.0.30319.42000" user-domain="ELLIE" cwd="C:\Users\austi\Projects\Cartographer" platform="Microsoft Windows 11 Pro|C:\WINDOWS|\Device\Harddisk0\Partition3" machine-name="ELLIE" nunit-version="2.5.8.0" os-version="10.0.26200" user="austi" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="2.7955" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\Users\austi\Projects\Cartographer\lib\powershell\network\wait-http-endpoint-ready.Tests.ps1" executed="True" result="Success" success="True" time="1.3744" asserts="0" description="C:\Users\austi\Projects\Cartographer\lib\powershell\network\wait-http-endpoint-ready.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Wait-HttpEndpointReady" executed="True" result="Success" success="True" time="0.7072" asserts="0" description="Wait-HttpEndpointReady">
+            <results>
+              <test-case description="returns true immediately when the endpoint responds on the first try" name="Wait-HttpEndpointReady.returns true immediately when the endpoint responds on the first try" time="0.4712" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="keeps polling until the endpoint responds, then returns true" name="Wait-HttpEndpointReady.keeps polling until the endpoint responds, then returns true" time="0.0959" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns false once the timeout elapses while the endpoint never responds" name="Wait-HttpEndpointReady.returns false once the timeout elapses while the endpoint never responds" time="0.0375" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\austi\Projects\Cartographer\lib\powershell\process\start-process-and-get-id.Tests.ps1" executed="True" result="Success" success="True" time="0.1775" asserts="0" description="C:\Users\austi\Projects\Cartographer\lib\powershell\process\start-process-and-get-id.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Start-ProcessAndGetId" executed="True" result="Success" success="True" time="0.0973" asserts="0" description="Start-ProcessAndGetId">
+            <results>
+              <test-case description="returns the new process's id and forwards FilePath/ArgumentList to Start-Process" name="Start-ProcessAndGetId.returns the new process's id and forwards FilePath/ArgumentList to Start-Process" time="0.049" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="propagates an exception when Start-Process fails" name="Start-ProcessAndGetId.propagates an exception when Start-Process fails" time="0.0356" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\austi\Projects\Cartographer\lib\powershell\process\stop-process-on-port.Tests.ps1" executed="True" result="Success" success="True" time="0.7379" asserts="0" description="C:\Users\austi\Projects\Cartographer\lib\powershell\process\stop-process-on-port.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Stop-ProcessOnPort" executed="True" result="Success" success="True" time="0.6848" asserts="0" description="Stop-ProcessOnPort">
+            <results>
+              <test-case description="does nothing when no connection owns the port" name="Stop-ProcessOnPort.does nothing when no connection owns the port" time="0.4875" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="stops the owning process for a matched connection" name="Stop-ProcessOnPort.stops the owning process for a matched connection" time="0.0975" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="skips process ids that no longer exist" name="Stop-ProcessOnPort.skips process ids that no longer exist" time="0.0227" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="only queries Listen-state connections, excluding TIME_WAIT/stale rows like PID 0" name="Stop-ProcessOnPort.only queries Listen-state connections, excluding TIME_WAIT/stale rows like PID 0" time="0.0611" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\austi\Projects\Cartographer\lib\powershell\process\wait-process-exit.Tests.ps1" executed="True" result="Success" success="True" time="0.2367" asserts="0" description="C:\Users\austi\Projects\Cartographer\lib\powershell\process\wait-process-exit.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Wait-ProcessExit" executed="True" result="Success" success="True" time="0.1651" asserts="0" description="Wait-ProcessExit">
+            <results>
+              <test-case description="returns true immediately when the process is already gone" name="Wait-ProcessExit.returns true immediately when the process is already gone" time="0.022" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="polls until the process exits, then returns true" name="Wait-ProcessExit.polls until the process exits, then returns true" time="0.0304" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns false once the timeout elapses while the process is still running" name="Wait-ProcessExit.returns false once the timeout elapses while the process is still running" time="0.0762" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\austi\Projects\Cartographer\lib\powershell\time\start-sleep-ms.Tests.ps1" executed="True" result="Success" success="True" time="0.1313" asserts="0" description="C:\Users\austi\Projects\Cartographer\lib\powershell\time\start-sleep-ms.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Start-SleepMs" executed="True" result="Success" success="True" time="0.0509" asserts="0" description="Start-SleepMs">
+            <results>
+              <test-case description="delegates to Start-Sleep with the given millisecond count" name="Start-SleepMs.delegates to Start-Sleep with the given millisecond count" time="0.0391" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\Users\austi\Projects\Cartographer\lib\powershell\windows\get-app-path-from-registry.Tests.ps1" executed="True" result="Success" success="True" time="0.1377" asserts="0" description="C:\Users\austi\Projects\Cartographer\lib\powershell\windows\get-app-path-from-registry.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-AppPathFromRegistry" executed="True" result="Success" success="True" time="0.0875" asserts="0" description="Get-AppPathFromRegistry">
+            <results>
+              <test-case description="returns the registered path for a registered executable" name="Get-AppPathFromRegistry.returns the registered path for a registered executable" time="0.0522" asserts="0" success="True" result="Success" executed="True" />
+              <test-case description="returns null when the executable is not registered" name="Get-AppPathFromRegistry.returns null when the executable is not registered" time="0.0238" asserts="0" success="True" result="Success" executed="True" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -3,6 +3,12 @@
 PowerShell library barrel: `index.psm1`. Import via `Import-Module` rather
 than dot-sourcing individual files directly.
 
+## time — generic time-pausing primitives
+
+- **`Start-SleepMs <int>`** — thin wrapper around `Start-Sleep -Milliseconds`
+  taking a positional millisecond duration. No knowledge of what the pause
+  is for.
+
 ## process — generic process/port management primitives
 
 - **`Stop-ProcessOnPort -Port <int>`** — stops whatever process currently

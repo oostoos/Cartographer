@@ -3,7 +3,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 /** The new id order implied by a drag-end event over `currentIds`, or null if nothing moved
  * (dropped outside a droppable, or dropped back on its own starting slot). */
-export function computeReorderedTaskIds(currentIds: string[], event: DragEndEvent): string[] | null {
+export function computeReorderedIds(currentIds: string[], event: DragEndEvent): string[] | null {
   const { active, over } = event;
   if (!over || active.id === over.id) return null;
 

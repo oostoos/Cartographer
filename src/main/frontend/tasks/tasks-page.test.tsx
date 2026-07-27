@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import * as projectsApi from "../projects/projects-api";
-import type { TProject } from "../projects/types";
+import * as groupsApi from "../groups/groups-api";
+import type { TGroup } from "../groups/types";
 import * as tasksApi from "./tasks-api";
 import { TaskDetailPanel } from "./task-detail-panel";
 import { TasksPage } from "./tasks-page";
@@ -18,11 +18,11 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
-  project_id: null,
+  group_id: null,
 };
 
-const PROJECT: TProject = {
-  id: "proj-1",
+const GROUP: TGroup = {
+  id: "group-1",
   name: "Home renovation",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
@@ -33,8 +33,8 @@ function buildTask(overrides: Partial<TTask>): TTask {
   return { ...TASK, ...overrides };
 }
 
-function stubProjects(projects: TProject[] = []) {
-  vi.spyOn(projectsApi, "fetchProjects").mockResolvedValue(projects);
+function stubGroups(groups: TGroup[] = []) {
+  vi.spyOn(groupsApi, "fetchGroups").mockResolvedValue(groups);
 }
 
 function renderPage(initialPath = "/tasks") {
@@ -56,7 +56,7 @@ describe("TasksPage", () => {
 
   it("renders the Tasks heading immediately", () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -65,7 +65,7 @@ describe("TasksPage", () => {
 
   it("renders an empty state when there are no tasks", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -74,7 +74,7 @@ describe("TasksPage", () => {
 
   it("renders each fetched task in the list", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -83,7 +83,7 @@ describe("TasksPage", () => {
 
   it("renders an error message when loading fails", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockRejectedValue(new Error("network error"));
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -99,7 +99,7 @@ describe("TasksPage", () => {
       completed_at: new Date().toISOString(),
     });
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([todayTask, activeTask]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -116,7 +116,7 @@ describe("TasksPage", () => {
       completed_at: "2020-01-01T00:00:00Z",
     });
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([priorTask]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -133,7 +133,7 @@ describe("TasksPage", () => {
       completed_at: new Date().toISOString(),
     });
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([activeTask, todayTask]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -145,7 +145,7 @@ describe("TasksPage", () => {
 
   it("shows the empty-state message in the detail column at /tasks", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    stubProjects();
+    stubGroups();
 
     renderPage();
 
@@ -154,7 +154,7 @@ describe("TasksPage", () => {
 
   it("renders the task detail panel at /tasks/:taskId instead of the empty state", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    stubProjects();
+    stubGroups();
 
     renderPage("/tasks/1");
 
@@ -162,82 +162,82 @@ describe("TasksPage", () => {
     expect(screen.queryByText("Select a task to see its details.")).not.toBeInTheDocument();
   });
 
-  it("renders a project pill for a task assigned to a project", async () => {
-    const assignedTask = buildTask({ id: "1", title: "Paint fence", project_id: PROJECT.id });
+  it("renders a group pill for a task assigned to a group", async () => {
+    const assignedTask = buildTask({ id: "1", title: "Paint fence", group_id: GROUP.id });
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([assignedTask]);
-    stubProjects([PROJECT]);
+    stubGroups([GROUP]);
 
     renderPage();
 
     await waitFor(() =>
-      expect(screen.getByText("Home renovation", { selector: ".task-project-pill" })).toBeInTheDocument(),
+      expect(screen.getByText("Home renovation", { selector: ".task-group-pill" })).toBeInTheDocument(),
     );
   });
 
-  it("renders the project sidebar's filter buttons and project cards", async () => {
+  it("renders the group sidebar's filter buttons and group cards", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
-    stubProjects([PROJECT]);
+    stubGroups([GROUP]);
 
     renderPage();
 
     await waitFor(() =>
-      expect(screen.getByText("Home renovation", { selector: ".project-card__name" })).toBeInTheDocument(),
+      expect(screen.getByText("Home renovation", { selector: ".group-card__name" })).toBeInTheDocument(),
     );
     expect(screen.getByRole("button", { name: "All tasks" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "No project" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "No group" })).toBeInTheDocument();
   });
 
-  it("filters the visible tasks to a project when its card is clicked", async () => {
-    const inProject = buildTask({ id: "1", title: "In project", project_id: PROJECT.id });
+  it("filters the visible tasks to a group when its card is clicked", async () => {
+    const inGroup = buildTask({ id: "1", title: "In group", group_id: GROUP.id });
     const unassigned = buildTask({ id: "2", title: "Unassigned task" });
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([inProject, unassigned]);
-    stubProjects([PROJECT]);
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([inGroup, unassigned]);
+    stubGroups([GROUP]);
 
     renderPage();
 
     await waitFor(() =>
-      expect(screen.getByText("Home renovation", { selector: ".project-card__name" })).toBeInTheDocument(),
+      expect(screen.getByText("Home renovation", { selector: ".group-card__name" })).toBeInTheDocument(),
     );
-    fireEvent.click(screen.getByText("Home renovation", { selector: ".project-card__name" }));
+    fireEvent.click(screen.getByText("Home renovation", { selector: ".group-card__name" }));
 
-    await waitFor(() => expect(screen.getByRole("link", { name: "In project" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("link", { name: "In group" })).toBeInTheDocument());
     expect(screen.queryByRole("link", { name: "Unassigned task" })).not.toBeInTheDocument();
   });
 
-  it("filters the visible tasks to unassigned ones when No project is clicked", async () => {
-    const inProject = buildTask({ id: "1", title: "In project", project_id: PROJECT.id });
+  it("filters the visible tasks to unassigned ones when No group is clicked", async () => {
+    const inGroup = buildTask({ id: "1", title: "In group", group_id: GROUP.id });
     const unassigned = buildTask({ id: "2", title: "Unassigned task" });
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([inProject, unassigned]);
-    stubProjects([PROJECT]);
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([inGroup, unassigned]);
+    stubGroups([GROUP]);
 
     renderPage();
-    await waitFor(() => expect(screen.getByRole("link", { name: "In project" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("link", { name: "In group" })).toBeInTheDocument());
 
-    fireEvent.click(screen.getByRole("button", { name: "No project" }));
+    fireEvent.click(screen.getByRole("button", { name: "No group" }));
 
     await waitFor(() => expect(screen.getByRole("link", { name: "Unassigned task" })).toBeInTheDocument());
-    expect(screen.queryByRole("link", { name: "In project" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "In group" })).not.toBeInTheDocument();
   });
 
-  it("creates a task assigned to the active project filter", async () => {
+  it("creates a task assigned to the active group filter", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
-    stubProjects([PROJECT]);
-    const createSpy = vi.spyOn(tasksApi, "createTask").mockResolvedValue(buildTask({ project_id: PROJECT.id }));
+    stubGroups([GROUP]);
+    const createSpy = vi.spyOn(tasksApi, "createTask").mockResolvedValue(buildTask({ group_id: GROUP.id }));
 
-    renderPage(`/tasks?project=${PROJECT.id}`);
+    renderPage(`/tasks?group=${GROUP.id}`);
     await waitFor(() => expect(screen.getByText("Home renovation")).toBeInTheDocument());
 
     fireEvent.change(screen.getByLabelText("Task title"), { target: { value: "Paint fence" } });
     fireEvent.click(screen.getByRole("button", { name: "Add task" }));
 
     await waitFor(() =>
-      expect(createSpy).toHaveBeenCalledWith({ title: "Paint fence", description: "", project_id: PROJECT.id }),
+      expect(createSpy).toHaveBeenCalledWith({ title: "Paint fence", description: "", group_id: GROUP.id }),
     );
   });
 
   it("creates an unassigned task when All tasks is the active filter", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
-    stubProjects([PROJECT]);
+    stubGroups([GROUP]);
     const createSpy = vi.spyOn(tasksApi, "createTask").mockResolvedValue(TASK);
 
     renderPage();
@@ -247,14 +247,14 @@ describe("TasksPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add task" }));
 
     await waitFor(() =>
-      expect(createSpy).toHaveBeenCalledWith({ title: "Buy milk", description: "", project_id: null }),
+      expect(createSpy).toHaveBeenCalledWith({ title: "Buy milk", description: "", group_id: null }),
     );
   });
 
   it("deletes a task via its row's delete button without a confirmation prompt", async () => {
     const confirmSpy = vi.spyOn(window, "confirm");
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    stubProjects();
+    stubGroups();
     const deleteSpy = vi.spyOn(tasksApi, "deleteTask").mockResolvedValue({ id: TASK.id });
 
     renderPage();

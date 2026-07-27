@@ -17,7 +17,7 @@ class TaskCreatePayload:
 
     title: str
     description: str
-    project_id: str | None
+    group_id: str | None
 
 
 @dataclass
@@ -41,11 +41,11 @@ def parseTaskCreatePayload(data: object) -> TaskCreatePayload:
     if not isString(description):
         raise InvalidPayloadError("'description' must be a string")
 
-    project_id = data.get("project_id")
-    if project_id is not None and not isString(project_id):
-        raise InvalidPayloadError("'project_id' must be a string or null")
+    group_id = data.get("group_id")
+    if group_id is not None and not isString(group_id):
+        raise InvalidPayloadError("'group_id' must be a string or null")
 
-    return TaskCreatePayload(title=title, description=description, project_id=project_id)
+    return TaskCreatePayload(title=title, description=description, group_id=group_id)
 
 
 def parseTaskUpdatePayload(data: object) -> TaskUpdatePayload:

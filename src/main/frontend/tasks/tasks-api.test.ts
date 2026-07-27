@@ -9,7 +9,7 @@ import {
   fetchTasks,
   reorderTasks,
   setTaskCompleted,
-  setTaskProject,
+  setTaskGroup,
   updateTask,
 } from "./tasks-api";
 
@@ -66,20 +66,20 @@ describe("tasks-api", () => {
     expect(spy).toHaveBeenCalledWith("/tasks/reorder", { task_ids: ["b", "a"] });
   });
 
-  it("setTaskProject calls PATCH /tasks/:id/project with the project id", async () => {
+  it("setTaskGroup calls PATCH /tasks/:id/group with the group id", async () => {
     const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
 
-    await setTaskProject("abc", "proj-1");
+    await setTaskGroup("abc", "group-1");
 
-    expect(spy).toHaveBeenCalledWith("/tasks/abc/project", { project_id: "proj-1" });
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/group", { group_id: "group-1" });
   });
 
-  it("setTaskProject calls PATCH /tasks/:id/project with null to clear it", async () => {
+  it("setTaskGroup calls PATCH /tasks/:id/group with null to clear it", async () => {
     const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
 
-    await setTaskProject("abc", null);
+    await setTaskGroup("abc", null);
 
-    expect(spy).toHaveBeenCalledWith("/tasks/abc/project", { project_id: null });
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/group", { group_id: null });
   });
 
   it("deleteTask calls DELETE /tasks/:id", async () => {

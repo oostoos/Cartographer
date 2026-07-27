@@ -74,7 +74,16 @@ export function GripIcon(props: IIconProps) {
   );
 }
 
-/** Trash-can icon, e.g. for a delete-project button. */
+/** Pencil icon, e.g. for a rename button. */
+export function PencilIcon(props: IIconProps) {
+  return (
+    <IconSvg {...props}>
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    </IconSvg>
+  );
+}
+
+/** Trash-can icon, e.g. for a delete-group button. */
 export function TrashIcon(props: IIconProps) {
   return (
     <IconSvg {...props}>

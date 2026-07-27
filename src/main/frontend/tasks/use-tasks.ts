@@ -8,7 +8,7 @@ import {
   fetchTasks,
   reorderTasks as reorderTasksRequest,
   setTaskCompleted as setTaskCompletedRequest,
-  setTaskProject as setTaskProjectRequest,
+  setTaskGroup as setTaskGroupRequest,
 } from "./tasks-api";
 import type { TTask } from "./types";
 
@@ -16,12 +16,12 @@ export interface IUseTasksResult {
   tasks: TTask[];
   isLoading: boolean;
   error: string | null;
-  createTask: (title: string, description: string, projectId?: string | null) => Promise<void>;
+  createTask: (title: string, description: string, groupId?: string | null) => Promise<void>;
   toggleTaskCompleted: (taskId: string, completed: boolean) => Promise<void>;
   applyTaskUpdate: (updated: TTask) => void;
   reorderActiveTasks: (orderedActiveTaskIds: string[]) => Promise<void>;
-  assignTaskProject: (taskId: string, projectId: string | null) => Promise<void>;
-  unassignTasksFromProject: (projectId: string) => void;
+  assignTaskGroup: (taskId: string, groupId: string | null) => Promise<void>;
+  unassignTasksFromGroup: (groupId: string) => void;
   deleteTask: (taskId: string) => Promise<void>;
 }
 
@@ -35,8 +35,8 @@ export function useTasks(): IUseTasksResult {
   } = useAsyncResource<TTask[]>(fetchTasks, [], "Failed to load tasks.");
 
   const createTask = useCallback(
-    async (title: string, description: string, projectId: string | null = null) => {
-      const task = await createTaskRequest({ title, description, project_id: projectId });
+    async (title: string, description: string, groupId: string | null = null) => {
+      const task = await createTaskRequest({ title, description, group_id: groupId });
       setTasks((current) => [...current, task]);
     },
     [setTasks],
@@ -66,18 +66,18 @@ export function useTasks(): IUseTasksResult {
     [setTasks],
   );
 
-  const assignTaskProject = useCallback(
-    async (taskId: string, projectId: string | null) => {
-      const updated = await setTaskProjectRequest(taskId, projectId);
+  const assignTaskGroup = useCallback(
+    async (taskId: string, groupId: string | null) => {
+      const updated = await setTaskGroupRequest(taskId, groupId);
       applyTaskUpdate(updated);
     },
     [applyTaskUpdate],
   );
 
-  const unassignTasksFromProject = useCallback(
-    (projectId: string) => {
+  const unassignTasksFromGroup = useCallback(
+    (groupId: string) => {
       setTasks((current) =>
-        current.map((task) => (task.project_id === projectId ? { ...task, project_id: null } : task)),
+        current.map((task) => (task.group_id === groupId ? { ...task, group_id: null } : task)),
       );
     },
     [setTasks],
@@ -99,8 +99,8 @@ export function useTasks(): IUseTasksResult {
     toggleTaskCompleted,
     applyTaskUpdate,
     reorderActiveTasks,
-    assignTaskProject,
-    unassignTasksFromProject,
+    assignTaskGroup,
+    unassignTasksFromGroup,
     deleteTask,
   };
 }

@@ -1,7 +1,7 @@
 import pytest
 
 from src.common.backend.app_factory import createApp
-from src.main.backend.projects.routes import projects_blueprint
+from src.main.backend.groups.routes import groups_blueprint
 from src.main.backend.tasks.routes import tasks_blueprint
 
 
@@ -9,12 +9,12 @@ from src.main.backend.tasks.routes import tasks_blueprint
 def client():
     app = createApp()
     app.register_blueprint(tasks_blueprint)
-    app.register_blueprint(projects_blueprint)
+    app.register_blueprint(groups_blueprint)
     return app.test_client()
 
 
-def _create_project(client, name="Project one"):
-    return client.post("/api/projects", json={"name": name}).get_json()["data"]
+def _create_group(client, name="Group one"):
+    return client.post("/api/groups", json={"name": name}).get_json()["data"]
 
 
 def _create(client, title="Buy milk", description=""):
@@ -195,65 +195,65 @@ def test_patch_tasks_reorder_non_list_task_ids_returns_400_envelope(client):
     assert response.get_json()["success"] is False
 
 
-def test_create_task_with_valid_project_id_assigns_it(client):
-    project = _create_project(client)
+def test_create_task_with_valid_group_id_assigns_it(client):
+    group = _create_group(client)
 
-    response = client.post("/api/tasks", json={"title": "Buy milk", "project_id": project["id"]})
+    response = client.post("/api/tasks", json={"title": "Buy milk", "group_id": group["id"]})
 
     assert response.status_code == 201
-    assert response.get_json()["data"]["project_id"] == project["id"]
+    assert response.get_json()["data"]["group_id"] == group["id"]
 
 
-def test_create_task_with_unknown_project_id_returns_400_envelope(client):
-    response = client.post("/api/tasks", json={"title": "Buy milk", "project_id": "does-not-exist"})
+def test_create_task_with_unknown_group_id_returns_400_envelope(client):
+    response = client.post("/api/tasks", json={"title": "Buy milk", "group_id": "does-not-exist"})
 
     assert response.status_code == 400
     assert response.get_json()["success"] is False
 
 
-def test_patch_task_project_assigns_project(client):
+def test_patch_task_group_assigns_group(client):
     created = _create(client)
-    project = _create_project(client)
+    group = _create_group(client)
 
-    response = client.patch(f"/api/tasks/{created['id']}/project", json={"project_id": project["id"]})
+    response = client.patch(f"/api/tasks/{created['id']}/group", json={"group_id": group["id"]})
 
     assert response.status_code == 200
-    assert response.get_json()["data"]["project_id"] == project["id"]
+    assert response.get_json()["data"]["group_id"] == group["id"]
 
 
-def test_patch_task_project_clears_project_with_null(client):
+def test_patch_task_group_clears_group_with_null(client):
     created = _create(client)
-    project = _create_project(client)
-    client.patch(f"/api/tasks/{created['id']}/project", json={"project_id": project["id"]})
+    group = _create_group(client)
+    client.patch(f"/api/tasks/{created['id']}/group", json={"group_id": group["id"]})
 
-    response = client.patch(f"/api/tasks/{created['id']}/project", json={"project_id": None})
+    response = client.patch(f"/api/tasks/{created['id']}/group", json={"group_id": None})
 
     assert response.status_code == 200
-    assert response.get_json()["data"]["project_id"] is None
+    assert response.get_json()["data"]["group_id"] is None
 
 
-def test_patch_task_project_unknown_task_returns_404_envelope(client):
-    project = _create_project(client)
+def test_patch_task_group_unknown_task_returns_404_envelope(client):
+    group = _create_group(client)
 
-    response = client.patch("/api/tasks/does-not-exist/project", json={"project_id": project["id"]})
+    response = client.patch("/api/tasks/does-not-exist/group", json={"group_id": group["id"]})
 
     assert response.status_code == 404
     assert response.get_json()["success"] is False
 
 
-def test_patch_task_project_unknown_project_returns_400_envelope(client):
+def test_patch_task_group_unknown_group_returns_400_envelope(client):
     created = _create(client)
 
-    response = client.patch(f"/api/tasks/{created['id']}/project", json={"project_id": "does-not-exist"})
+    response = client.patch(f"/api/tasks/{created['id']}/group", json={"group_id": "does-not-exist"})
 
     assert response.status_code == 400
     assert response.get_json()["success"] is False
 
 
-def test_patch_task_project_non_string_project_id_returns_400_envelope(client):
+def test_patch_task_group_non_string_group_id_returns_400_envelope(client):
     created = _create(client)
 
-    response = client.patch(f"/api/tasks/{created['id']}/project", json={"project_id": 123})
+    response = client.patch(f"/api/tasks/{created['id']}/group", json={"group_id": 123})
 
     assert response.status_code == 400
     assert response.get_json()["success"] is False

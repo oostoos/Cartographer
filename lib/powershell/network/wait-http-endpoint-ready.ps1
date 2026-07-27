@@ -31,7 +31,7 @@ function Wait-HttpEndpointReady {
             if (((Get-Date) - $startTime).TotalSeconds -ge $TimeoutSeconds) {
                 return $false
             }
-            Start-Sleep -Milliseconds $PollIntervalMilliseconds
+            Start-SleepMs $PollIntervalMilliseconds
         }
     }
 }

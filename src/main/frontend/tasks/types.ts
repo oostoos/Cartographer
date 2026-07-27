@@ -8,5 +8,5 @@ export type TTask = {
   updated_at: string;
   completed_at: string | null;
   order: number;
-  project_id: string | null;
+  group_id: string | null;
 };

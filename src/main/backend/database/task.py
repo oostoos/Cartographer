@@ -23,14 +23,14 @@ TASK_FIELD_ORDER = [
     "updated_at",
     "completed_at",
     "order",
-    "project_id",
+    "group_id",
 ]
 
 class EmptyTaskTitleError(ValueError):
     """Raised when creating or updating a task with a blank title."""
 
 
-def createTask(title: str, description: str = "", project_id: str | None = None) -> Task:
+def createTask(title: str, description: str = "", group_id: str | None = None) -> Task:
     """Create and persist a new task. Raises EmptyTaskTitleError if title is blank."""
     _requireNonEmptyTitle(title)
     now = currentUtcIsoTimestamp()
@@ -42,7 +42,7 @@ def createTask(title: str, description: str = "", project_id: str | None = None)
         created_at=now,
         updated_at=now,
         order=_nextTaskOrder(),
-        project_id=project_id,
+        group_id=group_id,
     )
     writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
@@ -103,29 +103,29 @@ def setTaskCompleted(task_id: str, completed: bool) -> Task | None:
     return task
 
 
-def setTaskProject(task_id: str, project_id: str | None) -> Task | None:
-    """Assign a task to a project, or clear its project when project_id is None.
+def setTaskGroup(task_id: str, group_id: str | None) -> Task | None:
+    """Assign a task to a group, or clear its group when group_id is None.
 
     Returns None if the task doesn't exist.
     """
     task = getTask(task_id)
     if task is None:
         return None
-    task.project_id = project_id
+    task.group_id = group_id
     task.updated_at = currentUtcIsoTimestamp()
     writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
     return task
 
 
-def unassignTasksFromProject(project_id: str) -> None:
-    """Clear project_id on every task currently assigned to the given project.
+def unassignTasksFromGroup(group_id: str) -> None:
+    """Clear group_id on every task currently assigned to the given group.
 
-    Used when that project is deleted, so its tasks fall back to "no project"
-    instead of pointing at a project that no longer exists.
+    Used when that group is deleted, so its tasks fall back to "no group"
+    instead of pointing at a group that no longer exists.
     """
     for task in getAllTasks():
-        if task.project_id == project_id:
-            setTaskProject(task.id, None)
+        if task.group_id == group_id:
+            setTaskGroup(task.id, None)
 
 
 def reorderTasks(task_ids: list[str]) -> list[Task]:
@@ -182,7 +182,7 @@ def _encodeTask(task: Task) -> list[str]:
         "updated_at": task.updated_at,
         "completed_at": task.completed_at if task.completed_at is not None else EMPTY_STRING,
         "order": str(task.order),
-        "project_id": task.project_id if task.project_id is not None else EMPTY_STRING,
+        "group_id": task.group_id if task.group_id is not None else EMPTY_STRING,
     }
     return [values[field] for field in TASK_FIELD_ORDER]
 
@@ -190,9 +190,9 @@ def _encodeTask(task: Task) -> list[str]:
 def _decodeTask(fields: list[str]) -> Task:
     """Decode a page_store field list (in TASK_FIELD_ORDER) back into a Task.
 
-    completed_at, order, and project_id are read defensively since legacy records
+    completed_at, order, and group_id are read defensively since legacy records
     written before those fields existed have fewer fields on disk; zip() simply omits
-    the key in that case, so missing ones default to None (completed_at, project_id)
+    the key in that case, so missing ones default to None (completed_at, group_id)
     and 0.0 (order).
     """
     values = buildDictFromKeysAndValues(TASK_FIELD_ORDER, fields)
@@ -205,5 +205,5 @@ def _decodeTask(fields: list[str]) -> Task:
         updated_at=values["updated_at"],
         completed_at=values.get("completed_at", EMPTY_STRING) or None,
         order=float(values.get("order") or 0.0),
-        project_id=values.get("project_id", EMPTY_STRING) or None,
+        group_id=values.get("group_id", EMPTY_STRING) or None,
     )

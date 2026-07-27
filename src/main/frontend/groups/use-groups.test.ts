@@ -1,11 +1,11 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import * as projectsApi from "./projects-api";
-import { useProjects } from "./use-projects";
-import type { TProject } from "./types";
+import * as groupsApi from "./groups-api";
+import { useGroups } from "./use-groups";
+import type { TGroup } from "./types";
 
-const PROJECT: TProject = {
+const GROUP: TGroup = {
   id: "1",
   name: "Home renovation",
   created_at: "2026-01-01T00:00:00Z",
@@ -13,57 +13,57 @@ const PROJECT: TProject = {
   order: 0,
 };
 
-describe("useProjects", () => {
+describe("useGroups", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("loads projects on mount", async () => {
-    vi.spyOn(projectsApi, "fetchProjects").mockResolvedValue([PROJECT]);
+  it("loads groups on mount", async () => {
+    vi.spyOn(groupsApi, "fetchGroups").mockResolvedValue([GROUP]);
 
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useGroups());
 
     expect(result.current.isLoading).toBe(true);
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.projects).toEqual([PROJECT]);
+    expect(result.current.groups).toEqual([GROUP]);
     expect(result.current.error).toBeNull();
   });
 
-  it("sets an error message when loading projects fails", async () => {
-    vi.spyOn(projectsApi, "fetchProjects").mockRejectedValue(new Error("network error"));
+  it("sets an error message when loading groups fails", async () => {
+    vi.spyOn(groupsApi, "fetchGroups").mockRejectedValue(new Error("network error"));
 
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useGroups());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toBe("Failed to load projects.");
-    expect(result.current.projects).toEqual([]);
+    expect(result.current.error).toBe("Failed to load groups.");
+    expect(result.current.groups).toEqual([]);
   });
 
-  it("createProject appends the newly created project to state", async () => {
-    vi.spyOn(projectsApi, "fetchProjects").mockResolvedValue([]);
-    vi.spyOn(projectsApi, "createProject").mockResolvedValue(PROJECT);
+  it("createGroup appends the newly created group to state", async () => {
+    vi.spyOn(groupsApi, "fetchGroups").mockResolvedValue([]);
+    vi.spyOn(groupsApi, "createGroup").mockResolvedValue(GROUP);
 
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useGroups());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await act(async () => {
-      await result.current.createProject("Home renovation");
+      await result.current.createGroup("Home renovation");
     });
 
-    expect(result.current.projects).toEqual([PROJECT]);
+    expect(result.current.groups).toEqual([GROUP]);
   });
 
-  it("deleteProject removes the project from state", async () => {
-    vi.spyOn(projectsApi, "fetchProjects").mockResolvedValue([PROJECT]);
-    vi.spyOn(projectsApi, "deleteProject").mockResolvedValue({ id: PROJECT.id });
+  it("deleteGroup removes the group from state", async () => {
+    vi.spyOn(groupsApi, "fetchGroups").mockResolvedValue([GROUP]);
+    vi.spyOn(groupsApi, "deleteGroup").mockResolvedValue({ id: GROUP.id });
 
-    const { result } = renderHook(() => useProjects());
+    const { result } = renderHook(() => useGroups());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await act(async () => {
-      await result.current.deleteProject(PROJECT.id);
+      await result.current.deleteGroup(GROUP.id);
     });
 
-    expect(result.current.projects).toEqual([]);
+    expect(result.current.groups).toEqual([]);
   });
 });

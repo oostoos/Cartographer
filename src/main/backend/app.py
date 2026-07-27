@@ -3,13 +3,13 @@ from src.common.backend.app_factory import createApp
 from src.common.backend.config import loadSharedConfig
 from src.common.backend.responses import buildSuccessResponse
 from src.main.backend.profile.routes import profile_blueprint
-from src.main.backend.projects.routes import projects_blueprint
+from src.main.backend.groups.routes import groups_blueprint
 from src.main.backend.tasks.routes import tasks_blueprint
 
 app = createApp()
 app.register_blueprint(tasks_blueprint)
 app.register_blueprint(profile_blueprint)
-app.register_blueprint(projects_blueprint)
+app.register_blueprint(groups_blueprint)
 
 
 @app.get("/api/health")

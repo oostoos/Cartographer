@@ -28,7 +28,7 @@ function Wait-ProcessExit {
         if ($TimeoutSeconds -gt 0 -and ((Get-Date) - $startTime).TotalSeconds -ge $TimeoutSeconds) {
             return $false
         }
-        Start-Sleep -Milliseconds $PollIntervalMilliseconds
+        Start-SleepMs $PollIntervalMilliseconds
     }
 
     return $true

@@ -15,7 +15,7 @@ function buildTask(overrides: Partial<TTask>): TTask {
     updated_at: "2026-01-01T00:00:00Z",
     completed_at: "2026-01-01T00:00:00Z",
     order: 0,
-    project_id: null,
+    group_id: null,
     ...overrides,
   };
 }
@@ -60,10 +60,10 @@ describe("CompletedTasksSection", () => {
     expect(screen.queryByRole("link", { name: /Buy milk/ })).not.toBeInTheDocument();
   });
 
-  it("renders a project pill for a task in a project once expanded", () => {
-    renderSection([buildTask({ id: "1", project_id: "proj-1" })], {
-      getProjectName: () => "Home renovation",
-      onRemoveProject: vi.fn(),
+  it("renders a group pill for a task in a group once expanded", () => {
+    renderSection([buildTask({ id: "1", group_id: "group-1" })], {
+      getGroupName: () => "Home renovation",
+      onRemoveGroup: vi.fn(),
     });
 
     fireEvent.click(screen.getByRole("button", { name: /Completed/ }));
@@ -71,17 +71,17 @@ describe("CompletedTasksSection", () => {
     expect(screen.getByText("Home renovation")).toBeInTheDocument();
   });
 
-  it("calls onRemoveProject with the task id when the pill's remove button is clicked", () => {
-    const onRemoveProject = vi.fn();
-    renderSection([buildTask({ id: "1", project_id: "proj-1" })], {
-      getProjectName: () => "Home renovation",
-      onRemoveProject,
+  it("calls onRemoveGroup with the task id when the pill's remove button is clicked", () => {
+    const onRemoveGroup = vi.fn();
+    renderSection([buildTask({ id: "1", group_id: "group-1" })], {
+      getGroupName: () => "Home renovation",
+      onRemoveGroup,
     });
 
     fireEvent.click(screen.getByRole("button", { name: /Completed/ }));
     fireEvent.click(screen.getByRole("button", { name: "Remove from Home renovation" }));
 
-    expect(onRemoveProject).toHaveBeenCalledWith("1");
+    expect(onRemoveGroup).toHaveBeenCalledWith("1");
   });
 
   it("calls onDelete with the task id when its delete button is clicked", () => {

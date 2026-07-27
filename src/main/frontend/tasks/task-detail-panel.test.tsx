@@ -16,12 +16,12 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
-  project_id: null,
+  group_id: null,
 };
 
 function LocationEcho() {
   const [searchParams] = useSearchParams();
-  return <p>filter:{searchParams.get("project") ?? "none"}</p>;
+  return <p>filter:{searchParams.get("group") ?? "none"}</p>;
 }
 
 function renderAtTaskId(
@@ -152,13 +152,13 @@ describe("TaskDetailPanel", () => {
   it("deleting calls onTaskDeleted and navigates back to /tasks preserving the filter", async () => {
     const onTaskDeleted = vi.fn().mockResolvedValue(undefined);
 
-    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn(), onTaskDeleted }, `/tasks/${TASK.id}?project=proj-1`);
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn(), onTaskDeleted }, `/tasks/${TASK.id}?group=group-1`);
     await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
 
     fireEvent.click(screen.getByRole("button", { name: "Delete" }));
 
     await waitFor(() => expect(onTaskDeleted).toHaveBeenCalledWith(TASK.id));
-    await waitFor(() => expect(screen.getByText("filter:proj-1")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("filter:group-1")).toBeInTheDocument());
     expect(screen.queryByText("Buy milk")).not.toBeInTheDocument();
   });
 });

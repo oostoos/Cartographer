@@ -14,7 +14,7 @@ class Task:
     updated_at: str
     completed_at: str | None = None
     order: float = 0.0
-    project_id: str | None = None
+    group_id: str | None = None
 
 
 @dataclass
@@ -25,8 +25,8 @@ class Profile:
 
 
 @dataclass
-class Project:
-    """A single project record, used to group tasks."""
+class Group:
+    """A single group record, used to group tasks."""
 
     id: str
     name: str

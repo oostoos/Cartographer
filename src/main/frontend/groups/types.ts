@@ -1,5 +1,5 @@
-// Mirrors src/main/backend/database/models.py's Project dataclass — keep in sync.
-export type TProject = {
+// Mirrors src/main/backend/database/models.py's Group dataclass — keep in sync.
+export type TGroup = {
   id: string;
   name: string;
   created_at: string;

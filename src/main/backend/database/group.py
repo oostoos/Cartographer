@@ -1,96 +1,123 @@
-"""Project records: business-facing wrapper around the common page_store engine."""
+"""Group records: business-facing wrapper around the common page_store engine."""
 from lib.python.collections.dict_utils import buildDictFromKeysAndValues
 from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
 from src.common.backend.database.ids import generateRecordId
-from src.main.backend.database.models import Project
+from src.main.backend.database.models import Group
 from src.main.backend.database.record_store import (
     deleteRecord,
     listRecordIds,
     readRecord,
     writeRecord,
 )
-from src.main.backend.database.task import unassignTasksFromProject
+from src.main.backend.database.task import unassignTasksFromGroup
 
-PROJECT_OBJECT_TYPE = "project"
-PROJECT_FIELD_ORDER = ["id", "name", "created_at", "updated_at", "order"]
-
-
-class EmptyProjectNameError(ValueError):
-    """Raised when creating a project with a blank name."""
+GROUP_OBJECT_TYPE = "group"
+GROUP_FIELD_ORDER = ["id", "name", "created_at", "updated_at", "order"]
 
 
-def createProject(name: str) -> Project:
-    """Create and persist a new project. Raises EmptyProjectNameError if name is blank."""
+class EmptyGroupNameError(ValueError):
+    """Raised when creating a group with a blank name."""
+
+
+def createGroup(name: str) -> Group:
+    """Create and persist a new group. Raises EmptyGroupNameError if name is blank."""
     _requireNonEmptyName(name)
     now = currentUtcIsoTimestamp()
-    project = Project(
+    group = Group(
         id=generateRecordId(),
         name=name,
         created_at=now,
         updated_at=now,
-        order=_nextProjectOrder(),
+        order=_nextGroupOrder(),
     )
-    writeRecord(PROJECT_OBJECT_TYPE, project.id, _encodeProject(project))
-    return project
+    writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
+    return group
 
 
-def getProject(project_id: str) -> Project | None:
-    """Fetch a project by id, or None if no project with that id exists."""
-    fields = readRecord(PROJECT_OBJECT_TYPE, project_id)
+def getGroup(group_id: str) -> Group | None:
+    """Fetch a group by id, or None if no group with that id exists."""
+    fields = readRecord(GROUP_OBJECT_TYPE, group_id)
     if fields is None:
         return None
-    return _decodeProject(fields)
+    return _decodeGroup(fields)
 
 
-def getAllProjects() -> list[Project]:
-    """Fetch every project, ordered by its persisted position (ascending)."""
-    projects = []
-    for project_id in listRecordIds(PROJECT_OBJECT_TYPE):
-        project = getProject(project_id)
-        if project is not None:
-            projects.append(project)
-    projects.sort(key=lambda project: project.order)
-    return projects
+def getAllGroups() -> list[Group]:
+    """Fetch every group, ordered by its persisted position (ascending)."""
+    groups = []
+    for group_id in listRecordIds(GROUP_OBJECT_TYPE):
+        group = getGroup(group_id)
+        if group is not None:
+            groups.append(group)
+    groups.sort(key=lambda group: group.order)
+    return groups
 
 
-def deleteProject(project_id: str) -> bool:
-    """Delete a project, unassigning every task in it first. Returns False if it doesn't exist."""
-    project = getProject(project_id)
-    if project is None:
+def updateGroup(group_id: str, name: str) -> Group | None:
+    """Rename a group. Returns None if the group doesn't exist. Raises EmptyGroupNameError if name is blank."""
+    group = getGroup(group_id)
+    if group is None:
+        return None
+    _requireNonEmptyName(name)
+    group.name = name
+    group.updated_at = currentUtcIsoTimestamp()
+    writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
+    return group
+
+
+def reorderGroups(group_ids: list[str]) -> list[Group]:
+    """Reassign order so groups sort in the given id sequence. Unknown ids are skipped.
+
+    Returns every group, freshly sorted by order.
+    """
+    for index, group_id in enumerate(group_ids):
+        group = getGroup(group_id)
+        if group is None:
+            continue
+        group.order = float(index)
+        group.updated_at = currentUtcIsoTimestamp()
+        writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
+    return getAllGroups()
+
+
+def deleteGroup(group_id: str) -> bool:
+    """Delete a group, unassigning every task in it first. Returns False if it doesn't exist."""
+    group = getGroup(group_id)
+    if group is None:
         return False
-    unassignTasksFromProject(project_id)
-    deleteRecord(PROJECT_OBJECT_TYPE, project_id)
+    unassignTasksFromGroup(group_id)
+    deleteRecord(GROUP_OBJECT_TYPE, group_id)
     return True
 
 
 def _requireNonEmptyName(name: str) -> None:
-    """Raise EmptyProjectNameError if name is blank (empty or whitespace-only)."""
+    """Raise EmptyGroupNameError if name is blank (empty or whitespace-only)."""
     if not name.strip():
-        raise EmptyProjectNameError("Project name must not be empty")
+        raise EmptyGroupNameError("Group name must not be empty")
 
 
-def _nextProjectOrder() -> float:
-    """The order value a newly created project should get: one past the current highest."""
-    existing_orders = [project.order for project in getAllProjects()]
+def _nextGroupOrder() -> float:
+    """The order value a newly created group should get: one past the current highest."""
+    existing_orders = [group.order for group in getAllGroups()]
     return max(existing_orders, default=-1.0) + 1
 
 
-def _encodeProject(project: Project) -> list[str]:
-    """Encode a Project into the field list page_store expects, in PROJECT_FIELD_ORDER."""
+def _encodeGroup(group: Group) -> list[str]:
+    """Encode a Group into the field list page_store expects, in GROUP_FIELD_ORDER."""
     values = {
-        "id": project.id,
-        "name": project.name,
-        "created_at": project.created_at,
-        "updated_at": project.updated_at,
-        "order": str(project.order),
+        "id": group.id,
+        "name": group.name,
+        "created_at": group.created_at,
+        "updated_at": group.updated_at,
+        "order": str(group.order),
     }
-    return [values[field] for field in PROJECT_FIELD_ORDER]
+    return [values[field] for field in GROUP_FIELD_ORDER]
 
 
-def _decodeProject(fields: list[str]) -> Project:
-    """Decode a page_store field list (in PROJECT_FIELD_ORDER) back into a Project."""
-    values = buildDictFromKeysAndValues(PROJECT_FIELD_ORDER, fields)
-    return Project(
+def _decodeGroup(fields: list[str]) -> Group:
+    """Decode a page_store field list (in GROUP_FIELD_ORDER) back into a Group."""
+    values = buildDictFromKeysAndValues(GROUP_FIELD_ORDER, fields)
+    return Group(
         id=values["id"],
         name=values["name"],
         created_at=values["created_at"],
