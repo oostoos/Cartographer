@@ -19,16 +19,18 @@ export interface ITopNavBarProps {
 export function TopNavBar({ brand, links, trailing }: ITopNavBarProps) {
   return (
     <header className="top-nav-bar">
-      <Link to="/" className="top-nav-bar__brand">
-        <span className="top-nav-bar__brand-name">{brand}</span>
-      </Link>
-      <nav className="top-nav-bar__links">
-        {links.map((link) => (
-          <Link key={link.to} to={link.to} className="top-nav-bar__link">
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+      <div className="top-nav-bar__leading">
+        <Link to="/" className="top-nav-bar__brand">
+          <span className="top-nav-bar__brand-name">{brand}</span>
+        </Link>
+        <nav className="top-nav-bar__links">
+          {links.map((link) => (
+            <Link key={link.to} to={link.to} className="top-nav-bar__link">
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
       <div className="top-nav-bar__trailing">{trailing}</div>
     </header>
   );

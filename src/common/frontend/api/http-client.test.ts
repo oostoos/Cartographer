@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { getJson, patchJson, postJson, putJson } from "./http-client";
+import { deleteJson, getJson, patchJson, postJson, putJson } from "./http-client";
 
 function stubFetchResolving(body: unknown) {
   const mockFetch = vi.fn().mockResolvedValue({
@@ -63,5 +63,14 @@ describe("http-client", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ display_name: "Austin" }),
     });
+  });
+
+  it("deleteJson sends the correct method and unwraps the response", async () => {
+    const mockFetch = stubFetchResolving({ success: true, data: { id: "1" } });
+
+    const result = await deleteJson<{ id: string }>("/projects/1");
+
+    expect(result).toEqual({ id: "1" });
+    expect(mockFetch).toHaveBeenCalledWith("/api/projects/1", { method: "DELETE" });
   });
 });

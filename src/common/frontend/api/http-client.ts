@@ -41,3 +41,8 @@ export function patchJson<T>(path: string, body: unknown): Promise<T> {
 export function putJson<T>(path: string, body: unknown): Promise<T> {
   return requestApiJsonWithBody<T>("PUT", path, body);
 }
+
+/** DELETE a Cartographer API endpoint and return its unwrapped response data. */
+export function deleteJson<T>(path: string): Promise<T> {
+  return requestApiJson<T>(path, { method: "DELETE" });
+}

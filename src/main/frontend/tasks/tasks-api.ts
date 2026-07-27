@@ -6,6 +6,7 @@ import type { TTask } from "./types";
 export type TTaskCreatePayload = {
   title: string;
   description: string;
+  project_id?: string | null;
 };
 
 export type TTaskUpdatePayload = {
@@ -46,4 +47,9 @@ export function setTaskCompleted(taskId: string, completed: boolean): Promise<TT
 /** Reorder tasks to match the given id sequence. Returns every task, freshly sorted. */
 export function reorderTasks(taskIds: string[]): Promise<TTask[]> {
   return patchJson<TTask[]>("/tasks/reorder", { task_ids: taskIds } satisfies TTaskReorderPayload);
+}
+
+/** Assign a task to a project, or clear its project by passing null. */
+export function setTaskProject(taskId: string, projectId: string | null): Promise<TTask> {
+  return patchJson<TTask>(`/tasks/${taskId}/project`, { project_id: projectId });
 }

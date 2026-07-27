@@ -17,15 +17,16 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
+  project_id: null,
 };
 
-function renderItem(onToggleCompleted = vi.fn()) {
+function renderItem(overrides: Partial<Parameters<typeof SortableTaskListItem>[0]> = {}) {
   return render(
     <MemoryRouter>
       <DndContext>
         <SortableContext items={[TASK.id]}>
           <ul>
-            <SortableTaskListItem task={TASK} onToggleCompleted={onToggleCompleted} />
+            <SortableTaskListItem task={TASK} onToggleCompleted={vi.fn()} {...overrides} />
           </ul>
         </SortableContext>
       </DndContext>
@@ -49,10 +50,25 @@ describe("SortableTaskListItem", () => {
 
   it("calls onToggleCompleted when the checkbox is toggled", () => {
     const onToggleCompleted = vi.fn();
-    renderItem(onToggleCompleted);
+    renderItem({ onToggleCompleted });
 
     screen.getByRole("checkbox").click();
 
     expect(onToggleCompleted).toHaveBeenCalledWith(true);
+  });
+
+  it("renders a project pill when given projectName and onRemoveProject", () => {
+    renderItem({ projectName: "Home renovation", onRemoveProject: vi.fn() });
+
+    expect(screen.getByText("Home renovation")).toBeInTheDocument();
+  });
+
+  it("calls onRemoveProject when the pill's remove button is clicked", () => {
+    const onRemoveProject = vi.fn();
+    renderItem({ projectName: "Home renovation", onRemoveProject });
+
+    screen.getByRole("button", { name: "Remove from Home renovation" }).click();
+
+    expect(onRemoveProject).toHaveBeenCalled();
   });
 });

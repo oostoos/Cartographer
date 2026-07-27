@@ -14,6 +14,7 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
+  project_id: null,
 };
 
 describe("useTasks", () => {
@@ -54,6 +55,20 @@ describe("useTasks", () => {
     });
 
     expect(result.current.tasks).toEqual([TASK]);
+  });
+
+  it("createTask passes the given project id through to the request", async () => {
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([]);
+    const createSpy = vi.spyOn(tasksApi, "createTask").mockResolvedValue({ ...TASK, project_id: "proj-1" });
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    await act(async () => {
+      await result.current.createTask("Buy milk", "", "proj-1");
+    });
+
+    expect(createSpy).toHaveBeenCalledWith({ title: "Buy milk", description: "", project_id: "proj-1" });
   });
 
   it("toggleTaskCompleted replaces the task with the updated version", async () => {
@@ -130,5 +145,35 @@ describe("useTasks", () => {
     });
 
     expect(result.current.tasks.map((task) => task.id)).toEqual(["active-2", "active-1", "completed-1"]);
+  });
+
+  it("assignTaskProject replaces the task with the updated (assigned) version", async () => {
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
+    vi.spyOn(tasksApi, "setTaskProject").mockResolvedValue({ ...TASK, project_id: "proj-1" });
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    await act(async () => {
+      await result.current.assignTaskProject(TASK.id, "proj-1");
+    });
+
+    expect(result.current.tasks[0].project_id).toBe("proj-1");
+  });
+
+  it("unassignTasksFromProject clears project_id on matching tasks only, without a network call", async () => {
+    const inProject = { ...TASK, id: "1", project_id: "proj-1" };
+    const otherProject = { ...TASK, id: "2", project_id: "proj-2" };
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([inProject, otherProject]);
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    act(() => {
+      result.current.unassignTasksFromProject("proj-1");
+    });
+
+    expect(result.current.tasks.find((task) => task.id === "1")?.project_id).toBeNull();
+    expect(result.current.tasks.find((task) => task.id === "2")?.project_id).toBe("proj-2");
   });
 });

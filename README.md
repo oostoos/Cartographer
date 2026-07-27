@@ -35,6 +35,11 @@ python -m src.main.backend.app
 npm run dev --workspace=src/main/frontend
 ```
 
+The backend reads/writes `src/main/backend/database/.data/prod` by default.
+To point it at a disposable sandbox instead (`.data/test`) — safe to freely
+create, break, and reset — set `CARTOGRAPHER_DATA_ENV=test` before launching
+it.
+
 ## Running tests
 
 ```

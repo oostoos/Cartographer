@@ -25,3 +25,8 @@ def listRecordIds(object_type: str) -> list[str]:
 def clearObjectType(object_type: str) -> None:
     """Delete every record of the given object type."""
     page_store.clearPageKey(DATA_ROOT, object_type)
+
+
+def deleteRecord(object_type: str, record_id: str) -> None:
+    """Delete a single record if it exists. A no-op if it doesn't."""
+    page_store.deletePage(DATA_ROOT, object_type, record_id)

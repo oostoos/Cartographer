@@ -11,13 +11,10 @@ from src.main.backend.database.task import (
     getTask,
     reorderTasks,
     setTaskCompleted,
+    setTaskProject,
+    unassignTasksFromProject,
     updateTask,
 )
-
-
-@pytest.fixture(autouse=True)
-def _use_tmp_data_root(tmp_path, monkeypatch):
-    monkeypatch.setattr(record_store_module, "DATA_ROOT", tmp_path)
 
 
 def test_create_task_persists_and_is_retrievable():
@@ -221,3 +218,67 @@ def test_delete_all_tasks_clears_every_task():
     deleteAllTasks()
 
     assert getAllTasks() == []
+
+
+def test_create_task_defaults_project_id_to_none():
+    task = createTask("Buy milk")
+
+    assert task.project_id is None
+
+
+def test_create_task_with_project_id_persists_it():
+    task = createTask("Buy milk", project_id="proj-1")
+
+    assert task.project_id == "proj-1"
+    assert getTask(task.id).project_id == "proj-1"
+
+
+def test_set_task_project_assigns_project():
+    task = createTask("Buy milk")
+
+    updated = setTaskProject(task.id, "proj-1")
+
+    assert updated.project_id == "proj-1"
+
+
+def test_set_task_project_clears_with_none():
+    task = createTask("Buy milk", project_id="proj-1")
+
+    updated = setTaskProject(task.id, None)
+
+    assert updated.project_id is None
+
+
+def test_set_task_project_on_unknown_id_returns_none():
+    assert setTaskProject("does-not-exist", "proj-1") is None
+
+
+def test_unassign_tasks_from_project_clears_matching_tasks_only():
+    in_project = createTask("Task in project", project_id="proj-1")
+    other_project = createTask("Task in other project", project_id="proj-2")
+    unassigned = createTask("Unassigned task")
+
+    unassignTasksFromProject("proj-1")
+
+    assert getTask(in_project.id).project_id is None
+    assert getTask(other_project.id).project_id == "proj-2"
+    assert getTask(unassigned.id).project_id is None
+
+
+def test_decode_task_defaults_project_id_to_none_for_legacy_eight_field_record():
+    task = createTask("Buy milk")
+    legacy_fields = [
+        task.id,
+        task.title,
+        task.description,
+        "false",
+        task.created_at,
+        task.updated_at,
+        "",
+        str(task.order),
+    ]
+    writePage(record_store_module.DATA_ROOT, TASK_OBJECT_TYPE, task.id, legacy_fields)
+
+    fetched = getTask(task.id)
+
+    assert fetched.project_id is None

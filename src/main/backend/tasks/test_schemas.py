@@ -21,6 +21,23 @@ def test_parse_task_create_payload_defaults_description_to_empty_string():
     assert payload.description == ""
 
 
+def test_parse_task_create_payload_defaults_project_id_to_none():
+    payload = parseTaskCreatePayload({"title": "Buy milk"})
+
+    assert payload.project_id is None
+
+
+def test_parse_task_create_payload_accepts_project_id():
+    payload = parseTaskCreatePayload({"title": "Buy milk", "project_id": "proj-1"})
+
+    assert payload.project_id == "proj-1"
+
+
+def test_parse_task_create_payload_non_string_project_id_raises():
+    with pytest.raises(InvalidPayloadError):
+        parseTaskCreatePayload({"title": "Buy milk", "project_id": 123})
+
+
 def test_parse_task_create_payload_missing_title_raises():
     with pytest.raises(InvalidPayloadError):
         parseTaskCreatePayload({})

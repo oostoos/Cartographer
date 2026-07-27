@@ -15,6 +15,7 @@ function buildTask(overrides: Partial<TTask>): TTask {
     updated_at: NOW.toISOString(),
     completed_at: null,
     order: 0,
+    project_id: null,
     ...overrides,
   };
 }

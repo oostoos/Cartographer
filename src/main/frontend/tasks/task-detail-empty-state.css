@@ -1,0 +1,4 @@
+.task-detail-empty-state {
+  color: var(--color-text-secondary);
+  text-align: center;
+}

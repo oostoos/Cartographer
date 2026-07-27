@@ -3,8 +3,9 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
-from lib.python.validation.type_checks import isDict
+from lib.python.validation.type_checks import isDict, isString
 from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
+from src.main.backend.database.project import getProject
 from src.main.backend.database.task import (
     EmptyTaskTitleError,
     createTask,
@@ -12,6 +13,7 @@ from src.main.backend.database.task import (
     getTask,
     reorderTasks,
     setTaskCompleted,
+    setTaskProject,
     updateTask,
 )
 from src.main.backend.tasks.schemas import (
@@ -40,7 +42,9 @@ def createTaskRoute():
     try:
         payload = _requireJsonObjectBody()
         create_payload = parseTaskCreatePayload(payload)
-        task = createTask(create_payload.title, create_payload.description)
+        if create_payload.project_id is not None and getProject(create_payload.project_id) is None:
+            raise InvalidPayloadError(f"No project with id '{create_payload.project_id}'")
+        task = createTask(create_payload.title, create_payload.description, create_payload.project_id)
     except (InvalidPayloadError, EmptyTaskTitleError) as error:
         return buildErrorResponse(str(error))
     return buildSuccessResponse(asdict(task), CREATED_STATUS_CODE)
@@ -93,6 +97,25 @@ def completeTaskRoute(task_id: str):
         return buildErrorResponse(str(error))
 
     task = setTaskCompleted(task_id, completed)
+    if task is None:
+        return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse(asdict(task))
+
+
+@tasks_blueprint.patch("/<task_id>/project")
+def setTaskProjectRoute(task_id: str):
+    """Assign a task to a project, or clear its project when project_id is null."""
+    try:
+        payload = _requireJsonObjectBody()
+        project_id = payload.get("project_id")
+        if project_id is not None and not isString(project_id):
+            raise InvalidPayloadError("'project_id' must be a string or null")
+        if project_id is not None and getProject(project_id) is None:
+            raise InvalidPayloadError(f"No project with id '{project_id}'")
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+
+    task = setTaskProject(task_id, project_id)
     if task is None:
         return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
     return buildSuccessResponse(asdict(task))

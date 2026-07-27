@@ -1,6 +1,3 @@
-import pytest
-
-from src.main.backend.database import record_store as record_store_module
 from src.main.backend.database.profile import (
     DEFAULT_DISPLAY_NAME,
     deleteAllData,
@@ -8,11 +5,6 @@ from src.main.backend.database.profile import (
     setDisplayName,
 )
 from src.main.backend.database.task import createTask, getAllTasks
-
-
-@pytest.fixture(autouse=True)
-def _use_tmp_data_root(tmp_path, monkeypatch):
-    monkeypatch.setattr(record_store_module, "DATA_ROOT", tmp_path)
 
 
 def test_get_profile_returns_default_when_unset():

@@ -16,6 +16,7 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
+  project_id: null,
 };
 
 function renderAtTaskId(taskId: string, context: ITasksOutletContext) {
@@ -66,15 +67,6 @@ describe("TaskDetailPanel", () => {
     renderAtTaskId(TASK.id, { tasks: [{ ...TASK, description: "" }], onTaskUpdated: vi.fn() });
 
     await waitFor(() => expect(screen.getByText("No description")).toBeInTheDocument());
-  });
-
-  it("closing the panel navigates back to /tasks", async () => {
-    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
-
-    fireEvent.click(screen.getByRole("button", { name: "Close task detail" }));
-
-    await waitFor(() => expect(screen.queryByText("Buy milk")).not.toBeInTheDocument());
   });
 
   it("toggling completion calls onTaskUpdated with the updated task", async () => {

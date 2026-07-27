@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as profileApi from "../profile/profile-api";
+import * as projectsApi from "../projects/projects-api";
 import * as tasksApi from "../tasks/tasks-api";
 import type { TTask } from "../tasks/types";
 import { AppRoutes } from "./router";
@@ -16,6 +17,7 @@ const TASK: TTask = {
   updated_at: "2026-01-01T00:00:00Z",
   completed_at: null,
   order: 0,
+  project_id: null,
 };
 
 function renderAtPath(path: string) {
@@ -31,6 +33,7 @@ describe("AppRoutes", () => {
     // TasksPage/TaskDetailPanel/ProfilePage fetch on mount; stub them so route tests don't fire real network calls.
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
     vi.spyOn(tasksApi, "fetchTask").mockResolvedValue(TASK);
+    vi.spyOn(projectsApi, "fetchProjects").mockResolvedValue([]);
     vi.spyOn(profileApi, "fetchProfile").mockResolvedValue({ display_name: "Explorer" });
   });
 
@@ -54,7 +57,7 @@ describe("AppRoutes", () => {
     renderAtPath("/tasks/abc123");
 
     expect(screen.getByRole("heading", { name: "Tasks" })).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Close task detail" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument());
   });
 
   it("renders the profile page at /profile", () => {

@@ -13,39 +13,32 @@
   min-height: 0;
 }
 
-.tasks-layout__list {
-  flex: 1 1 100%;
+.tasks-layout__sidebar-projects {
+  flex: 0 0 14rem;
   min-width: 0;
   overflow-y: auto;
-  transition: flex-basis 0.2s ease;
 }
 
-.tasks-layout--detail-open .tasks-layout__list {
-  flex: 0 1 22rem;
+.tasks-layout__list {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-y: auto;
 }
 
 .tasks-layout__detail {
-  flex: 1 1 28rem;
+  flex: 0 0 20rem;
   min-width: 0;
   overflow-y: auto;
 }
 
-.tasks-layout:not(.tasks-layout--detail-open) .tasks-layout__detail {
-  display: none;
-}
-
-/* Side-by-side doesn't work on a phone-width viewport: the open detail panel takes over the full screen. */
 @media (max-width: 640px) {
-  .tasks-layout--detail-open .tasks-layout__list {
-    display: none;
+  .tasks-layout {
+    flex-direction: column;
   }
 
-  .tasks-layout--detail-open .tasks-layout__detail {
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    overflow-y: auto;
-    background-color: var(--color-background);
-    padding: var(--space-md);
+  .tasks-layout__sidebar-projects,
+  .tasks-layout__list,
+  .tasks-layout__detail {
+    flex: 1 1 auto;
   }
 }

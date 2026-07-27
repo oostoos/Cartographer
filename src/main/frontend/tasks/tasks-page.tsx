@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Outlet, useMatch } from "react-router-dom";
+import { Outlet, useMatch, useSearchParams } from "react-router-dom";
 
 import {
   DndContext,
@@ -14,20 +14,40 @@ import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrate
 
 import "./tasks-page.css";
 
+import { ProjectSidebar } from "../projects/project-sidebar";
+import { useProjects } from "../projects/use-projects";
 import { CompletedTasksSection } from "./completed-tasks-section";
-import { computeReorderedTaskIds } from "./compute-reordered-task-ids";
+import { computeDragOutcome } from "./compute-drag-outcome";
 import { groupTasks } from "./group-tasks";
 import { SortableTaskListItem } from "./sortable-task-list-item";
+import { buildTaskFilterParam, filterTasksByProject, parseTaskFilter } from "./task-filter";
 import { TaskCreateForm } from "./task-create-form";
+import { TaskDetailEmptyState } from "./task-detail-empty-state";
 import { TaskListItem } from "./task-list-item";
 import type { ITasksOutletContext } from "./tasks-outlet-context";
 import { useTasks } from "./use-tasks";
 
 export function TasksPage() {
-  const { tasks, isLoading, error, createTask, toggleTaskCompleted, applyTaskUpdate, reorderActiveTasks } =
-    useTasks();
-  const grouped = useMemo(() => groupTasks(tasks), [tasks]);
-  const isDetailOpen = Boolean(useMatch("/tasks/:taskId"));
+  const {
+    tasks,
+    isLoading,
+    error,
+    createTask,
+    toggleTaskCompleted,
+    applyTaskUpdate,
+    reorderActiveTasks,
+    assignTaskProject,
+    unassignTasksFromProject,
+  } = useTasks();
+  const { projects, createProject, deleteProject } = useProjects();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filter = useMemo(() => parseTaskFilter(searchParams), [searchParams]);
+  const filteredTasks = useMemo(() => filterTasksByProject(tasks, filter), [tasks, filter]);
+  const grouped = useMemo(() => groupTasks(filteredTasks), [filteredTasks]);
+  const projectsById = useMemo(() => new Map(projects.map((project) => [project.id, project])), [projects]);
+
+  const taskIdMatch = useMatch("/tasks/:taskId");
 
   const activeTaskIds = useMemo(() => grouped.active.map((task) => task.id), [grouped.active]);
   const sensors = useSensors(
@@ -37,55 +57,104 @@ export function TasksPage() {
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
-      const newOrder = computeReorderedTaskIds(activeTaskIds, event);
-      if (newOrder) reorderActiveTasks(newOrder);
+      const outcome = computeDragOutcome(activeTaskIds, event);
+      if (!outcome) return;
+      if (outcome.type === "reorder") reorderActiveTasks(outcome.taskIds);
+      else assignTaskProject(outcome.taskId, outcome.projectId);
     },
-    [activeTaskIds, reorderActiveTasks],
+    [activeTaskIds, reorderActiveTasks, assignTaskProject],
   );
+
+  function handleSelectFilter(nextFilter: typeof filter) {
+    const value = buildTaskFilterParam(nextFilter);
+    setSearchParams(value ? { project: value } : {});
+  }
+
+  async function handleCreateTask(title: string, description: string) {
+    const projectId = filter.type === "project" ? filter.projectId : null;
+    await createTask(title, description, projectId);
+  }
+
+  async function handleDeleteProject(projectId: string) {
+    const project = projectsById.get(projectId);
+    if (!window.confirm(`Delete "${project?.name ?? "this project"}"? Its tasks will become unassigned.`)) {
+      return;
+    }
+    await deleteProject(projectId);
+    unassignTasksFromProject(projectId);
+  }
+
+  function getProjectName(projectId: string): string | null {
+    return projectsById.get(projectId)?.name ?? null;
+  }
 
   return (
     <div className="tasks-page">
       <h1>Tasks</h1>
-      <TaskCreateForm onCreate={createTask} />
       {isLoading && <p>Loading tasks…</p>}
       {error && <p role="alert">{error}</p>}
-      {!isLoading && !error && tasks.length === 0 && (
-        <p>No tasks yet. Add one above to get started.</p>
-      )}
-      {!isLoading && tasks.length > 0 && (
-        <div className={`tasks-layout${isDetailOpen ? " tasks-layout--detail-open" : ""}`}>
-          <div className="tasks-layout__list">
-            <ul className="task-list">
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={activeTaskIds} strategy={verticalListSortingStrategy}>
-                  {grouped.active.map((task) => (
-                    <SortableTaskListItem
-                      key={task.id}
-                      task={task}
-                      onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
-                    />
-                  ))}
-                </SortableContext>
-              </DndContext>
-              {grouped.completedToday.map((task) => (
-                <li key={task.id}>
-                  <TaskListItem
-                    task={task}
-                    onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
-                  />
-                </li>
-              ))}
-            </ul>
-            <CompletedTasksSection
-              tasks={grouped.completedPrior}
-              onToggleCompleted={toggleTaskCompleted}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <div className="tasks-layout">
+          <div className="tasks-layout__sidebar-projects">
+            <ProjectSidebar
+              projects={projects}
+              tasks={tasks}
+              activeFilter={filter}
+              onSelectFilter={handleSelectFilter}
+              onCreateProject={createProject}
+              onDeleteProject={handleDeleteProject}
             />
           </div>
+
+          <div className="tasks-layout__list">
+            <TaskCreateForm onCreate={handleCreateTask} />
+            {!isLoading && !error && filteredTasks.length === 0 && (
+              <p>No tasks yet. Add one above to get started.</p>
+            )}
+            {!isLoading && filteredTasks.length > 0 && (
+              <>
+                <ul className="task-list">
+                  <SortableContext items={activeTaskIds} strategy={verticalListSortingStrategy}>
+                    {grouped.active.map((task) => (
+                      <SortableTaskListItem
+                        key={task.id}
+                        task={task}
+                        onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
+                        projectName={task.project_id ? getProjectName(task.project_id) : null}
+                        onRemoveProject={() => assignTaskProject(task.id, null)}
+                      />
+                    ))}
+                  </SortableContext>
+                  {grouped.completedToday.map((task) => (
+                    <li key={task.id}>
+                      <TaskListItem
+                        task={task}
+                        onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
+                        projectName={task.project_id ? getProjectName(task.project_id) : null}
+                        onRemoveProject={() => assignTaskProject(task.id, null)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+                <CompletedTasksSection
+                  tasks={grouped.completedPrior}
+                  onToggleCompleted={toggleTaskCompleted}
+                  getProjectName={getProjectName}
+                  onRemoveProject={(taskId) => assignTaskProject(taskId, null)}
+                />
+              </>
+            )}
+          </div>
+
           <div className="tasks-layout__detail">
-            <Outlet context={{ tasks, onTaskUpdated: applyTaskUpdate } satisfies ITasksOutletContext} />
+            {taskIdMatch ? (
+              <Outlet context={{ tasks, onTaskUpdated: applyTaskUpdate } satisfies ITasksOutletContext} />
+            ) : (
+              <TaskDetailEmptyState />
+            )}
           </div>
         </div>
-      )}
+      </DndContext>
     </div>
   );
 }

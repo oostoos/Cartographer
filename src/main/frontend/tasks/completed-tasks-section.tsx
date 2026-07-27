@@ -10,10 +10,18 @@ import type { TTask } from "./types";
 export interface ICompletedTasksSectionProps {
   tasks: TTask[];
   onToggleCompleted: (taskId: string, completed: boolean) => void;
+  /** Resolves a task's project name for its pill, given its project_id. */
+  getProjectName?: (projectId: string) => string | null;
+  onRemoveProject?: (taskId: string) => void;
 }
 
 /** Collapsible "Completed" section for tasks completed on a prior day. Collapsed by default. */
-export function CompletedTasksSection({ tasks, onToggleCompleted }: ICompletedTasksSectionProps) {
+export function CompletedTasksSection({
+  tasks,
+  onToggleCompleted,
+  getProjectName,
+  onRemoveProject,
+}: ICompletedTasksSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (tasks.length === 0) return null;
@@ -36,7 +44,12 @@ export function CompletedTasksSection({ tasks, onToggleCompleted }: ICompletedTa
         <ul className="task-list">
           {tasks.map((task) => (
             <li key={task.id}>
-              <TaskListItem task={task} onToggleCompleted={(completed) => onToggleCompleted(task.id, completed)} />
+              <TaskListItem
+                task={task}
+                onToggleCompleted={(completed) => onToggleCompleted(task.id, completed)}
+                projectName={task.project_id ? getProjectName?.(task.project_id) : null}
+                onRemoveProject={onRemoveProject ? () => onRemoveProject(task.id) : undefined}
+              />
             </li>
           ))}
         </ul>

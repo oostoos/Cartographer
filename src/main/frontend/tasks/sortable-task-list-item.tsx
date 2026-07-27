@@ -12,10 +12,18 @@ import type { TTask } from "./types";
 export interface ISortableTaskListItemProps {
   task: TTask;
   onToggleCompleted: (completed: boolean) => void;
+  projectName?: string | null;
+  onRemoveProject?: () => void;
 }
 
-/** A TaskListItem draggable within its list, for reordering active tasks. */
-export function SortableTaskListItem({ task, onToggleCompleted }: ISortableTaskListItemProps) {
+/** A TaskListItem draggable within its list, for reordering active tasks and for
+ * dragging onto a project card in the sidebar to assign it. */
+export function SortableTaskListItem({
+  task,
+  onToggleCompleted,
+  projectName,
+  onRemoveProject,
+}: ISortableTaskListItemProps) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   });
@@ -30,6 +38,8 @@ export function SortableTaskListItem({ task, onToggleCompleted }: ISortableTaskL
       <TaskListItem
         task={task}
         onToggleCompleted={onToggleCompleted}
+        projectName={projectName}
+        onRemoveProject={onRemoveProject}
         dragHandle={
           <IconButton
             ref={setActivatorNodeRef}

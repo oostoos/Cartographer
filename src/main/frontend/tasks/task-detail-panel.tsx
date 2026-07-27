@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
 import { Button } from "@common/design-language/button";
 import { Card } from "@common/design-language/card";
-import { IconButton } from "@common/design-language/icon-button";
-import { CloseIcon } from "@common/design-language/icons";
 
 import "./task-detail-panel.css";
 
@@ -12,10 +10,9 @@ import { fetchTask, setTaskCompleted, updateTask } from "./tasks-api";
 import type { ITasksOutletContext } from "./tasks-outlet-context";
 import type { TTask } from "./types";
 
-/** Detail panel for the selected task, rendered beside the task list. Closing it returns to /tasks. */
+/** Detail panel for the selected task: the Tasks page's persistent right-hand column. */
 export function TaskDetailPanel() {
   const { taskId } = useParams<{ taskId: string }>();
-  const navigate = useNavigate();
   const { tasks, onTaskUpdated } = useOutletContext<ITasksOutletContext>();
 
   const [task, setTask] = useState<TTask | null>(null);
@@ -77,10 +74,6 @@ export function TaskDetailPanel() {
     };
   }, [taskId, tasks]);
 
-  function handleClose() {
-    navigate("/tasks");
-  }
-
   async function handleToggleCompleted(completed: boolean) {
     if (!task) return;
     const updated = await setTaskCompleted(task.id, completed);
@@ -117,14 +110,6 @@ export function TaskDetailPanel() {
   return (
     <Card>
       <div className="task-detail-panel">
-        <IconButton
-          aria-label="Close task detail"
-          className="task-detail-panel__close"
-          onClick={handleClose}
-        >
-          <CloseIcon />
-        </IconButton>
-
         {isLoading && <p>Loading task…</p>}
         {!isLoading && (error || !task) && <p role="alert">{error ?? "Task not found."}</p>}
 
