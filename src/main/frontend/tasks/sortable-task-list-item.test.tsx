@@ -71,4 +71,13 @@ describe("SortableTaskListItem", () => {
 
     expect(onRemoveProject).toHaveBeenCalled();
   });
+
+  it("calls onDelete when the delete button is clicked", () => {
+    const onDelete = vi.fn();
+    renderItem({ onDelete });
+
+    screen.getByRole("button", { name: 'Delete "Buy milk"' }).click();
+
+    expect(onDelete).toHaveBeenCalled();
+  });
 });

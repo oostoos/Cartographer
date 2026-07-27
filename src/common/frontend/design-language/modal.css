@@ -1,0 +1,31 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(46, 42, 36, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  z-index: 100;
+}
+
+.modal {
+  width: 100%;
+  max-width: 24rem;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.modal__title {
+  margin: 0;
+  font-size: 1.1rem;
+}

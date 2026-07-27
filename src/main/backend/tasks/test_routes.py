@@ -257,3 +257,28 @@ def test_patch_task_project_non_string_project_id_returns_400_envelope(client):
 
     assert response.status_code == 400
     assert response.get_json()["success"] is False
+
+
+def test_delete_task_returns_success_envelope(client):
+    created = _create(client)
+
+    response = client.delete(f"/api/tasks/{created['id']}")
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["id"] == created["id"]
+
+
+def test_delete_task_unknown_id_returns_404_envelope(client):
+    response = client.delete("/api/tasks/does-not-exist")
+
+    assert response.status_code == 404
+    assert response.get_json()["success"] is False
+
+
+def test_delete_task_removes_it_from_subsequent_list(client):
+    created = _create(client)
+
+    client.delete(f"/api/tasks/{created['id']}")
+    response = client.get("/api/tasks")
+
+    assert response.get_json()["data"] == []

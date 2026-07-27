@@ -7,6 +7,7 @@ from src.common.backend.database.ids import generateRecordId
 from src.main.backend.database.models import Task
 from src.main.backend.database.record_store import (
     clearObjectType,
+    deleteRecord,
     listRecordIds,
     readRecord,
     writeRecord,
@@ -53,6 +54,14 @@ def getTask(task_id: str) -> Task | None:
     if fields is None:
         return None
     return _decodeTask(fields)
+
+
+def deleteTask(task_id: str) -> bool:
+    """Delete a single task. Returns False (no-op) if it doesn't exist."""
+    if getTask(task_id) is None:
+        return False
+    deleteRecord(TASK_OBJECT_TYPE, task_id)
+    return True
 
 
 def updateTask(task_id: str, title: str | None = None, description: str | None = None) -> Task | None:

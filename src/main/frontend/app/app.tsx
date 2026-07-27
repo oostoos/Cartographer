@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useMatch } from "react-router-dom";
 
 import { PageContainer } from "@common/layout/page-container";
 
@@ -6,12 +6,15 @@ import "./app.css";
 
 import { Nav } from "./nav";
 
-/** App shell: the persistent nav bar plus whatever the current route renders, centered in a shared page container. */
+/** App shell: the persistent nav bar plus whatever the current route renders, centered in a shared page container.
+ * The Tasks page's multi-column layout gets the full viewport width instead of the usual centered column. */
 export function App() {
+  const isTasksRoute = Boolean(useMatch("/tasks/*"));
+
   return (
     <div className="app-shell">
       <Nav />
-      <PageContainer>
+      <PageContainer fullWidth={isTasksRoute}>
         <Outlet />
       </PageContainer>
     </div>

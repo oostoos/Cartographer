@@ -129,4 +129,33 @@ describe("TaskListItem", () => {
 
     expect(screen.queryByText("Home renovation")).not.toBeInTheDocument();
   });
+
+  it("renders a delete button when onDelete is given", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} onDelete={vi.fn()} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("button", { name: 'Delete "Buy milk"' })).toBeInTheDocument();
+  });
+
+  it("calls onDelete when the delete button is clicked", () => {
+    const onDelete = vi.fn();
+    render(
+      <MemoryRouter>
+        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} onDelete={onDelete} />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: 'Delete "Buy milk"' }));
+
+    expect(onDelete).toHaveBeenCalled();
+  });
+
+  it("renders no delete button when onDelete is not given", () => {
+    renderItem(TASK);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

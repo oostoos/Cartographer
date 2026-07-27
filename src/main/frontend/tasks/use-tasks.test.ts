@@ -176,4 +176,19 @@ describe("useTasks", () => {
     expect(result.current.tasks.find((task) => task.id === "1")?.project_id).toBeNull();
     expect(result.current.tasks.find((task) => task.id === "2")?.project_id).toBe("proj-2");
   });
+
+  it("deleteTask removes the task from state after the request resolves", async () => {
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
+    const deleteSpy = vi.spyOn(tasksApi, "deleteTask").mockResolvedValue({ id: TASK.id });
+
+    const { result } = renderHook(() => useTasks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    await act(async () => {
+      await result.current.deleteTask(TASK.id);
+    });
+
+    expect(deleteSpy).toHaveBeenCalledWith(TASK.id);
+    expect(result.current.tasks).toEqual([]);
+  });
 });

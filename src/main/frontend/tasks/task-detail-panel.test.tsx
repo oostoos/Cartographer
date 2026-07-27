@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Outlet, Route, Routes, useSearchParams } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as tasksApi from "./tasks-api";
@@ -19,11 +19,22 @@ const TASK: TTask = {
   project_id: null,
 };
 
-function renderAtTaskId(taskId: string, context: ITasksOutletContext) {
+function LocationEcho() {
+  const [searchParams] = useSearchParams();
+  return <p>filter:{searchParams.get("project") ?? "none"}</p>;
+}
+
+function renderAtTaskId(
+  taskId: string,
+  context: Pick<ITasksOutletContext, "tasks" | "onTaskUpdated"> & Partial<Pick<ITasksOutletContext, "onTaskDeleted">>,
+  initialPath = `/tasks/${taskId}`,
+) {
+  const fullContext: ITasksOutletContext = { onTaskDeleted: vi.fn(), ...context };
   return render(
-    <MemoryRouter initialEntries={[`/tasks/${taskId}`]}>
+    <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/tasks" element={<Outlet context={context} />}>
+        <Route path="/tasks" element={<Outlet context={fullContext} />}>
+          <Route index element={<LocationEcho />} />
           <Route path=":taskId" element={<TaskDetailPanel />} />
         </Route>
       </Routes>
@@ -136,5 +147,18 @@ describe("TaskDetailPanel", () => {
 
     expect(updateSpy).not.toHaveBeenCalled();
     expect(screen.getByText("Buy milk")).toBeInTheDocument();
+  });
+
+  it("deleting calls onTaskDeleted and navigates back to /tasks preserving the filter", async () => {
+    const onTaskDeleted = vi.fn().mockResolvedValue(undefined);
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn(), onTaskDeleted }, `/tasks/${TASK.id}?project=proj-1`);
+    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => expect(onTaskDeleted).toHaveBeenCalledWith(TASK.id));
+    await waitFor(() => expect(screen.getByText("filter:proj-1")).toBeInTheDocument());
+    expect(screen.queryByText("Buy milk")).not.toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Button } from "@common/design-language/button";
 import { PlusIcon } from "@common/design-language/icons";
+import { Modal } from "@common/design-language/modal";
 
 import "./project-sidebar.css";
 
@@ -30,43 +31,38 @@ export function ProjectSidebar({
   onCreateProject,
   onDeleteProject,
 }: IProjectSidebarProps) {
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   async function handleCreate(name: string) {
     await onCreateProject(name);
-    setIsCreating(false);
+    setIsCreateModalOpen(false);
   }
 
   return (
     <div className="project-sidebar">
       <div className="project-sidebar__filters">
-        <button
+        <Button
           type="button"
-          className="project-sidebar__filter-button"
-          data-active={activeFilter.type === "all"}
+          variant={activeFilter.type === "all" ? "primary" : "secondary"}
           onClick={() => onSelectFilter({ type: "all" })}
         >
           All tasks
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="project-sidebar__filter-button"
-          data-active={activeFilter.type === "no-project"}
+          variant={activeFilter.type === "no-project" ? "primary" : "secondary"}
           onClick={() => onSelectFilter({ type: "no-project" })}
         >
           No project
-        </button>
-        <Button
-          type="button"
-          variant="secondary"
-          aria-label="New project"
-          onClick={() => setIsCreating((current) => !current)}
-        >
+        </Button>
+        <Button type="button" variant="secondary" onClick={() => setIsCreateModalOpen(true)}>
           <PlusIcon /> New project
         </Button>
       </div>
 
-      {isCreating && <ProjectCreateForm onCreate={handleCreate} />}
+      <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} title="New project">
+        <ProjectCreateForm onCreate={handleCreate} />
+      </Modal>
 
       <ul className="project-sidebar__list">
         {projects.map((project) => {

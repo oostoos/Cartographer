@@ -4,6 +4,7 @@ import { useAsyncResource } from "@common/hooks/use-async-resource";
 
 import {
   createTask as createTaskRequest,
+  deleteTask as deleteTaskRequest,
   fetchTasks,
   reorderTasks as reorderTasksRequest,
   setTaskCompleted as setTaskCompletedRequest,
@@ -21,6 +22,7 @@ export interface IUseTasksResult {
   reorderActiveTasks: (orderedActiveTaskIds: string[]) => Promise<void>;
   assignTaskProject: (taskId: string, projectId: string | null) => Promise<void>;
   unassignTasksFromProject: (projectId: string) => void;
+  deleteTask: (taskId: string) => Promise<void>;
 }
 
 /** Loads the task list on mount and exposes create/toggle actions that keep it in sync. */
@@ -81,6 +83,14 @@ export function useTasks(): IUseTasksResult {
     [setTasks],
   );
 
+  const deleteTask = useCallback(
+    async (taskId: string) => {
+      await deleteTaskRequest(taskId);
+      setTasks((current) => current.filter((task) => task.id !== taskId));
+    },
+    [setTasks],
+  );
+
   return {
     tasks,
     isLoading,
@@ -91,6 +101,7 @@ export function useTasks(): IUseTasksResult {
     reorderActiveTasks,
     assignTaskProject,
     unassignTasksFromProject,
+    deleteTask,
   };
 }
 

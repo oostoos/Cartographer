@@ -9,6 +9,7 @@ from src.main.backend.database.project import getProject
 from src.main.backend.database.task import (
     EmptyTaskTitleError,
     createTask,
+    deleteTask,
     getAllTasks,
     getTask,
     reorderTasks,
@@ -100,6 +101,15 @@ def completeTaskRoute(task_id: str):
     if task is None:
         return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
     return buildSuccessResponse(asdict(task))
+
+
+@tasks_blueprint.delete("/<task_id>")
+def deleteTaskRoute(task_id: str):
+    """Delete a single task."""
+    deleted = deleteTask(task_id)
+    if not deleted:
+        return buildErrorResponse(f"No task with id '{task_id}'", NOT_FOUND_STATUS_CODE)
+    return buildSuccessResponse({"id": task_id})
 
 
 @tasks_blueprint.patch("/<task_id>/project")

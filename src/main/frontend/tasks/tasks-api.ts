@@ -1,4 +1,4 @@
-import { getJson, patchJson, postJson } from "@common/api/http-client";
+import { deleteJson, getJson, patchJson, postJson } from "@common/api/http-client";
 
 import type { TTask } from "./types";
 
@@ -52,4 +52,9 @@ export function reorderTasks(taskIds: string[]): Promise<TTask[]> {
 /** Assign a task to a project, or clear its project by passing null. */
 export function setTaskProject(taskId: string, projectId: string | null): Promise<TTask> {
   return patchJson<TTask>(`/tasks/${taskId}/project`, { project_id: projectId });
+}
+
+/** Delete a task. */
+export function deleteTask(taskId: string): Promise<{ id: string }> {
+  return deleteJson<{ id: string }>(`/tasks/${taskId}`);
 }

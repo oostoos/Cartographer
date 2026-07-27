@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 
 import { Card } from "@common/design-language/card";
-import { Link } from "react-router-dom";
+import { IconButton } from "@common/design-language/icon-button";
+import { TrashIcon } from "@common/design-language/icons";
+import { Link, useLocation } from "react-router-dom";
 
 import "./task-list-item.css";
 
@@ -18,6 +20,8 @@ export interface ITaskListItemProps {
   projectName?: string | null;
   /** Called when the project pill's remove button is clicked. Required whenever projectName is set. */
   onRemoveProject?: () => void;
+  /** Called when the row's delete button is clicked. Omit to hide the delete button. */
+  onDelete?: () => void;
 }
 
 /** A single row in the task list: checkbox + title, linking through to the task's detail page. */
@@ -27,7 +31,10 @@ export function TaskListItem({
   dragHandle,
   projectName,
   onRemoveProject,
+  onDelete,
 }: ITaskListItemProps) {
+  const location = useLocation();
+
   return (
     <Card>
       <div className="task-list-item" data-completed={task.completed}>
@@ -38,12 +45,20 @@ export function TaskListItem({
           onChange={(event) => onToggleCompleted(event.target.checked)}
           aria-label={`Mark "${task.title}" as ${task.completed ? "not completed" : "completed"}`}
         />
-        <Link to={`/tasks/${task.id}`}>{task.title}</Link>
-        {projectName && onRemoveProject && (
-          <TaskProjectPill projectName={projectName} onRemove={onRemoveProject} />
-        )}
+        <div className="task-list-item__content">
+          {/* Preserves the active ?project= filter so opening a task's details doesn't reset it to "All tasks". */}
+          <Link to={{ pathname: `/tasks/${task.id}`, search: location.search }}>{task.title}</Link>
+          {projectName && onRemoveProject && (
+            <TaskProjectPill projectName={projectName} onRemove={onRemoveProject} />
+          )}
+        </div>
         {task.completed && task.completed_at && (
           <span className="task-list-item__completed-at">{formatCompletionLabel(task.completed_at)}</span>
+        )}
+        {onDelete && (
+          <IconButton aria-label={`Delete "${task.title}"`} className="task-list-item__delete" onClick={onDelete}>
+            <TrashIcon />
+          </IconButton>
         )}
       </div>
     </Card>

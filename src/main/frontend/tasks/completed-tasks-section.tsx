@@ -13,6 +13,7 @@ export interface ICompletedTasksSectionProps {
   /** Resolves a task's project name for its pill, given its project_id. */
   getProjectName?: (projectId: string) => string | null;
   onRemoveProject?: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
 }
 
 /** Collapsible "Completed" section for tasks completed on a prior day. Collapsed by default. */
@@ -21,6 +22,7 @@ export function CompletedTasksSection({
   onToggleCompleted,
   getProjectName,
   onRemoveProject,
+  onDelete,
 }: ICompletedTasksSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -49,6 +51,7 @@ export function CompletedTasksSection({
                 onToggleCompleted={(completed) => onToggleCompleted(task.id, completed)}
                 projectName={task.project_id ? getProjectName?.(task.project_id) : null}
                 onRemoveProject={onRemoveProject ? () => onRemoveProject(task.id) : undefined}
+                onDelete={onDelete ? () => onDelete(task.id) : undefined}
               />
             </li>
           ))}

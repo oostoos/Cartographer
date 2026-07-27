@@ -250,4 +250,20 @@ describe("TasksPage", () => {
       expect(createSpy).toHaveBeenCalledWith({ title: "Buy milk", description: "", project_id: null }),
     );
   });
+
+  it("deletes a task via its row's delete button without a confirmation prompt", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm");
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
+    stubProjects();
+    const deleteSpy = vi.spyOn(tasksApi, "deleteTask").mockResolvedValue({ id: TASK.id });
+
+    renderPage();
+    await waitFor(() => expect(screen.getByRole("link", { name: "Buy milk" })).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: 'Delete "Buy milk"' }));
+
+    await waitFor(() => expect(deleteSpy).toHaveBeenCalledWith(TASK.id));
+    expect(confirmSpy).not.toHaveBeenCalled();
+    await waitFor(() => expect(screen.queryByRole("link", { name: "Buy milk" })).not.toBeInTheDocument());
+  });
 });

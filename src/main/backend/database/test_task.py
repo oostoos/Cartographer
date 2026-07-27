@@ -7,6 +7,7 @@ from src.main.backend.database.task import (
     EmptyTaskTitleError,
     createTask,
     deleteAllTasks,
+    deleteTask,
     getAllTasks,
     getTask,
     reorderTasks,
@@ -209,6 +210,28 @@ def test_get_all_tasks_returns_every_created_task():
 
 def test_get_all_tasks_returns_empty_list_when_no_tasks_exist():
     assert getAllTasks() == []
+
+
+def test_delete_task_removes_it():
+    task = createTask("Buy milk")
+
+    deleted = deleteTask(task.id)
+
+    assert deleted is True
+    assert getTask(task.id) is None
+
+
+def test_delete_task_returns_false_for_unknown_id():
+    assert deleteTask("does-not-exist") is False
+
+
+def test_delete_task_leaves_other_tasks_unaffected():
+    keep = createTask("Keep me")
+    remove = createTask("Remove me")
+
+    deleteTask(remove.id)
+
+    assert getTask(keep.id) == keep
 
 
 def test_delete_all_tasks_clears_every_task():

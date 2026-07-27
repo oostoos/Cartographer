@@ -14,6 +14,7 @@ export interface ISortableTaskListItemProps {
   onToggleCompleted: (completed: boolean) => void;
   projectName?: string | null;
   onRemoveProject?: () => void;
+  onDelete?: () => void;
 }
 
 /** A TaskListItem draggable within its list, for reordering active tasks and for
@@ -23,6 +24,7 @@ export function SortableTaskListItem({
   onToggleCompleted,
   projectName,
   onRemoveProject,
+  onDelete,
 }: ISortableTaskListItemProps) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -40,6 +42,7 @@ export function SortableTaskListItem({
         onToggleCompleted={onToggleCompleted}
         projectName={projectName}
         onRemoveProject={onRemoveProject}
+        onDelete={onDelete}
         dragHandle={
           <IconButton
             ref={setActivatorNodeRef}

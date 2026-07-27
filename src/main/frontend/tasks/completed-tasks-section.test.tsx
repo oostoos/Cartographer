@@ -83,4 +83,14 @@ describe("CompletedTasksSection", () => {
 
     expect(onRemoveProject).toHaveBeenCalledWith("1");
   });
+
+  it("calls onDelete with the task id when its delete button is clicked", () => {
+    const onDelete = vi.fn();
+    renderSection([buildTask({ id: "1", title: "Buy milk" })], { onDelete });
+
+    fireEvent.click(screen.getByRole("button", { name: /Completed/ }));
+    fireEvent.click(screen.getByRole("button", { name: 'Delete "Buy milk"' }));
+
+    expect(onDelete).toHaveBeenCalledWith("1");
+  });
 });

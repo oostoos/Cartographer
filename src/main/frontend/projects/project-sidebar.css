@@ -6,28 +6,10 @@
 
 .project-sidebar__filters {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.project-sidebar__filter-button {
-  text-align: left;
-  background: none;
-  border: none;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-small);
-  font: inherit;
-  cursor: pointer;
-  color: var(--color-text-primary);
-}
-
-.project-sidebar__filter-button:hover {
-  background-color: var(--color-surface-muted);
-}
-
-.project-sidebar__filter-button[data-active="true"] {
-  background-color: var(--color-surface-muted);
-  font-weight: bold;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 .project-sidebar__list {

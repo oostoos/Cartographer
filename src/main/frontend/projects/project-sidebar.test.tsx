@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DndContext } from "@dnd-kit/core";
@@ -89,17 +89,18 @@ describe("ProjectSidebar", () => {
     expect(onSelectFilter).toHaveBeenCalledWith({ type: "project", projectId: "proj-1" });
   });
 
-  it("toggles the create-project form when New project is clicked", () => {
+  it("opens the create-project modal when New project is clicked", () => {
     renderSidebar();
 
-    expect(screen.queryByLabelText("Project name")).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "New project" }));
 
+    expect(screen.getByRole("dialog", { name: "New project" })).toBeInTheDocument();
     expect(screen.getByLabelText("Project name")).toBeInTheDocument();
   });
 
-  it("calls onCreateProject and hides the form again on submit", async () => {
+  it("calls onCreateProject and closes the modal again on submit", async () => {
     const onCreateProject = vi.fn().mockResolvedValue(undefined);
     renderSidebar({ onCreateProject });
 
@@ -108,5 +109,6 @@ describe("ProjectSidebar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Create" }));
 
     expect(onCreateProject).toHaveBeenCalledWith("Side project");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 });

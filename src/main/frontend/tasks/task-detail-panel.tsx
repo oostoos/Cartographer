@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 import { Button } from "@common/design-language/button";
 import { Card } from "@common/design-language/card";
@@ -13,7 +13,9 @@ import type { TTask } from "./types";
 /** Detail panel for the selected task: the Tasks page's persistent right-hand column. */
 export function TaskDetailPanel() {
   const { taskId } = useParams<{ taskId: string }>();
-  const { tasks, onTaskUpdated } = useOutletContext<ITasksOutletContext>();
+  const { tasks, onTaskUpdated, onTaskDeleted } = useOutletContext<ITasksOutletContext>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [task, setTask] = useState<TTask | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +25,7 @@ export function TaskDetailPanel() {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     setIsEditing(false);
@@ -107,6 +110,18 @@ export function TaskDetailPanel() {
     setIsEditing(false);
   }
 
+  async function handleDelete() {
+    if (!task) return;
+
+    setIsDeleting(true);
+    try {
+      await onTaskDeleted(task.id);
+      navigate(`/tasks${location.search}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <Card>
       <div className="task-detail-panel">
@@ -151,6 +166,9 @@ export function TaskDetailPanel() {
                 <div className="task-detail-actions">
                   <Button variant="secondary" onClick={() => setIsEditing(true)}>
                     Edit
+                  </Button>
+                  <Button variant="danger" onClick={handleDelete} disabled={isDeleting}>
+                    Delete
                   </Button>
                 </div>
               </div>

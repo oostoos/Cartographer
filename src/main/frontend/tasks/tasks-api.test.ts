@@ -2,7 +2,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as httpClient from "@common/api/http-client";
 
-import { createTask, fetchTask, fetchTasks, reorderTasks, setTaskCompleted, updateTask } from "./tasks-api";
+import {
+  createTask,
+  deleteTask,
+  fetchTask,
+  fetchTasks,
+  reorderTasks,
+  setTaskCompleted,
+  setTaskProject,
+  updateTask,
+} from "./tasks-api";
 
 describe("tasks-api", () => {
   afterEach(() => {
@@ -55,5 +64,29 @@ describe("tasks-api", () => {
     await reorderTasks(["b", "a"]);
 
     expect(spy).toHaveBeenCalledWith("/tasks/reorder", { task_ids: ["b", "a"] });
+  });
+
+  it("setTaskProject calls PATCH /tasks/:id/project with the project id", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskProject("abc", "proj-1");
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/project", { project_id: "proj-1" });
+  });
+
+  it("setTaskProject calls PATCH /tasks/:id/project with null to clear it", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskProject("abc", null);
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/project", { project_id: null });
+  });
+
+  it("deleteTask calls DELETE /tasks/:id", async () => {
+    const spy = vi.spyOn(httpClient, "deleteJson").mockResolvedValue({ id: "abc" });
+
+    await deleteTask("abc");
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc");
   });
 });

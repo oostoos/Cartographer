@@ -25,6 +25,7 @@ import { TaskCreateForm } from "./task-create-form";
 import { TaskDetailEmptyState } from "./task-detail-empty-state";
 import { TaskListItem } from "./task-list-item";
 import type { ITasksOutletContext } from "./tasks-outlet-context";
+import type { TTask } from "./types";
 import { useTasks } from "./use-tasks";
 
 export function TasksPage() {
@@ -38,6 +39,7 @@ export function TasksPage() {
     reorderActiveTasks,
     assignTaskProject,
     unassignTasksFromProject,
+    deleteTask,
   } = useTasks();
   const { projects, createProject, deleteProject } = useProjects();
 
@@ -88,6 +90,10 @@ export function TasksPage() {
     return projectsById.get(projectId)?.name ?? null;
   }
 
+  async function handleDeleteTask(task: TTask) {
+    await deleteTask(task.id);
+  }
+
   return (
     <div className="tasks-page">
       <h1>Tasks</h1>
@@ -107,48 +113,60 @@ export function TasksPage() {
           </div>
 
           <div className="tasks-layout__list">
-            <TaskCreateForm onCreate={handleCreateTask} />
-            {!isLoading && !error && filteredTasks.length === 0 && (
-              <p>No tasks yet. Add one above to get started.</p>
-            )}
-            {!isLoading && filteredTasks.length > 0 && (
-              <>
-                <ul className="task-list">
-                  <SortableContext items={activeTaskIds} strategy={verticalListSortingStrategy}>
-                    {grouped.active.map((task) => (
-                      <SortableTaskListItem
-                        key={task.id}
-                        task={task}
-                        onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
-                        projectName={task.project_id ? getProjectName(task.project_id) : null}
-                        onRemoveProject={() => assignTaskProject(task.id, null)}
-                      />
+            <div className="tasks-layout__list-header">
+              <TaskCreateForm onCreate={handleCreateTask} />
+            </div>
+            <div className="tasks-layout__list-body">
+              {!isLoading && !error && filteredTasks.length === 0 && (
+                <p>No tasks yet. Add one above to get started.</p>
+              )}
+              {!isLoading && filteredTasks.length > 0 && (
+                <>
+                  <ul className="task-list">
+                    <SortableContext items={activeTaskIds} strategy={verticalListSortingStrategy}>
+                      {grouped.active.map((task) => (
+                        <SortableTaskListItem
+                          key={task.id}
+                          task={task}
+                          onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
+                          projectName={task.project_id ? getProjectName(task.project_id) : null}
+                          onRemoveProject={() => assignTaskProject(task.id, null)}
+                          onDelete={() => handleDeleteTask(task)}
+                        />
+                      ))}
+                    </SortableContext>
+                    {grouped.completedToday.map((task) => (
+                      <li key={task.id}>
+                        <TaskListItem
+                          task={task}
+                          onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
+                          projectName={task.project_id ? getProjectName(task.project_id) : null}
+                          onRemoveProject={() => assignTaskProject(task.id, null)}
+                          onDelete={() => handleDeleteTask(task)}
+                        />
+                      </li>
                     ))}
-                  </SortableContext>
-                  {grouped.completedToday.map((task) => (
-                    <li key={task.id}>
-                      <TaskListItem
-                        task={task}
-                        onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
-                        projectName={task.project_id ? getProjectName(task.project_id) : null}
-                        onRemoveProject={() => assignTaskProject(task.id, null)}
-                      />
-                    </li>
-                  ))}
-                </ul>
-                <CompletedTasksSection
-                  tasks={grouped.completedPrior}
-                  onToggleCompleted={toggleTaskCompleted}
-                  getProjectName={getProjectName}
-                  onRemoveProject={(taskId) => assignTaskProject(taskId, null)}
-                />
-              </>
-            )}
+                  </ul>
+                  <CompletedTasksSection
+                    tasks={grouped.completedPrior}
+                    onToggleCompleted={toggleTaskCompleted}
+                    getProjectName={getProjectName}
+                    onRemoveProject={(taskId) => assignTaskProject(taskId, null)}
+                    onDelete={(taskId) => {
+                      const task = grouped.completedPrior.find((candidate) => candidate.id === taskId);
+                      if (task) handleDeleteTask(task);
+                    }}
+                  />
+                </>
+              )}
+            </div>
           </div>
 
           <div className="tasks-layout__detail">
             {taskIdMatch ? (
-              <Outlet context={{ tasks, onTaskUpdated: applyTaskUpdate } satisfies ITasksOutletContext} />
+              <Outlet
+                context={{ tasks, onTaskUpdated: applyTaskUpdate, onTaskDeleted: deleteTask } satisfies ITasksOutletContext}
+              />
             ) : (
               <TaskDetailEmptyState />
             )}
