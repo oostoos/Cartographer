@@ -39,6 +39,7 @@ function renderSidebar(overrides: Partial<Parameters<typeof GroupSidebar>[0]> = 
         activeFilter={{ type: "all" }}
         onSelectFilter={vi.fn()}
         onCreateGroup={vi.fn()}
+        onRenameGroup={vi.fn()}
         onDeleteGroup={vi.fn()}
         {...overrides}
       />
@@ -110,5 +111,16 @@ describe("GroupSidebar", () => {
 
     expect(onCreateGroup).toHaveBeenCalledWith("Side group");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it("calls onRenameGroup with the group id and new name", () => {
+    const onRenameGroup = vi.fn();
+    renderSidebar({ onRenameGroup });
+
+    fireEvent.click(screen.getByRole("button", { name: "Rename Home renovation" }));
+    fireEvent.change(screen.getByLabelText("Rename Home renovation"), { target: { value: "Home projects" } });
+    fireEvent.blur(screen.getByLabelText("Rename Home renovation"));
+
+    expect(onRenameGroup).toHaveBeenCalledWith("group-1", "Home projects");
   });
 });

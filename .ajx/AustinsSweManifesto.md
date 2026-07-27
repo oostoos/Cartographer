@@ -18,7 +18,7 @@ Modularization and building blocks
 - Create wrappers often and group wrappers together around their common shared definition. Common variations of a function call, especially those that take a constant value, should be wrapped into an understandable and prepackaged version of that function call if they are used multiple times. For example, if I have a function that is do_update_based_on_key(structure, key) and we find ourselves writing do_update_based_on_key(structure, "user") multiple times in code, it's worth making a do_update_based_on_user(structure) that is a wrapper that hard-codes the "user" key.
 - As soon as you find yourself writing code for the second time, split that code into a shared defintion.
 - If a group of constants falls into a logical grouping, consider either moving those similar constants to a file that defines the grouping or move the constants to a parent structure within a file so they can be referenced via a common parent.
-- One-line functions are easy to inline into a parent caller. If a function can be written in a single line and remains easily understandable, it should be written as a single line.
+- Prefer reducing cyclomatic complexity over reducing lines of code. Prefer "if x return" early and often to reduce branching of functions. Prefer avoiding else-statements when possible. Prefer if-statements over switch or other logical control statements when possible.
 - Ideal state: we write code whose name defines very clearly what it does, a caller does not need to know about the underlying logic, then we optimize the logic to be faster if needed.
 
 Libraries

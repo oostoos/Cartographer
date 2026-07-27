@@ -1,7 +1,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { describe, expect, it } from "vitest";
 
-import { buildGroupDropId, computeDragOutcome } from "./compute-drag-outcome";
+import { computeDragOutcome } from "./compute-drag-outcome";
 
 function buildDragEndEvent(
   activeId: string,
@@ -16,16 +16,10 @@ function buildDragEndEvent(
   } as unknown as DragEndEvent;
 }
 
-describe("buildGroupDropId", () => {
-  it("namespaces the group id so it can't collide with a task id", () => {
-    expect(buildGroupDropId("group-1")).toBe("group-drop:group-1");
-  });
-});
-
 describe("computeDragOutcome", () => {
   it("returns an assign-group outcome when a task is dropped on a group droppable", () => {
     const event = buildDragEndEvent("task-1", {
-      id: buildGroupDropId("group-1"),
+      id: "group-1",
       data: { type: "group", groupId: "group-1" },
     });
 
@@ -44,7 +38,7 @@ describe("computeDragOutcome", () => {
 
   it("returns a reorder-groups outcome when a group is dragged, even if dropped on a group droppable", () => {
     const event = buildDragEndEvent("group-1", {
-      id: buildGroupDropId("group-2"),
+      id: "group-2",
       data: { type: "group", groupId: "group-2" },
     });
 

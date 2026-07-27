@@ -11,6 +11,10 @@ than reaching into individual modules directly.
 
 ## date — generic date/time formatting helpers
 
+- **`isSameLocalYear(a: Date, b: Date) -> boolean`** — true if `a` and `b`
+  fall in the same local calendar year.
+- **`isSameLocalMonth(a: Date, b: Date) -> boolean`** — true if `a` and `b`
+  fall in the same local calendar month of the same year.
 - **`isSameLocalDay(a: Date, b: Date) -> boolean`** — true if `a` and `b`
   fall on the same calendar day in the local timezone.
 - **`formatLocalClockTime(date: Date) -> string`** — formats `date` as a

@@ -37,6 +37,7 @@ export function GroupCreateForm({ onCreate }: IGroupCreateFormProps) {
         value={name}
         onChange={(event) => setName(event.target.value)}
         aria-label="Group name"
+        autoFocus
       />
       <Button type="submit" disabled={isSubmitting || !name.trim()}>
         Create

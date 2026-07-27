@@ -8,13 +8,6 @@ export type TDragOutcome =
   | { type: "assign-group"; taskId: string; groupId: string }
   | null;
 
-const GROUP_DROP_ID_PREFIX = "group-drop:";
-
-/** The droppable id a group card in the sidebar should register under. */
-export function buildGroupDropId(groupId: string): string {
-  return `${GROUP_DROP_ID_PREFIX}${groupId}`;
-}
-
 interface IGroupDropData {
   type?: string;
   groupId?: string;

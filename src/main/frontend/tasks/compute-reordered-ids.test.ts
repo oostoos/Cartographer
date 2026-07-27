@@ -1,7 +1,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { describe, expect, it } from "vitest";
 
-import { computeReorderedIds } from "./compute-reordered-task-ids";
+import { computeReorderedIds } from "./compute-reordered-ids";
 
 function buildDragEndEvent(activeId: string, overId: string | null): DragEndEvent {
   return {

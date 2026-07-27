@@ -10,7 +10,6 @@ import { GripIcon, PencilIcon, TrashIcon } from "@common/design-language/icons";
 
 import "./group-card.css";
 
-import { buildGroupDropId } from "../tasks/compute-drag-outcome";
 import type { TGroup } from "./types";
 
 export interface IGroupCardProps {
