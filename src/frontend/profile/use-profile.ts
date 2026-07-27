@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useAsyncResource } from "@common/hooks/use-async-resource";
+import { useAsyncResource } from "@lib-stack/hooks/use-async-resource";
 
 import {
   deleteAllData as deleteAllDataRequest,

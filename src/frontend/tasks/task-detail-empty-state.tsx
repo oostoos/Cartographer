@@ -1,4 +1,4 @@
-import { Card } from "@common/design-language/card";
+import { Card } from "@lib-stack/design-language/card";
 
 import "./task-detail-empty-state.css";
 

@@ -3,9 +3,9 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
-from lib.python.validation.type_checks import isDict, isString
-from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
-from src.main.backend.database.profile import deleteAllData, getProfile, setDisplayName
+from lib.language.python.validation.type_checks import isDict, isString
+from lib.stack.flask.responses import buildErrorResponse, buildSuccessResponse
+from src.backend.database.profile import deleteAllData, getProfile, setDisplayName
 
 profile_blueprint = Blueprint("profile", __name__, url_prefix="/api/profile")
 

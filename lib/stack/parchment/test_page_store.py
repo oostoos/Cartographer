@@ -1,6 +1,6 @@
 import threading
 
-from src.common.backend.database.page_store import (
+from lib.stack.parchment.page_store import (
     PAGE_FILE_EXTENSION,
     buildPagePath,
     clearPageKey,

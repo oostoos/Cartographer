@@ -11,7 +11,7 @@
       "command": "node",
       "args": ["${workspaceFolder}/node_modules/vite/bin/vite.js"],
       "options": {
-        "cwd": "${workspaceFolder}/src/main/frontend"
+        "cwd": "${workspaceFolder}/src/frontend"
       },
       "isBackground": true,
       "problemMatcher": {
@@ -43,7 +43,7 @@
         "-NoProfile",
         "-ExecutionPolicy", "Bypass",
         "-Command",
-        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5173"
+        "Import-Module '${workspaceFolder}/lib/language/powershell/index.psm1'; Stop-ProcessOnPort -Port 5173"
       ],
       "problemMatcher": []
     },
@@ -61,7 +61,7 @@
         "-NoProfile",
         "-ExecutionPolicy", "Bypass",
         "-Command",
-        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5000"
+        "Import-Module '${workspaceFolder}/lib/language/powershell/index.psm1'; Stop-ProcessOnPort -Port 5000"
       ],
       "problemMatcher": []
     },
@@ -78,7 +78,7 @@
         "-NoProfile",
         "-ExecutionPolicy", "Bypass",
         "-Command",
-        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; Stop-ProcessOnPort -Port 5000; Stop-ProcessOnPort -Port 5173"
+        "Import-Module '${workspaceFolder}/lib/language/powershell/index.psm1'; Stop-ProcessOnPort -Port 5000; Stop-ProcessOnPort -Port 5173"
       ],
       "problemMatcher": []
     },
@@ -142,7 +142,7 @@
         "-NoProfile",
         "-ExecutionPolicy", "Bypass",
         "-Command",
-        "Import-Module '${workspaceFolder}/lib/powershell/index.psm1'; if (-not (Wait-HttpEndpointReady -Uri 'http://localhost:5000/api/health' -TimeoutSeconds 30)) { throw 'Backend did not become ready in time.' }"
+        "Import-Module '${workspaceFolder}/lib/language/powershell/index.psm1'; if (-not (Wait-HttpEndpointReady -Uri 'http://localhost:5000/api/health' -TimeoutSeconds 30)) { throw 'Backend did not become ready in time.' }"
       ],
       "problemMatcher": []
     },

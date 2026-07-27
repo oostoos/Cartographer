@@ -18,7 +18,7 @@ param(
 )
 
 . "$PSScriptRoot/cartographer-dev-loop-constants.ps1"
-Import-Module "$PSScriptRoot/../../lib/powershell/index.psm1"
+Import-Module "$PSScriptRoot/../../lib/language/powershell/index.psm1"
 
 $LogFilePath = Join-Path $env:TEMP "cartographer-edge-watchdog.log"
 

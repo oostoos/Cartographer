@@ -1,4 +1,4 @@
-from lib.python.validation.type_checks import isDict, isList, isString
+from lib.language.python.validation.type_checks import isDict, isList, isString
 
 
 def test_is_string_true_for_str():

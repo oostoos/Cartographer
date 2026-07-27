@@ -1,5 +1,5 @@
-import { IconButton } from "@common/design-language/icon-button";
-import { CloseIcon } from "@common/design-language/icons";
+import { IconButton } from "@lib-stack/design-language/icon-button";
+import { CloseIcon } from "@lib-stack/design-language/icons";
 
 import "./task-group-pill.css";
 

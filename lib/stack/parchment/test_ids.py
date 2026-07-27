@@ -1,4 +1,4 @@
-from src.common.backend.database.ids import generateRecordId
+from lib.stack.parchment.ids import generateRecordId
 
 
 def test_generate_record_id_returns_32_char_hex_string():

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from src.common.backend.config import ENV_FILE_PATH
+from src.backend.config import ENV_FILE_PATH
 
 DATA_ENV_VAR = "CARTOGRAPHER_DATA_ENV"
 PROD_DATA_ENV = "prod"

@@ -13,9 +13,9 @@ jobs:
         with:
           python-version-file: ".python-version"
           cache: "pip"
-          cache-dependency-path: src/main/backend/requirements.txt
+          cache-dependency-path: src/backend/requirements.txt
 
-      - run: pip install -r src/main/backend/requirements.txt
+      - run: pip install -r src/backend/requirements.txt
 
       - run: pytest
 
@@ -32,6 +32,6 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build --workspace=src/main/frontend
+      - run: npm run build --workspace=src/frontend
 
-      - run: npm run test --workspace=src/main/frontend
+      - run: npm run test --workspace=src/frontend

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import * as httpClient from "@common/api/http-client";
+import * as httpClient from "@lib-stack/api/http-client";
 
 import {
   createTask,

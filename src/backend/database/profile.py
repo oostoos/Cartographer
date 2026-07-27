@@ -2,10 +2,10 @@
 
 Models a singleton record — there's no auth/multi-user concept yet.
 """
-from lib.python.collections.dict_utils import buildDictFromKeysAndValues
-from src.main.backend.database.models import Profile
-from src.main.backend.database.record_store import clearObjectType, readRecord, writeRecord
-from src.main.backend.database.task import TASK_OBJECT_TYPE
+from lib.language.python.collections.dict_utils import buildDictFromKeysAndValues
+from src.backend.database.models import Profile
+from src.backend.database.record_store import clearObjectType, readRecord, writeRecord
+from src.backend.database.task import TASK_OBJECT_TYPE
 
 PROFILE_OBJECT_TYPE = "profile"
 PROFILE_SINGLETON_ID = "singleton"

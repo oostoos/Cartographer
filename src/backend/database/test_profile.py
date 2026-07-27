@@ -1,10 +1,10 @@
-from src.main.backend.database.profile import (
+from src.backend.database.profile import (
     DEFAULT_DISPLAY_NAME,
     deleteAllData,
     getProfile,
     setDisplayName,
 )
-from src.main.backend.database.task import createTask, getAllTasks
+from src.backend.database.task import createTask, getAllTasks
 
 
 def test_get_profile_returns_default_when_unset():

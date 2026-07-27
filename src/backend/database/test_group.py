@@ -1,6 +1,6 @@
 import pytest
 
-from src.main.backend.database.group import (
+from src.backend.database.group import (
     EmptyGroupNameError,
     createGroup,
     deleteGroup,
@@ -9,7 +9,7 @@ from src.main.backend.database.group import (
     reorderGroups,
     updateGroup,
 )
-from src.main.backend.database.task import createTask, getTask
+from src.backend.database.task import createTask, getTask
 
 
 def test_create_group_persists_and_is_retrievable():

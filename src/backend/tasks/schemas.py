@@ -1,10 +1,10 @@
 """Request payload shapes for the /api/tasks routes, validated directly here.
 
-Mirrored on the frontend by src/main/frontend/tasks/tasks-api.ts.
+Mirrored on the frontend by src/frontend/tasks/tasks-api.ts.
 """
 from dataclasses import dataclass
 
-from lib.python.validation.type_checks import isDict, isList, isString
+from lib.language.python.validation.type_checks import isDict, isList, isString
 
 
 class InvalidPayloadError(ValueError):

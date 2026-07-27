@@ -1,4 +1,4 @@
-from src.common.backend.app_factory import createApp
+from lib.stack.flask.app_factory import createApp
 
 
 def test_create_app_returns_flask_app_with_no_business_routes():
@@ -19,7 +19,7 @@ def test_unhandled_exception_returns_json_error_envelope():
     response = client.get("/boom")
 
     assert response.status_code == 500
-    assert response.get_json() == {"success": False, "error": "kaboom"}
+    assert response.get_json() == {"success": False, "data": None, "error": "kaboom"}
 
 
 def test_http_exception_returns_json_error_envelope():

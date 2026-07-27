@@ -1,4 +1,4 @@
-from src.main.backend.database.record_store import (
+from src.backend.database.record_store import (
     clearObjectType,
     listRecordIds,
     readRecord,

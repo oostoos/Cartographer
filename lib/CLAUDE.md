@@ -1,11 +1,14 @@
 # lib/
 
-Stack-agnostic library code, one subdirectory per language. See `.ajx/AustinsSweManifesto.md` ("Libraries" section).
+Reusable code, split into two tiers. See `.ajx/AustinsSweManifesto.md`
+("Libraries" section).
 
-- Code here must require no business or stack knowledge — only generic building blocks.
-- No dependencies outside the base language (no frameworks — e.g. no React, no
-  Flask). A dependency on the language's own standard library is fine; a
-  dependency on a framework belongs in `src/common` instead, even if the code
-  itself is otherwise generic/reusable.
-- Each language subdirectory exposes a barrel that surfaces everything the library defines, with a short description per definition.
-- Build library definitions on top of library definitions.
+- [`language/`](language/CLAUDE.md) — one subdirectory per language, zero
+  stack or business knowledge.
+- [`stack/`](stack/CLAUDE.md) — one subdirectory per framework/engine/package
+  (e.g. Flask, React), reusable across any repo built on that same
+  package but not stack-agnostic.
+
+Both tiers follow the same conventions: split files by what they solve, and
+expose a barrel that surfaces everything the directory defines with a short
+description per definition.

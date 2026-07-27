@@ -1,6 +1,6 @@
 import pytest
 
-from src.main.backend.tasks.schemas import (
+from src.backend.tasks.schemas import (
     InvalidPayloadError,
     parseTaskCreatePayload,
     parseTaskReorderPayload,

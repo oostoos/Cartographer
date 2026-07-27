@@ -3,8 +3,8 @@
 DATA_ROOT is a constant every page_store call needs; callers (task.py,
 profile.py) shouldn't have to pass it on every call, so it's bound here once.
 """
-from src.common.backend.database import page_store
-from src.main.backend.database.paths import DATA_ROOT
+from lib.stack.parchment import page_store
+from src.backend.database.paths import DATA_ROOT
 
 
 def readRecord(object_type: str, record_id: str) -> list[str] | None:

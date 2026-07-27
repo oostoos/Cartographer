@@ -1,4 +1,4 @@
-# lib/powershell/
+# lib/language/powershell/
 
 PowerShell library barrel: `index.psm1`. Import via `Import-Module` rather
 than dot-sourcing individual files directly.

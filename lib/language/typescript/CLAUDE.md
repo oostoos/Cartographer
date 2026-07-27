@@ -1,4 +1,4 @@
-# lib/typescript/
+# lib/language/typescript/
 
 TypeScript library barrel: `index.ts`. Import definitions from there rather
 than reaching into individual modules directly.

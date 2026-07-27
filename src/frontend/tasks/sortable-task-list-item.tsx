@@ -1,8 +1,8 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { IconButton } from "@common/design-language/icon-button";
-import { GripIcon } from "@common/design-language/icons";
+import { IconButton } from "@lib-stack/design-language/icon-button";
+import { GripIcon } from "@lib-stack/design-language/icons";
 
 import "./sortable-task-list-item.css";
 

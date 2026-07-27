@@ -1,4 +1,4 @@
-from src.main.backend.database.models import Profile, Task
+from src.backend.database.models import Profile, Task
 
 
 def test_task_holds_all_expected_fields():

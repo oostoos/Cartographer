@@ -2,7 +2,7 @@
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 
-from src.common.backend.responses import buildErrorResponse
+from lib.stack.flask.responses import buildErrorResponse
 
 UNEXPECTED_EXCEPTION_STATUS_CODE = 500
 

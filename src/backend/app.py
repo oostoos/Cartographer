@@ -1,10 +1,10 @@
-"""Cartographer Flask entrypoint. Launch with `python -m src.main.backend.app`."""
-from src.common.backend.app_factory import createApp
-from src.common.backend.config import loadSharedConfig
-from src.common.backend.responses import buildSuccessResponse
-from src.main.backend.profile.routes import profile_blueprint
-from src.main.backend.groups.routes import groups_blueprint
-from src.main.backend.tasks.routes import tasks_blueprint
+"""Cartographer Flask entrypoint. Launch with `python -m src.backend.app`."""
+from lib.stack.flask.app_factory import createApp
+from src.backend.config import loadSharedConfig
+from lib.stack.flask.responses import buildSuccessResponse
+from src.backend.profile.routes import profile_blueprint
+from src.backend.groups.routes import groups_blueprint
+from src.backend.tasks.routes import tasks_blueprint
 
 app = createApp()
 app.register_blueprint(tasks_blueprint)

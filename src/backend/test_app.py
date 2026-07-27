@@ -1,4 +1,4 @@
-from src.main.backend.app import app
+from src.backend.app import app
 
 
 def test_health_returns_ok_status():
@@ -7,4 +7,4 @@ def test_health_returns_ok_status():
     response = client.get("/api/health")
 
     assert response.status_code == 200
-    assert response.get_json() == {"success": True, "data": {"status": "ok"}}
+    assert response.get_json() == {"success": True, "data": {"status": "ok"}, "error": None}

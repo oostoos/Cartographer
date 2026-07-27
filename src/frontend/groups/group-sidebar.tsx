@@ -2,9 +2,9 @@ import { useState } from "react";
 
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
-import { Button } from "@common/design-language/button";
-import { PlusIcon } from "@common/design-language/icons";
-import { Modal } from "@common/design-language/modal";
+import { Button } from "@lib-stack/design-language/button";
+import { PlusIcon } from "@lib-stack/design-language/icons";
+import { Modal } from "@lib-stack/design-language/modal";
 
 import "./group-sidebar.css";
 

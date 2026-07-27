@@ -1,4 +1,4 @@
-from src.common.backend.config import (
+from src.backend.config import (
     BACKEND_PORT_ENV_VAR,
     DEFAULT_BACKEND_PORT,
     DEFAULT_FRONTEND_PORT,

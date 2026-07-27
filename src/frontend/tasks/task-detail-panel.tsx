@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useOutletContext, useParams } from "react-router-dom";
 
-import { Button } from "@common/design-language/button";
-import { Card } from "@common/design-language/card";
+import { Button } from "@lib-stack/design-language/button";
+import { Card } from "@lib-stack/design-language/card";
 
 import "./task-detail-panel.css";
 

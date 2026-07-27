@@ -2,8 +2,6 @@ import type { ReactElement } from "react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import "../design-language/global.css";
-
 const ROOT_ELEMENT_ID = "root";
 
 /** Mount a React root component into the page's #root element. */

@@ -4,7 +4,7 @@ import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 
-const REPO_ROOT = path.resolve(__dirname, "../../..");
+const REPO_ROOT = path.resolve(__dirname, "../..");
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, REPO_ROOT, "CARTOGRAPHER_");
@@ -16,8 +16,8 @@ export default defineConfig(({ mode }) => {
     envDir: REPO_ROOT,
     resolve: {
       alias: {
-        "@common": path.resolve(__dirname, "../../common/frontend"),
-        "@lib": path.resolve(__dirname, "../../../lib/typescript"),
+        "@lib": path.resolve(__dirname, "../../lib/language/typescript"),
+        "@lib-stack": path.resolve(__dirname, "../../lib/stack/react"),
       },
     },
     server: {
@@ -35,8 +35,8 @@ export default defineConfig(({ mode }) => {
       globals: true,
       include: [
         "**/*.{test,spec}.{ts,tsx}",
-        "../../common/frontend/**/*.{test,spec}.{ts,tsx}",
-        "../../../lib/typescript/**/*.{test,spec}.{ts,tsx}",
+        "../../lib/language/typescript/**/*.{test,spec}.{ts,tsx}",
+        "../../lib/stack/react/**/*.{test,spec}.{ts,tsx}",
       ],
     },
   };

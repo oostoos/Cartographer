@@ -13,16 +13,16 @@
     "jsx": "react-jsx",
     "strict": true,
     "paths": {
-      "@common/*": ["../../common/frontend/*"],
-      "@lib/*": ["../../../lib/typescript/*"]
+      "@lib/*": ["../../lib/language/typescript/*"],
+      "@lib-stack/*": ["../../lib/stack/react/*"]
     },
     "types": ["node", "vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../../common/frontend/**/*.ts",
-    "../../common/frontend/**/*.tsx",
-    "../../../lib/typescript/**/*.ts"
+    "../../lib/language/typescript/**/*.ts",
+    "../../lib/stack/react/**/*.ts",
+    "../../lib/stack/react/**/*.tsx"
   ]
 }

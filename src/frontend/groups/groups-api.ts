@@ -1,18 +1,18 @@
-import { deleteJson, getJson, patchJson, postJson } from "@common/api/http-client";
+import { deleteJson, getJson, patchJson, postJson } from "@lib-stack/api/http-client";
 
 import type { TGroup } from "./types";
 
-// Mirrors src/main/backend/groups/schemas.py's GroupCreatePayload — keep in sync.
+// Mirrors src/backend/groups/schemas.py's GroupCreatePayload — keep in sync.
 export type TGroupCreatePayload = {
   name: string;
 };
 
-// Mirrors src/main/backend/groups/schemas.py's GroupUpdatePayload — keep in sync.
+// Mirrors src/backend/groups/schemas.py's GroupUpdatePayload — keep in sync.
 export type TGroupUpdatePayload = {
   name: string;
 };
 
-// Mirrors src/main/backend/groups/schemas.py's GroupReorderPayload — keep in sync.
+// Mirrors src/backend/groups/schemas.py's GroupReorderPayload — keep in sync.
 export type TGroupReorderPayload = {
   group_ids: string[];
 };

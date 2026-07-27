@@ -1,6 +1,6 @@
 import pytest
 
-from src.main.backend.groups.schemas import (
+from src.backend.groups.schemas import (
     InvalidPayloadError,
     parseGroupCreatePayload,
     parseGroupReorderPayload,

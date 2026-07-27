@@ -3,9 +3,9 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
-from lib.python.validation.type_checks import isDict
-from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
-from src.main.backend.database.group import (
+from lib.language.python.validation.type_checks import isDict
+from lib.stack.flask.responses import buildErrorResponse, buildSuccessResponse
+from src.backend.database.group import (
     EmptyGroupNameError,
     createGroup,
     deleteGroup,
@@ -13,7 +13,7 @@ from src.main.backend.database.group import (
     reorderGroups,
     updateGroup,
 )
-from src.main.backend.groups.schemas import (
+from src.backend.groups.schemas import (
     InvalidPayloadError,
     parseGroupCreatePayload,
     parseGroupReorderPayload,

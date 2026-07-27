@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 
-import { Button } from "@common/design-language/button";
+import { Button } from "@lib-stack/design-language/button";
 
 import "./group-create-form.css";
 

@@ -1,6 +1,6 @@
 import pytest
 
-from src.main.backend.database.paths import (
+from src.backend.database.paths import (
     DATA_ROOT,
     PROD_DATA_ENV,
     TEST_DATA_ENV,

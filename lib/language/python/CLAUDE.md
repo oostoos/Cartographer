@@ -1,4 +1,4 @@
-# lib/python/
+# lib/language/python/
 
 Python library barrel: `index.py`. Import definitions from there rather than
 reaching into individual modules directly.

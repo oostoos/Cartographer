@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 
-import { Button } from "@common/design-language/button";
+import { Button } from "@lib-stack/design-language/button";
 
 import "./profile-page.css";
 

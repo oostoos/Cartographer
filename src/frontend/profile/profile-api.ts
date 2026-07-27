@@ -1,4 +1,4 @@
-import { getJson, postJson, putJson } from "@common/api/http-client";
+import { getJson, postJson, putJson } from "@lib-stack/api/http-client";
 
 import type { TProfile } from "./types";
 

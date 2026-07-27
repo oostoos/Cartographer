@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from lib.python.date.utc_timestamp import currentUtcIsoTimestamp
+from lib.language.python.date.utc_timestamp import currentUtcIsoTimestamp
 
 
 def test_current_utc_iso_timestamp_is_parseable_iso_string():

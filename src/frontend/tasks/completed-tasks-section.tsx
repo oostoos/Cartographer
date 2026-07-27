@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ChevronDownIcon } from "@common/design-language/icons";
+import { ChevronDownIcon } from "@lib-stack/design-language/icons";
 
 import "./completed-tasks-section.css";
 

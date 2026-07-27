@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
-import { InitialsChip } from "@common/design-language/initials-chip";
-import { TopNavBar } from "@common/layout/top-nav-bar";
-import type { ITopNavBarLink } from "@common/layout/top-nav-bar";
+import { InitialsChip } from "@lib-stack/design-language/initials-chip";
+import { TopNavBar } from "@lib-stack/layout/top-nav-bar";
+import type { ITopNavBarLink } from "@lib-stack/layout/top-nav-bar";
 import { getInitials } from "@lib/index";
 
 import { useProfile } from "../profile/use-profile";

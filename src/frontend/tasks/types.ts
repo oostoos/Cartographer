@@ -1,4 +1,4 @@
-// Mirrors src/main/backend/database/models.py's Task dataclass — keep in sync.
+// Mirrors src/backend/database/models.py's Task dataclass — keep in sync.
 export type TTask = {
   id: string;
   title: string;

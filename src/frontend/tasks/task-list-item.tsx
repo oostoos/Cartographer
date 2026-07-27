@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { Card } from "@common/design-language/card";
-import { IconButton } from "@common/design-language/icon-button";
-import { TrashIcon } from "@common/design-language/icons";
+import { Card } from "@lib-stack/design-language/card";
+import { IconButton } from "@lib-stack/design-language/icon-button";
+import { TrashIcon } from "@lib-stack/design-language/icons";
 import { Link, useLocation } from "react-router-dom";
 
 import "./task-list-item.css";

@@ -3,10 +3,10 @@ from dataclasses import asdict
 
 from flask import Blueprint, request
 
-from lib.python.validation.type_checks import isDict, isString
-from src.common.backend.responses import buildErrorResponse, buildSuccessResponse
-from src.main.backend.database.group import getGroup
-from src.main.backend.database.task import (
+from lib.language.python.validation.type_checks import isDict, isString
+from lib.stack.flask.responses import buildErrorResponse, buildSuccessResponse
+from src.backend.database.group import getGroup
+from src.backend.database.task import (
     EmptyTaskTitleError,
     createTask,
     deleteTask,
@@ -17,7 +17,7 @@ from src.main.backend.database.task import (
     setTaskGroup,
     updateTask,
 )
-from src.main.backend.tasks.schemas import (
+from src.backend.tasks.schemas import (
     InvalidPayloadError,
     parseTaskCreatePayload,
     parseTaskReorderPayload,

@@ -1,4 +1,4 @@
-from lib.python.strings.bool_codec import decodeBoolFromString, encodeBoolAsString
+from lib.language.python.strings.bool_codec import decodeBoolFromString, encodeBoolAsString
 
 
 def test_encode_bool_as_string_true():

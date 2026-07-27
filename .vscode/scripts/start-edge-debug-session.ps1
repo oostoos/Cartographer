@@ -4,8 +4,8 @@ Launches an isolated Edge instance for the F5 dev loop, waits for it to be CDP-a
 off teardown to a detached watchdog, then exits.
 
 .DESCRIPTION
-This is deliberately NOT a `lib/powershell` definition — it has Cartographer and Edge/CDP-specific
-knowledge (ports, executable name), which the library must not contain (see
+This is deliberately NOT a `lib/language/powershell` definition — it has Cartographer and Edge/CDP-
+specific knowledge (ports, executable name), which the language-tier library must not contain (see
 .ajx/AustinsSweManifesto.md, "Libraries").
 
 Owning the Edge process directly (rather than letting VS Code's "msedge" launch config spawn and
@@ -24,7 +24,7 @@ that session as ended, independent of whether the browser itself is actually gon
 #>
 
 . "$PSScriptRoot/cartographer-dev-loop-constants.ps1"
-Import-Module "$PSScriptRoot/../../lib/powershell/index.psm1"
+Import-Module "$PSScriptRoot/../../lib/language/powershell/index.psm1"
 
 function New-CartographerEdgeUserDataDir {
     $userDataDir = Join-Path $env:TEMP "cartographer-edge-debug-$([guid]::NewGuid())"

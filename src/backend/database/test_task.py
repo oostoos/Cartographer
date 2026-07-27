@@ -1,8 +1,8 @@
 import pytest
 
-from src.common.backend.database.page_store import writePage
-from src.main.backend.database import record_store as record_store_module
-from src.main.backend.database.task import (
+from lib.stack.parchment.page_store import writePage
+from src.backend.database import record_store as record_store_module
+from src.backend.database.task import (
     TASK_OBJECT_TYPE,
     EmptyTaskTitleError,
     createTask,

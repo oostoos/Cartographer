@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from lib.python.file_io.atomic_write import atomicWriteText
+from lib.language.python.file_io.atomic_write import atomicWriteText
 
 
 def test_atomic_write_creates_file_with_content(tmp_path):

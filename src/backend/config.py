@@ -8,7 +8,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 ENV_FILE_PATH = REPO_ROOT / ".env"
 
 BACKEND_PORT_ENV_VAR = "CARTOGRAPHER_BACKEND_PORT"

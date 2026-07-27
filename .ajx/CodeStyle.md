@@ -29,6 +29,8 @@ const buildErrorMessage = (detail: string) => buildLabeledMessage("ERROR", detai
 const buildWarningMessage = (detail: string) => buildLabeledMessage("WARNING", detail);
 ```
 
+- An if-statement whose body is non-trivial should split out the body into a private helper function with a descriptive name, and call that function from the if-statement.
+
 ## Python
 
 - Use snake_case for variables, definitions, and file/directory names.
@@ -58,3 +60,9 @@ export function isSameLocalDay(a: Date, b: Date): boolean {
   return true;
 }
 ```
+
+## React 
+
+- Use PascalCase for component names and kebab-case for file/directory names. If a file contains code to export a component, the file name should match the component name. For example, a component named MyComponent should be in a file named MyComponent.tsx.
+- Use the "I" prefix for the interface name of a component's props. For example, a component named MyComponent should have an interface named IMyComponentProps.
+- If a file doesn't need to be .tsx, don't make it .tsx. For example, a file that only contains a component's props interface should be .ts, not .tsx.

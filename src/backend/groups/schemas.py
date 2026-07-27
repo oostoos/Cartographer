@@ -1,10 +1,10 @@
 """Request payload shapes for the /api/groups routes, validated directly here.
 
-Mirrored on the frontend by src/main/frontend/groups/groups-api.ts.
+Mirrored on the frontend by src/frontend/groups/groups-api.ts.
 """
 from dataclasses import dataclass
 
-from lib.python.validation.type_checks import isDict, isList, isString
+from lib.language.python.validation.type_checks import isDict, isList, isString
 
 
 class InvalidPayloadError(ValueError):

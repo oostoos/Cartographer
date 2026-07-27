@@ -8,7 +8,7 @@ can namespace their own kinds of lists.
 """
 from pathlib import Path
 
-from src.common.backend.database.page_store import deletePage, readPage, writePage
+from lib.stack.parchment.page_store import deletePage, readPage, writePage
 
 
 def createList(data_root: Path, object_type: str, list_id: str, elements: list[str]) -> None:

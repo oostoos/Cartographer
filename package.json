@@ -2,6 +2,6 @@
   "name": "cartographer",
   "private": true,
   "workspaces": [
-    "src/main/frontend"
+    "src/frontend"
   ]
 }

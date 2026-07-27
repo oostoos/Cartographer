@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { Card } from "@common/design-language/card";
-import { IconButton } from "@common/design-language/icon-button";
-import { GripIcon, PencilIcon, TrashIcon } from "@common/design-language/icons";
+import { Card } from "@lib-stack/design-language/card";
+import { IconButton } from "@lib-stack/design-language/icon-button";
+import { GripIcon, PencilIcon, TrashIcon } from "@lib-stack/design-language/icons";
 
 import "./group-card.css";
 

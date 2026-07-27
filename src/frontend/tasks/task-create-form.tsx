@@ -1,8 +1,8 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 
-import { Button } from "@common/design-language/button";
-import { PlusIcon } from "@common/design-language/icons";
+import { Button } from "@lib-stack/design-language/button";
+import { PlusIcon } from "@lib-stack/design-language/icons";
 
 import "./task-create-form.css";
 

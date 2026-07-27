@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from lib.python.file_io.file_lock import (
+from lib.language.python.file_io.file_lock import (
     LockTimeoutError,
     acquireExclusiveLock,
     releaseExclusiveLock,

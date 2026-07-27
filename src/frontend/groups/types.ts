@@ -1,4 +1,4 @@
-// Mirrors src/main/backend/database/models.py's Group dataclass — keep in sync.
+// Mirrors src/backend/database/models.py's Group dataclass — keep in sync.
 export type TGroup = {
   id: string;
   name: string;

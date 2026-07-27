@@ -1,9 +1,9 @@
 import pytest
 
-from src.common.backend.app_factory import createApp
-from src.main.backend.database import profile as profile_module
-from src.main.backend.profile.routes import profile_blueprint
-from src.main.backend.tasks.routes import tasks_blueprint
+from lib.stack.flask.app_factory import createApp
+from src.backend.database import profile as profile_module
+from src.backend.profile.routes import profile_blueprint
+from src.backend.tasks.routes import tasks_blueprint
 
 
 @pytest.fixture

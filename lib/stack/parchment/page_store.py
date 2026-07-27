@@ -2,12 +2,12 @@
 
 Knows this app's storage format (the .page extension, the escaping scheme, one file
 per page) but nothing about what a page represents (Task, Profile, ...) — that
-knowledge belongs to src/main/backend/database.
+knowledge belongs to src/backend/database.
 """
 from pathlib import Path
 
-from lib.python.file_io.atomic_write import atomicWriteText
-from lib.python.file_io.file_lock import acquireExclusiveLock, releaseExclusiveLock
+from lib.language.python.file_io.atomic_write import atomicWriteText
+from lib.language.python.file_io.file_lock import acquireExclusiveLock, releaseExclusiveLock
 
 PAGE_FILE_EXTENSION = ".page"
 LOCK_TIMEOUT_SECONDS = 5.0

@@ -1,4 +1,4 @@
-from lib.python.collections.dict_utils import buildDictFromKeysAndValues
+from lib.language.python.collections.dict_utils import buildDictFromKeysAndValues
 
 
 def test_build_dict_from_keys_and_values_pairs_by_position():

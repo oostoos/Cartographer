@@ -1,6 +1,6 @@
 import { Outlet, useMatch } from "react-router-dom";
 
-import { PageContainer } from "@common/layout/page-container";
+import { PageContainer } from "@lib-stack/layout/page-container";
 
 import "./app.css";
 
