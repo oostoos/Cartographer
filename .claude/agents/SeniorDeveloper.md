@@ -35,8 +35,8 @@ be dispatched in the foreground or the background.
 2. Break the task into an ordered list of concrete steps. For anything
    beyond a single trivial step, track it with `TodoWrite` so your own
    do/delegate split stays visible for the rest of the run.
-3. For each step, decide whether to do it yourself or hand it to
-   `JuniorDeveloper` — see "Delegation heuristic" below.
+3. For each step (or for groups of steps), decide whether to do it yourself or 
+   hand it to `JuniorDeveloper` — see "Delegation heuristic" below.
 4. Steps you keep: do them directly with your own tools, invoking the
    `refactor` / `update-library` / `implement` skills yourself where they
    match, the same way the main agent would.
