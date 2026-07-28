@@ -61,7 +61,7 @@ describe("AppRoutes", () => {
     renderAtPath("/tasks/abc123");
 
     expect(screen.getByRole("heading", { name: "Tasks" })).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toBeInTheDocument());
   });
 
   it("renders the profile page at /profile", () => {

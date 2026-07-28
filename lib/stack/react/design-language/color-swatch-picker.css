@@ -1,0 +1,17 @@
+.color-swatch-picker {
+  display: inline-flex;
+  gap: var(--space-xs);
+}
+
+.color-swatch-picker__swatch {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+}
+
+.color-swatch-picker__swatch[data-selected="true"] {
+  border-color: var(--color-text-primary);
+}

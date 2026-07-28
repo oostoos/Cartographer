@@ -100,10 +100,16 @@ describe("TaskListItem", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("renders a group pill when groupName and onRemoveGroup are given", () => {
+  it("renders a group pill when groupName, groupColor, and onRemoveGroup are given", () => {
     render(
       <MemoryRouter>
-        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} groupName="Home renovation" onRemoveGroup={vi.fn()} />
+        <TaskListItem
+          task={TASK}
+          onToggleCompleted={vi.fn()}
+          groupName="Home renovation"
+          groupColor="#f3d9c4"
+          onRemoveGroup={vi.fn()}
+        />
       </MemoryRouter>,
     );
 
@@ -118,6 +124,7 @@ describe("TaskListItem", () => {
           task={TASK}
           onToggleCompleted={vi.fn()}
           groupName="Home renovation"
+          groupColor="#f3d9c4"
           onRemoveGroup={onRemoveGroup}
         />
       </MemoryRouter>,
@@ -163,88 +170,37 @@ describe("TaskListItem", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("renders an energy pill when energy_requirement and onSetEnergyRequirement are given", () => {
-    render(
-      <MemoryRouter>
-        <TaskListItem
-          task={{ ...TASK, energy_requirement: 3 }}
-          onToggleCompleted={vi.fn()}
-          onSetEnergyRequirement={vi.fn()}
-        />
-      </MemoryRouter>,
-    );
+  it("renders a read-only energy pill when energy_requirement is set", () => {
+    renderItem({ ...TASK, energy_requirement: 3 });
 
     expect(screen.getByText("Energy")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("renders no energy pill when energy_requirement is null", () => {
-    render(
-      <MemoryRouter>
-        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} onSetEnergyRequirement={vi.fn()} />
-      </MemoryRouter>,
-    );
+    renderItem(TASK);
 
     expect(screen.queryByText("Energy")).not.toBeInTheDocument();
   });
 
-  it("renders no energy pill when onSetEnergyRequirement is not given, even if energy_requirement is set", () => {
-    renderItem({ ...TASK, energy_requirement: 3 });
-
-    expect(screen.queryByText("Energy")).not.toBeInTheDocument();
-  });
-
-  it("renders an impact pill when impact and onSetImpact are given", () => {
-    render(
-      <MemoryRouter>
-        <TaskListItem task={{ ...TASK, impact: 4 }} onToggleCompleted={vi.fn()} onSetImpact={vi.fn()} />
-      </MemoryRouter>,
-    );
+  it("renders a read-only impact pill when impact is set", () => {
+    renderItem({ ...TASK, impact: 4 });
 
     expect(screen.getByText("Impact")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("renders a due date field when due_date and onSetDueDate are given", () => {
-    render(
-      <MemoryRouter>
-        <TaskListItem
-          task={{ ...TASK, due_date: "2026-08-01" }}
-          onToggleCompleted={vi.fn()}
-          onSetDueDate={vi.fn()}
-        />
-      </MemoryRouter>,
-    );
+  it("renders a read-only due date when due_date is set", () => {
+    renderItem({ ...TASK, due_date: "2026-08-01" });
 
-    expect(screen.getByLabelText('"Buy milk" due date')).toHaveValue("2026-08-01");
+    expect(screen.getByText("Aug 1")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
-  it("renders a time estimate pill when time_estimate_minutes and onSetTimeEstimateMinutes are given", () => {
-    render(
-      <MemoryRouter>
-        <TaskListItem
-          task={{ ...TASK, time_estimate_minutes: 45 }}
-          onToggleCompleted={vi.fn()}
-          onSetTimeEstimateMinutes={vi.fn()}
-        />
-      </MemoryRouter>,
-    );
+  it("renders a read-only time estimate when time_estimate_minutes is set", () => {
+    renderItem({ ...TASK, time_estimate_minutes: 45 });
 
     expect(screen.getByText("45m")).toBeInTheDocument();
-  });
-
-  it("calls onSetEnergyRequirement with the clicked level", () => {
-    const onSetEnergyRequirement = vi.fn();
-    render(
-      <MemoryRouter>
-        <TaskListItem
-          task={{ ...TASK, energy_requirement: 2 }}
-          onToggleCompleted={vi.fn()}
-          onSetEnergyRequirement={onSetEnergyRequirement}
-        />
-      </MemoryRouter>,
-    );
-
-    fireEvent.click(screen.getAllByRole("button", { name: /^Energy: level/ })[4]);
-
-    expect(onSetEnergyRequirement).toHaveBeenCalledWith(5);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as groupsApi from "./groups-api";
+import { GROUP_COLOR_PALETTE } from "./group-color-palette";
 import { useGroups } from "./use-groups";
 import type { TGroup } from "./types";
 
@@ -10,6 +11,7 @@ const GROUP: TGroup = {
   name: "Home renovation",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
+  color: GROUP_COLOR_PALETTE[0],
   order: 0,
 };
 
@@ -51,6 +53,20 @@ describe("useGroups", () => {
     });
 
     expect(result.current.groups).toEqual([GROUP]);
+  });
+
+  it("setGroupColor replaces the group with the updated (recolored) version", async () => {
+    vi.spyOn(groupsApi, "fetchGroups").mockResolvedValue([GROUP]);
+    vi.spyOn(groupsApi, "updateGroup").mockResolvedValue({ ...GROUP, color: GROUP_COLOR_PALETTE[3] });
+
+    const { result } = renderHook(() => useGroups());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    await act(async () => {
+      await result.current.setGroupColor(GROUP.id, GROUP_COLOR_PALETTE[3]);
+    });
+
+    expect(result.current.groups[0].color).toBe(GROUP_COLOR_PALETTE[3]);
   });
 
   it("deleteGroup removes the group from state", async () => {

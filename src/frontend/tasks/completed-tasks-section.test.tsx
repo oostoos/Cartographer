@@ -67,6 +67,7 @@ describe("CompletedTasksSection", () => {
   it("renders a group pill for a task in a group once expanded", () => {
     renderSection([buildTask({ id: "1", group_id: "group-1" })], {
       getGroupName: () => "Home renovation",
+      getGroupColor: () => "#f3d9c4",
       onRemoveGroup: vi.fn(),
     });
 
@@ -79,6 +80,7 @@ describe("CompletedTasksSection", () => {
     const onRemoveGroup = vi.fn();
     renderSection([buildTask({ id: "1", group_id: "group-1" })], {
       getGroupName: () => "Home renovation",
+      getGroupColor: () => "#f3d9c4",
       onRemoveGroup,
     });
 
@@ -98,13 +100,11 @@ describe("CompletedTasksSection", () => {
     expect(onDelete).toHaveBeenCalledWith("1");
   });
 
-  it("calls onSetEnergyRequirement with the task id when the energy pill's segment is clicked", () => {
-    const onSetEnergyRequirement = vi.fn();
-    renderSection([buildTask({ id: "1", energy_requirement: 2 })], { onSetEnergyRequirement });
+  it("renders a read-only energy pill for a task with energy_requirement set", () => {
+    renderSection([buildTask({ id: "1", energy_requirement: 2 })]);
 
     fireEvent.click(screen.getByRole("button", { name: /Completed/ }));
-    fireEvent.click(screen.getAllByRole("button", { name: /^Energy: level/ })[4]);
 
-    expect(onSetEnergyRequirement).toHaveBeenCalledWith("1", 5);
+    expect(screen.getByText("Energy")).toBeInTheDocument();
   });
 });

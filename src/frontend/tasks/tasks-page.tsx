@@ -49,13 +49,9 @@ export function TasksPage() {
     reorderActiveTasks,
     assignTaskGroup,
     unassignTasksFromGroup,
-    setTaskEnergyRequirement,
-    setTaskImpact,
-    setTaskDueDate,
-    setTaskTimeEstimateMinutes,
     deleteTask,
   } = useTasks();
-  const { groups, createGroup, renameGroup, reorderGroups, deleteGroup } = useGroups();
+  const { groups, createGroup, renameGroup, setGroupColor, reorderGroups, deleteGroup } = useGroups();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const filter = useMemo(() => parseTaskFilter(searchParams), [searchParams]);
@@ -106,6 +102,10 @@ export function TasksPage() {
     return groupsById.get(groupId)?.name ?? null;
   }
 
+  function getGroupColor(groupId: string): string | null {
+    return groupsById.get(groupId)?.color ?? null;
+  }
+
   async function handleDeleteTask(task: TTask) {
     await deleteTask(task.id);
   }
@@ -125,6 +125,7 @@ export function TasksPage() {
               onSelectFilter={handleSelectFilter}
               onCreateGroup={createGroup}
               onRenameGroup={renameGroup}
+              onChangeGroupColor={setGroupColor}
               onDeleteGroup={handleDeleteGroup}
             />
           </div>
@@ -147,11 +148,8 @@ export function TasksPage() {
                           task={task}
                           onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
                           groupName={task.group_id ? getGroupName(task.group_id) : null}
+                          groupColor={task.group_id ? getGroupColor(task.group_id) : null}
                           onRemoveGroup={() => assignTaskGroup(task.id, null)}
-                          onSetEnergyRequirement={(value) => setTaskEnergyRequirement(task.id, value)}
-                          onSetImpact={(value) => setTaskImpact(task.id, value)}
-                          onSetDueDate={(value) => setTaskDueDate(task.id, value)}
-                          onSetTimeEstimateMinutes={(value) => setTaskTimeEstimateMinutes(task.id, value)}
                           onDelete={() => handleDeleteTask(task)}
                         />
                       ))}
@@ -162,11 +160,8 @@ export function TasksPage() {
                           task={task}
                           onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
                           groupName={task.group_id ? getGroupName(task.group_id) : null}
+                          groupColor={task.group_id ? getGroupColor(task.group_id) : null}
                           onRemoveGroup={() => assignTaskGroup(task.id, null)}
-                          onSetEnergyRequirement={(value) => setTaskEnergyRequirement(task.id, value)}
-                          onSetImpact={(value) => setTaskImpact(task.id, value)}
-                          onSetDueDate={(value) => setTaskDueDate(task.id, value)}
-                          onSetTimeEstimateMinutes={(value) => setTaskTimeEstimateMinutes(task.id, value)}
                           onDelete={() => handleDeleteTask(task)}
                         />
                       </li>
@@ -176,11 +171,8 @@ export function TasksPage() {
                     tasks={grouped.completedPrior}
                     onToggleCompleted={toggleTaskCompleted}
                     getGroupName={getGroupName}
+                    getGroupColor={getGroupColor}
                     onRemoveGroup={(taskId) => assignTaskGroup(taskId, null)}
-                    onSetEnergyRequirement={setTaskEnergyRequirement}
-                    onSetImpact={setTaskImpact}
-                    onSetDueDate={setTaskDueDate}
-                    onSetTimeEstimateMinutes={setTaskTimeEstimateMinutes}
                     onDelete={(taskId) => {
                       const task = grouped.completedPrior.find((candidate) => candidate.id === taskId);
                       if (task) handleDeleteTask(task);
@@ -194,7 +186,7 @@ export function TasksPage() {
           <div className="tasks-layout__detail">
             {taskIdMatch ? (
               <Outlet
-                context={{ tasks, onTaskUpdated: applyTaskUpdate, onTaskDeleted: deleteTask } satisfies ITasksOutletContext}
+                context={{ tasks, onTaskUpdated: applyTaskUpdate } satisfies ITasksOutletContext}
               />
             ) : (
               <TaskDetailEmptyState />

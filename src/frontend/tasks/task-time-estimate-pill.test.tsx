@@ -27,4 +27,11 @@ describe("TaskTimeEstimatePill", () => {
 
     expect(onChange).toHaveBeenCalledWith(null);
   });
+
+  it("renders read-only plain text with no stepper buttons when onChange is omitted", () => {
+    render(<TaskTimeEstimatePill value={90} />);
+
+    expect(screen.getByText("1h 30m")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

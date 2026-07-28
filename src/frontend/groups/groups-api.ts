@@ -9,7 +9,8 @@ export type TGroupCreatePayload = {
 
 // Mirrors src/backend/groups/schemas.py's GroupUpdatePayload — keep in sync.
 export type TGroupUpdatePayload = {
-  name: string;
+  name?: string;
+  color?: string;
 };
 
 // Mirrors src/backend/groups/schemas.py's GroupReorderPayload — keep in sync.
@@ -27,7 +28,7 @@ export function createGroup(payload: TGroupCreatePayload): Promise<TGroup> {
   return postJson<TGroup>("/groups", payload);
 }
 
-/** Rename a group. */
+/** Update a group's name and/or color. */
 export function updateGroup(groupId: string, payload: TGroupUpdatePayload): Promise<TGroup> {
   return patchJson<TGroup>(`/groups/${groupId}`, payload);
 }

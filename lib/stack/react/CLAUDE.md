@@ -20,8 +20,13 @@ look by loading its own token stylesheet before anything here renders.
 - **`Button({ variant?, ...ButtonHTMLAttributes })`** — styled button;
   `variant: "primary" | "secondary" | "danger" | "additive"` (default
   `"primary"`) drives the class name. Exports `TButtonVariant`.
-- **`Card({ children })`** — a surface-colored, shadowed container for
-  grouped content.
+- **`Card({ children, style? })`** — a surface-colored, shadowed container
+  for grouped content; `style` is an escape hatch for a caller-supplied
+  per-instance background (e.g. a color tied to the record being shown),
+  overriding the default token-driven surface color. Exports `ICardProps`.
+- **`ColorSwatchPicker({ colors, value, onChange, "aria-label" })`** — a row
+  of clickable color swatches (caller-supplied hex values, not tokens); the
+  one matching `value` is marked selected. Exports `IColorSwatchPickerProps`.
 - **`IconButton({ "aria-label", variant?, ...ButtonHTMLAttributes })`** — a
   square/icon-only button; `aria-label` is required by the prop type for
   accessibility. `variant: "default" | "danger" | "additive"` (default

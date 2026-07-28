@@ -17,6 +17,7 @@ export interface IUseGroupsResult {
   error: string | null;
   createGroup: (name: string) => Promise<void>;
   renameGroup: (groupId: string, name: string) => Promise<void>;
+  setGroupColor: (groupId: string, color: string) => Promise<void>;
   reorderGroups: (orderedGroupIds: string[]) => Promise<void>;
   deleteGroup: (groupId: string) => Promise<void>;
 }
@@ -46,6 +47,14 @@ export function useGroups(): IUseGroupsResult {
     [setGroups],
   );
 
+  const setGroupColor = useCallback(
+    async (groupId: string, color: string) => {
+      const updated = await updateGroupRequest(groupId, { color });
+      setGroups((current) => current.map((group) => (group.id === updated.id ? updated : group)));
+    },
+    [setGroups],
+  );
+
   const reorderGroups = useCallback(
     async (orderedGroupIds: string[]) => {
       setGroups((current) => _applyGroupOrder(current, orderedGroupIds));
@@ -63,7 +72,7 @@ export function useGroups(): IUseGroupsResult {
     [setGroups],
   );
 
-  return { groups, isLoading, error, createGroup, renameGroup, reorderGroups, deleteGroup };
+  return { groups, isLoading, error, createGroup, renameGroup, setGroupColor, reorderGroups, deleteGroup };
 }
 
 /** Reorders `groups` to match `orderedGroupIds`. Used to reflect a drag-reorder locally before

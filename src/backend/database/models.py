@@ -36,4 +36,5 @@ class Group:
     name: str
     created_at: str
     updated_at: str
+    color: str
     order: float = 0.0

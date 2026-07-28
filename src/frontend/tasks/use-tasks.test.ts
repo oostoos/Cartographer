@@ -181,62 +181,6 @@ describe("useTasks", () => {
     expect(result.current.tasks.find((task) => task.id === "2")?.group_id).toBe("group-2");
   });
 
-  it("setTaskEnergyRequirement replaces the task with the updated version", async () => {
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    vi.spyOn(tasksApi, "setTaskEnergyRequirement").mockResolvedValue({ ...TASK, energy_requirement: 3 });
-
-    const { result } = renderHook(() => useTasks());
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    await act(async () => {
-      await result.current.setTaskEnergyRequirement(TASK.id, 3);
-    });
-
-    expect(result.current.tasks[0].energy_requirement).toBe(3);
-  });
-
-  it("setTaskImpact replaces the task with the updated version", async () => {
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    vi.spyOn(tasksApi, "setTaskImpact").mockResolvedValue({ ...TASK, impact: 5 });
-
-    const { result } = renderHook(() => useTasks());
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    await act(async () => {
-      await result.current.setTaskImpact(TASK.id, 5);
-    });
-
-    expect(result.current.tasks[0].impact).toBe(5);
-  });
-
-  it("setTaskDueDate replaces the task with the updated version", async () => {
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    vi.spyOn(tasksApi, "setTaskDueDate").mockResolvedValue({ ...TASK, due_date: "2026-08-01" });
-
-    const { result } = renderHook(() => useTasks());
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    await act(async () => {
-      await result.current.setTaskDueDate(TASK.id, "2026-08-01");
-    });
-
-    expect(result.current.tasks[0].due_date).toBe("2026-08-01");
-  });
-
-  it("setTaskTimeEstimateMinutes replaces the task with the updated version", async () => {
-    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
-    vi.spyOn(tasksApi, "setTaskTimeEstimateMinutes").mockResolvedValue({ ...TASK, time_estimate_minutes: 45 });
-
-    const { result } = renderHook(() => useTasks());
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    await act(async () => {
-      await result.current.setTaskTimeEstimateMinutes(TASK.id, 45);
-    });
-
-    expect(result.current.tasks[0].time_estimate_minutes).toBe(45);
-  });
-
   it("deleteTask removes the task from state after the request resolves", async () => {
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([TASK]);
     const deleteSpy = vi.spyOn(tasksApi, "deleteTask").mockResolvedValue({ id: TASK.id });

@@ -37,4 +37,18 @@ describe("SegmentedScale", () => {
 
     expect(onChange).toHaveBeenCalledWith(3);
   });
+
+  it("renders as read-only (no buttons) when onChange is omitted", () => {
+    render(<SegmentedScale segmentCount={5} value={3} aria-label="Energy" />);
+
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("still shows the fill state when read-only", () => {
+    const { container } = render(<SegmentedScale segmentCount={5} value={3} aria-label="Energy" />);
+
+    const segments = container.querySelectorAll(".segmented-scale__segment");
+    expect(segments[0]).toHaveAttribute("data-filled", "true");
+    expect(segments[3]).toHaveAttribute("data-filled", "false");
+  });
 });

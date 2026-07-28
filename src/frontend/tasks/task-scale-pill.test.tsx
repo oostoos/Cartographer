@@ -27,4 +27,11 @@ describe("TaskScalePill", () => {
 
     expect(onChange).toHaveBeenCalledWith(null);
   });
+
+  it("renders read-only with no clear button and no clickable segments when onChange is omitted", () => {
+    render(<TaskScalePill label="Energy" value={3} />);
+
+    expect(screen.getByText("Energy")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

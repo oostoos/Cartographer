@@ -5,14 +5,20 @@ import { TaskGroupPill } from "./task-group-pill";
 
 describe("TaskGroupPill", () => {
   it("renders the group name", () => {
-    render(<TaskGroupPill groupName="Home renovation" onRemove={vi.fn()} />);
+    render(<TaskGroupPill groupName="Home renovation" groupColor="#f3d9c4" onRemove={vi.fn()} />);
 
     expect(screen.getByText("Home renovation")).toBeInTheDocument();
   });
 
+  it("applies the group color as its background", () => {
+    render(<TaskGroupPill groupName="Home renovation" groupColor="#f3d9c4" onRemove={vi.fn()} />);
+
+    expect(screen.getByText("Home renovation")).toHaveStyle({ backgroundColor: "#f3d9c4" });
+  });
+
   it("calls onRemove when the remove button is clicked", () => {
     const onRemove = vi.fn();
-    render(<TaskGroupPill groupName="Home renovation" onRemove={onRemove} />);
+    render(<TaskGroupPill groupName="Home renovation" groupColor="#f3d9c4" onRemove={onRemove} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Remove from Home renovation" }));
 

@@ -4,5 +4,6 @@ export type TGroup = {
   name: string;
   created_at: string;
   updated_at: string;
+  color: string;
   order: number;
 };

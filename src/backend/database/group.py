@@ -11,9 +11,10 @@ from src.backend.database.record_store import (
     writeRecord,
 )
 from src.backend.database.task import unassignTasksFromGroup
+from src.backend.groups.group_color_palette import GROUP_COLOR_PALETTE
 
 GROUP_OBJECT_TYPE = "group"
-GROUP_FIELD_ORDER = ["id", "name", "created_at", "updated_at", "order"]
+GROUP_FIELD_ORDER = ["id", "name", "created_at", "updated_at", "order", "color"]
 
 
 class EmptyGroupNameError(ValueError):
@@ -21,7 +22,10 @@ class EmptyGroupNameError(ValueError):
 
 
 def createGroup(name: str) -> Group:
-    """Create and persist a new group. Raises EmptyGroupNameError if name is blank."""
+    """Create and persist a new group. Raises EmptyGroupNameError if name is blank.
+
+    Its color is auto-assigned by cycling through GROUP_COLOR_PALETTE in creation order.
+    """
     _requireNonEmptyName(name)
     now = currentUtcIsoTimestamp()
     group = Group(
@@ -29,6 +33,7 @@ def createGroup(name: str) -> Group:
         name=name,
         created_at=now,
         updated_at=now,
+        color=_nextGroupColor(),
         order=_nextGroupOrder(),
     )
     writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
@@ -54,13 +59,19 @@ def getAllGroups() -> list[Group]:
     return groups
 
 
-def updateGroup(group_id: str, name: str) -> Group | None:
-    """Rename a group. Returns None if the group doesn't exist. Raises EmptyGroupNameError if name is blank."""
+def updateGroup(group_id: str, name: str | None = None, color: str | None = None) -> Group | None:
+    """Update a group's name and/or color. Returns None if the group doesn't exist.
+
+    Omitted fields are left unchanged. Raises EmptyGroupNameError if name is provided but blank.
+    """
     group = getGroup(group_id)
     if group is None:
         return None
-    _requireNonEmptyName(name)
-    group.name = name
+    if name is not None:
+        _requireNonEmptyName(name)
+        group.name = name
+    if color is not None:
+        group.color = color
     group.updated_at = currentUtcIsoTimestamp()
     writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
     return group
@@ -96,6 +107,11 @@ def _nextGroupOrder() -> float:
     return computeNextOrder([group.order for group in getAllGroups()])
 
 
+def _nextGroupColor() -> str:
+    """The color a newly created group should get: cycles through GROUP_COLOR_PALETTE."""
+    return GROUP_COLOR_PALETTE[len(getAllGroups()) % len(GROUP_COLOR_PALETTE)]
+
+
 def _saveGroupAtOrder(group: Group, order: float) -> None:
     """Persist a group at a new order, stamping updated_at."""
     group.order = order
@@ -111,12 +127,17 @@ def _encodeGroup(group: Group) -> list[str]:
         "created_at": group.created_at,
         "updated_at": group.updated_at,
         "order": str(group.order),
+        "color": group.color,
     }
     return [values[field] for field in GROUP_FIELD_ORDER]
 
 
 def _decodeGroup(fields: list[str]) -> Group:
-    """Decode a page_store field list (in GROUP_FIELD_ORDER) back into a Group."""
+    """Decode a page_store field list (in GROUP_FIELD_ORDER) back into a Group.
+
+    color is read defensively since legacy records written before that field existed
+    have fewer fields on disk; missing ones default to the palette's first color.
+    """
     values = buildDictFromKeysAndValues(GROUP_FIELD_ORDER, fields)
     return Group(
         id=values["id"],
@@ -124,4 +145,5 @@ def _decodeGroup(fields: list[str]) -> Group:
         created_at=values["created_at"],
         updated_at=values["updated_at"],
         order=float(values.get("order") or 0.0),
+        color=values.get("color") or GROUP_COLOR_PALETTE[0],
     )

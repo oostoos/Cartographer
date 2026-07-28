@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as groupsApi from "../groups/groups-api";
+import { GROUP_COLOR_PALETTE } from "../groups/group-color-palette";
 import type { TGroup } from "../groups/types";
 import * as tasksApi from "./tasks-api";
 import { TaskDetailPanel } from "./task-detail-panel";
@@ -30,6 +31,7 @@ const GROUP: TGroup = {
   name: "Home renovation",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
+  color: GROUP_COLOR_PALETTE[0],
   order: 0,
 };
 
@@ -162,7 +164,7 @@ describe("TasksPage", () => {
 
     renderPage("/tasks/1");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Edit" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toBeInTheDocument());
     expect(screen.queryByText("Select a task to see its details.")).not.toBeInTheDocument();
   });
 
@@ -255,20 +257,15 @@ describe("TasksPage", () => {
     );
   });
 
-  it("renders an energy pill for a task with energy_requirement set, adjustable inline", async () => {
+  it("renders a read-only energy pill on the row for a task with energy_requirement set", async () => {
     const withEnergy = buildTask({ id: "1", title: "Buy milk", energy_requirement: 2 });
     vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([withEnergy]);
     stubGroups();
-    const setEnergySpy = vi
-      .spyOn(tasksApi, "setTaskEnergyRequirement")
-      .mockResolvedValue({ ...withEnergy, energy_requirement: 5 });
 
     renderPage();
 
     await waitFor(() => expect(screen.getByText("Energy")).toBeInTheDocument());
-    fireEvent.click(screen.getAllByRole("button", { name: /^Energy: level/ })[4]);
-
-    await waitFor(() => expect(setEnergySpy).toHaveBeenCalledWith("1", 5));
+    expect(screen.queryByRole("button", { name: /^Energy: level/ })).not.toBeInTheDocument();
   });
 
   it("deletes a task via its row's delete button without a confirmation prompt", async () => {

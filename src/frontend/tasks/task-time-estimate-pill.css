@@ -4,4 +4,7 @@
   padding: 0 var(--space-xs);
   border-radius: var(--radius-small);
   background-color: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.6;
 }

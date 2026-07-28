@@ -14,4 +14,15 @@ describe("Card", () => {
     const content = screen.getByText("Task content");
     expect(content.closest(".card")).not.toBeNull();
   });
+
+  it("applies a given style override", () => {
+    render(
+      <Card style={{ backgroundColor: "#f3d9c4" }}>
+        <p>Task content</p>
+      </Card>,
+    );
+
+    const card = screen.getByText("Task content").closest(".card");
+    expect(card).toHaveStyle({ backgroundColor: "#f3d9c4" });
+  });
 });

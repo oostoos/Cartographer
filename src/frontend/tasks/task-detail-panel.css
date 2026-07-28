@@ -1,25 +1,19 @@
-.task-detail-view {
+.task-detail-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
 
-.task-detail-edit {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.task-detail-edit input,
-.task-detail-edit textarea {
+.task-detail-form input[type="text"],
+.task-detail-form textarea {
   border: 1px solid var(--color-border);
   padding: var(--space-sm);
   font-family: inherit;
 }
 
-.task-detail-actions {
-  display: flex;
-  gap: var(--space-sm);
+.task-detail-title-input {
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
 .task-detail-field {

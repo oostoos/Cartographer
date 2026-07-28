@@ -5,6 +5,7 @@ import { DndContext } from "@dnd-kit/core";
 
 import type { TTask } from "../tasks/types";
 import { GroupSidebar } from "./group-sidebar";
+import { GROUP_COLOR_PALETTE } from "./group-color-palette";
 import type { TGroup } from "./types";
 
 const GROUP: TGroup = {
@@ -12,6 +13,7 @@ const GROUP: TGroup = {
   name: "Home renovation",
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
+  color: GROUP_COLOR_PALETTE[0],
   order: 0,
 };
 
@@ -44,6 +46,7 @@ function renderSidebar(overrides: Partial<Parameters<typeof GroupSidebar>[0]> = 
         onSelectFilter={vi.fn()}
         onCreateGroup={vi.fn()}
         onRenameGroup={vi.fn()}
+        onChangeGroupColor={vi.fn()}
         onDeleteGroup={vi.fn()}
         {...overrides}
       />
@@ -121,10 +124,22 @@ describe("GroupSidebar", () => {
     const onRenameGroup = vi.fn();
     renderSidebar({ onRenameGroup });
 
-    fireEvent.click(screen.getByRole("button", { name: "Rename Home renovation" }));
+    fireEvent.click(screen.getByRole("button", { name: "Edit Home renovation" }));
     fireEvent.change(screen.getByLabelText("Rename Home renovation"), { target: { value: "Home projects" } });
     fireEvent.blur(screen.getByLabelText("Rename Home renovation"));
 
     expect(onRenameGroup).toHaveBeenCalledWith("group-1", "Home projects");
+  });
+
+  it("calls onChangeGroupColor with the group id and new color", () => {
+    const onChangeGroupColor = vi.fn();
+    renderSidebar({ onChangeGroupColor });
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit Home renovation" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: `Home renovation color: ${GROUP_COLOR_PALETTE[2]}` }),
+    );
+
+    expect(onChangeGroupColor).toHaveBeenCalledWith("group-1", GROUP_COLOR_PALETTE[2]);
   });
 });

@@ -61,15 +61,15 @@ describe("SortableTaskListItem", () => {
     expect(onToggleCompleted).toHaveBeenCalledWith(true);
   });
 
-  it("renders a group pill when given groupName and onRemoveGroup", () => {
-    renderItem({ groupName: "Home renovation", onRemoveGroup: vi.fn() });
+  it("renders a group pill when given groupName, groupColor, and onRemoveGroup", () => {
+    renderItem({ groupName: "Home renovation", groupColor: "#f3d9c4", onRemoveGroup: vi.fn() });
 
     expect(screen.getByText("Home renovation")).toBeInTheDocument();
   });
 
   it("calls onRemoveGroup when the pill's remove button is clicked", () => {
     const onRemoveGroup = vi.fn();
-    renderItem({ groupName: "Home renovation", onRemoveGroup });
+    renderItem({ groupName: "Home renovation", groupColor: "#f3d9c4", onRemoveGroup });
 
     screen.getByRole("button", { name: "Remove from Home renovation" }).click();
 
@@ -85,12 +85,9 @@ describe("SortableTaskListItem", () => {
     expect(onDelete).toHaveBeenCalled();
   });
 
-  it("renders and wires an energy pill when given energy_requirement and onSetEnergyRequirement", () => {
-    const onSetEnergyRequirement = vi.fn();
-    renderItem({ task: { ...TASK, energy_requirement: 2 }, onSetEnergyRequirement });
+  it("renders a read-only energy pill when the wrapped task has energy_requirement set", () => {
+    renderItem({ task: { ...TASK, energy_requirement: 2 } });
 
-    screen.getAllByRole("button", { name: /^Energy: level/ })[4].click();
-
-    expect(onSetEnergyRequirement).toHaveBeenCalledWith(5);
+    expect(screen.getByText("Energy")).toBeInTheDocument();
   });
 });

@@ -1,6 +1,9 @@
 import pytest
 
+from lib.stack.parchment.page_store import writePage
+from src.backend.database import record_store as record_store_module
 from src.backend.database.group import (
+    GROUP_OBJECT_TYPE,
     EmptyGroupNameError,
     createGroup,
     deleteGroup,
@@ -10,6 +13,7 @@ from src.backend.database.group import (
     updateGroup,
 )
 from src.backend.database.task import createTask, getTask
+from src.backend.groups.group_color_palette import GROUP_COLOR_PALETTE
 
 
 def test_create_group_persists_and_is_retrievable():
@@ -105,6 +109,56 @@ def test_update_group_with_empty_name_raises():
 
     with pytest.raises(EmptyGroupNameError):
         updateGroup(group.id, "")
+
+
+def test_create_group_assigns_a_color_from_the_palette():
+    group = createGroup("Home renovation")
+
+    assert group.color in GROUP_COLOR_PALETTE
+
+
+def test_create_group_cycles_through_the_palette():
+    groups = [createGroup(f"Group {i}") for i in range(len(GROUP_COLOR_PALETTE) + 1)]
+
+    colors = [group.color for group in groups]
+
+    assert colors == GROUP_COLOR_PALETTE + [GROUP_COLOR_PALETTE[0]]
+
+
+def test_update_group_sets_color():
+    group = createGroup("Home renovation")
+    new_color = GROUP_COLOR_PALETTE[1] if group.color != GROUP_COLOR_PALETTE[1] else GROUP_COLOR_PALETTE[2]
+
+    updated = updateGroup(group.id, color=new_color)
+
+    assert updated.color == new_color
+    assert getGroup(group.id).color == new_color
+
+
+def test_update_group_color_leaves_name_unchanged():
+    group = createGroup("Home renovation")
+
+    updated = updateGroup(group.id, color=GROUP_COLOR_PALETTE[3])
+
+    assert updated.name == "Home renovation"
+
+
+def test_update_group_name_leaves_color_unchanged():
+    group = createGroup("Home renovation")
+
+    updated = updateGroup(group.id, name="Home projects")
+
+    assert updated.color == group.color
+
+
+def test_decode_group_defaults_color_to_first_palette_entry_for_legacy_five_field_record():
+    group = createGroup("Home renovation")
+    legacy_fields = [group.id, group.name, group.created_at, group.updated_at, str(group.order)]
+    writePage(record_store_module.DATA_ROOT, GROUP_OBJECT_TYPE, group.id, legacy_fields)
+
+    fetched = getGroup(group.id)
+
+    assert fetched.color == GROUP_COLOR_PALETTE[0]
 
 
 def test_reorder_groups_reassigns_order_to_match_given_sequence():

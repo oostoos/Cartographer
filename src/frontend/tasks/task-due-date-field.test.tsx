@@ -33,4 +33,11 @@ describe("TaskDueDateField", () => {
 
     expect(onChange).toHaveBeenCalledWith(null);
   });
+
+  it("renders a read-only formatted label with no input when onChange is omitted", () => {
+    render(<TaskDueDateField value="2026-08-01" aria-label="Due date" />);
+
+    expect(screen.getByText("Aug 1")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  });
 });

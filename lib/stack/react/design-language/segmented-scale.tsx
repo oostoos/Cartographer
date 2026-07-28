@@ -1,15 +1,17 @@
 import "./segmented-scale.css";
 
 export interface ISegmentedScaleProps {
-  /** Number of clickable segments to render, e.g. 5 for a 1-5 scale. */
+  /** Number of segments to render, e.g. 5 for a 1-5 scale. */
   segmentCount: number;
   /** The currently selected level (1-based), or null if unset. */
   value: number | null;
-  onChange: (value: number) => void;
+  /** Omit to render a read-only scale (plain filled bars, no click affordance). */
+  onChange?: (value: number) => void;
   "aria-label": string;
 }
 
-/** A volume-style scale of N clickable segments, filled up to the current value. */
+/** A volume-style scale of N segments, filled up to the current value. Clickable when
+ * onChange is given, a plain read-only display when it's omitted. */
 export function SegmentedScale({
   segmentCount,
   value,
@@ -17,6 +19,16 @@ export function SegmentedScale({
   "aria-label": ariaLabel,
 }: ISegmentedScaleProps) {
   const levels = Array.from({ length: segmentCount }, (_, index) => index + 1);
+
+  if (!onChange) {
+    return (
+      <div className="segmented-scale" role="img" aria-label={`${ariaLabel}: ${value ?? "unset"}`}>
+        {levels.map((level) => (
+          <span key={level} className="segmented-scale__segment" data-filled={value !== null && level <= value} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="segmented-scale" role="group" aria-label={ariaLabel}>

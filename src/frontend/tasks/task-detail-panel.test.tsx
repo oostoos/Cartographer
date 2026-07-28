@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Outlet, Route, Routes, useSearchParams } from "react-router-dom";
+import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as tasksApi from "./tasks-api";
@@ -23,22 +23,11 @@ const TASK: TTask = {
   time_estimate_minutes: null,
 };
 
-function LocationEcho() {
-  const [searchParams] = useSearchParams();
-  return <p>filter:{searchParams.get("group") ?? "none"}</p>;
-}
-
-function renderAtTaskId(
-  taskId: string,
-  context: Pick<ITasksOutletContext, "tasks" | "onTaskUpdated"> & Partial<Pick<ITasksOutletContext, "onTaskDeleted">>,
-  initialPath = `/tasks/${taskId}`,
-) {
-  const fullContext: ITasksOutletContext = { onTaskDeleted: vi.fn(), ...context };
+function renderAtTaskId(taskId: string, context: ITasksOutletContext, initialPath = `/tasks/${taskId}`) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/tasks" element={<Outlet context={fullContext} />}>
-          <Route index element={<LocationEcho />} />
+        <Route path="/tasks" element={<Outlet context={context} />}>
           <Route path=":taskId" element={<TaskDetailPanel />} />
         </Route>
       </Routes>
@@ -56,8 +45,8 @@ describe("TaskDetailPanel", () => {
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
 
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
-    expect(screen.getByText("2%")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
+    expect(screen.getByLabelText("Edit task description")).toHaveValue("2%");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
@@ -67,7 +56,7 @@ describe("TaskDetailPanel", () => {
     renderAtTaskId(TASK.id, { tasks: [], onTaskUpdated: vi.fn() });
 
     expect(screen.getByText(/Loading task/)).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
   });
 
   it("shows an error message when the fallback fetch fails", async () => {
@@ -78,173 +67,121 @@ describe("TaskDetailPanel", () => {
     await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Task not found."));
   });
 
-  it("shows a fallback message when the task has no description", async () => {
-    renderAtTaskId(TASK.id, { tasks: [{ ...TASK, description: "" }], onTaskUpdated: vi.fn() });
+  it("renders no Edit, Save, Cancel, or Delete buttons — every field is always live", async () => {
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
 
-    await waitFor(() => expect(screen.getByText("No description")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
+    for (const name of ["Edit", "Save", "Cancel", "Delete"]) {
+      expect(screen.queryByRole("button", { name })).not.toBeInTheDocument();
+    }
   });
 
-  it("toggling completion calls onTaskUpdated with the updated task", async () => {
-    vi.spyOn(tasksApi, "setTaskCompleted").mockResolvedValue({ ...TASK, completed: true });
+  it("commits the title on blur when it changed", async () => {
+    const updateSpy = vi.spyOn(tasksApi, "updateTask").mockResolvedValue({ ...TASK, title: "Buy oat milk" });
     const onTaskUpdated = vi.fn();
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
 
-    fireEvent.click(screen.getByRole("checkbox"));
+    const titleInput = screen.getByLabelText("Edit task title");
+    fireEvent.change(titleInput, { target: { value: "Buy oat milk" } });
+    fireEvent.blur(titleInput);
 
-    await waitFor(() => expect(onTaskUpdated).toHaveBeenCalledWith({ ...TASK, completed: true }));
+    await waitFor(() => expect(updateSpy).toHaveBeenCalledWith(TASK.id, { title: "Buy oat milk" }));
+    expect(onTaskUpdated).toHaveBeenCalledWith({ ...TASK, title: "Buy oat milk" });
   });
 
-  it("edits and saves the title and description, calling onTaskUpdated", async () => {
+  it("does not commit the title on blur when it did not change", async () => {
+    const updateSpy = vi.spyOn(tasksApi, "updateTask");
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
+
+    fireEvent.blur(screen.getByLabelText("Edit task title"));
+
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it("reverts to the last saved title on blur instead of saving a blank one", async () => {
+    const updateSpy = vi.spyOn(tasksApi, "updateTask");
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
+
+    const titleInput = screen.getByLabelText("Edit task title");
+    fireEvent.change(titleInput, { target: { value: "   " } });
+    fireEvent.blur(titleInput);
+
+    expect(updateSpy).not.toHaveBeenCalled();
+    expect(titleInput).toHaveValue("Buy milk");
+  });
+
+  it("commits the description on blur when it changed", async () => {
     const updateSpy = vi
       .spyOn(tasksApi, "updateTask")
-      .mockResolvedValue({ ...TASK, title: "Buy oat milk", description: "unsweetened" });
+      .mockResolvedValue({ ...TASK, description: "unsweetened" });
     const onTaskUpdated = vi.fn();
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.change(screen.getByLabelText("Task title"), { target: { value: "Buy oat milk" } });
-    fireEvent.change(screen.getByLabelText("Task description"), {
-      target: { value: "unsweetened" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    const descriptionInput = screen.getByLabelText("Edit task description");
+    fireEvent.change(descriptionInput, { target: { value: "unsweetened" } });
+    fireEvent.blur(descriptionInput);
 
-    await waitFor(() =>
-      expect(updateSpy).toHaveBeenCalledWith(TASK.id, {
-        title: "Buy oat milk",
-        description: "unsweetened",
-      }),
-    );
-    await waitFor(() => expect(screen.getByText("Buy oat milk")).toBeInTheDocument());
-    expect(onTaskUpdated).toHaveBeenCalledWith({
-      ...TASK,
-      title: "Buy oat milk",
-      description: "unsweetened",
-    });
+    await waitFor(() => expect(updateSpy).toHaveBeenCalledWith(TASK.id, { description: "unsweetened" }));
+    expect(onTaskUpdated).toHaveBeenCalledWith({ ...TASK, description: "unsweetened" });
   });
 
-  it("save only calls setTaskEnergyRequirement when energy requirement was changed", async () => {
-    const updateSpy = vi.spyOn(tasksApi, "updateTask").mockResolvedValue(TASK);
+  it("commits energy requirement immediately on click", async () => {
     const energySpy = vi
       .spyOn(tasksApi, "setTaskEnergyRequirement")
       .mockResolvedValue({ ...TASK, energy_requirement: 3 });
-    const impactSpy = vi.spyOn(tasksApi, "setTaskImpact");
     const onTaskUpdated = vi.fn();
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.click(
-      screen.getAllByRole("button", { name: /^Energy requirement: level/ })[2],
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.click(screen.getAllByRole("button", { name: /^Energy requirement: level/ })[2]);
 
     await waitFor(() => expect(energySpy).toHaveBeenCalledWith(TASK.id, 3));
-    expect(updateSpy).toHaveBeenCalled();
-    expect(impactSpy).not.toHaveBeenCalled();
+    expect(onTaskUpdated).toHaveBeenCalledWith({ ...TASK, energy_requirement: 3 });
   });
 
-  it("save does not call any of the new field setters when nothing changed", async () => {
-    const updateSpy = vi.spyOn(tasksApi, "updateTask").mockResolvedValue(TASK);
-    const energySpy = vi.spyOn(tasksApi, "setTaskEnergyRequirement");
-    const impactSpy = vi.spyOn(tasksApi, "setTaskImpact");
-    const dueDateSpy = vi.spyOn(tasksApi, "setTaskDueDate");
-    const estimateSpy = vi.spyOn(tasksApi, "setTaskTimeEstimateMinutes");
+  it("commits impact immediately on click", async () => {
+    const impactSpy = vi.spyOn(tasksApi, "setTaskImpact").mockResolvedValue({ ...TASK, impact: 5 });
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    fireEvent.click(screen.getAllByRole("button", { name: /^Impact: level/ })[4]);
 
-    await waitFor(() => expect(updateSpy).toHaveBeenCalled());
-    expect(energySpy).not.toHaveBeenCalled();
-    expect(impactSpy).not.toHaveBeenCalled();
-    expect(dueDateSpy).not.toHaveBeenCalled();
-    expect(estimateSpy).not.toHaveBeenCalled();
+    await waitFor(() => expect(impactSpy).toHaveBeenCalledWith(TASK.id, 5));
   });
 
-  it("save calls setTaskDueDate and setTaskTimeEstimateMinutes when those fields were changed", async () => {
-    vi.spyOn(tasksApi, "updateTask").mockResolvedValue(TASK);
+  it("commits due date immediately on change", async () => {
     const dueDateSpy = vi
       .spyOn(tasksApi, "setTaskDueDate")
       .mockResolvedValue({ ...TASK, due_date: "2026-08-01" });
-    const estimateSpy = vi
-      .spyOn(tasksApi, "setTaskTimeEstimateMinutes")
-      .mockResolvedValue({ ...TASK, due_date: "2026-08-01", time_estimate_minutes: 15 });
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByLabelText("Due date"), { target: { value: "2026-08-01" } });
-    fireEvent.click(screen.getByRole("button", { name: "Increase Time estimate" }));
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() => expect(dueDateSpy).toHaveBeenCalledWith(TASK.id, "2026-08-01"));
-    expect(estimateSpy).toHaveBeenCalledWith(TASK.id, 15);
   });
 
-  it("cancel resets edited scale/date/estimate fields without saving", async () => {
-    const energySpy = vi.spyOn(tasksApi, "setTaskEnergyRequirement");
+  it("commits time estimate immediately on interaction", async () => {
+    const estimateSpy = vi
+      .spyOn(tasksApi, "setTaskTimeEstimateMinutes")
+      .mockResolvedValue({ ...TASK, time_estimate_minutes: 15 });
 
     renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText("Edit task title")).toHaveValue("Buy milk"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.click(screen.getAllByRole("button", { name: /^Energy requirement: level/ })[2]);
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    fireEvent.click(screen.getByRole("button", { name: "Increase Time estimate" }));
 
-    expect(energySpy).not.toHaveBeenCalled();
-
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    expect(screen.getAllByRole("button", { name: /^Energy requirement: level/ })[0]).toHaveAttribute(
-      "data-filled",
-      "false",
-    );
-  });
-
-  it("save is disabled and does nothing when the edited title is blank", async () => {
-    const updateSpy = vi.spyOn(tasksApi, "updateTask");
-
-    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
-
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.change(screen.getByLabelText("Task title"), { target: { value: "   " } });
-
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
-    expect(updateSpy).not.toHaveBeenCalled();
-  });
-
-  it("cancel discards edits without saving", async () => {
-    const updateSpy = vi.spyOn(tasksApi, "updateTask");
-
-    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
-
-    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
-    fireEvent.change(screen.getByLabelText("Task title"), { target: { value: "Should not save" } });
-    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
-
-    expect(updateSpy).not.toHaveBeenCalled();
-    expect(screen.getByText("Buy milk")).toBeInTheDocument();
-  });
-
-  it("deleting calls onTaskDeleted and navigates back to /tasks preserving the filter", async () => {
-    const onTaskDeleted = vi.fn().mockResolvedValue(undefined);
-
-    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn(), onTaskDeleted }, `/tasks/${TASK.id}?group=group-1`);
-    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
-
-    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
-
-    await waitFor(() => expect(onTaskDeleted).toHaveBeenCalledWith(TASK.id));
-    await waitFor(() => expect(screen.getByText("filter:group-1")).toBeInTheDocument());
-    expect(screen.queryByText("Buy milk")).not.toBeInTheDocument();
+    await waitFor(() => expect(estimateSpy).toHaveBeenCalledWith(TASK.id, 15));
   });
 });

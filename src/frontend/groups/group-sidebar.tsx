@@ -22,6 +22,7 @@ export interface IGroupSidebarProps {
   onSelectFilter: (filter: TTaskFilter) => void;
   onCreateGroup: (name: string) => Promise<void>;
   onRenameGroup: (groupId: string, name: string) => Promise<void>;
+  onChangeGroupColor: (groupId: string, color: string) => void;
   onDeleteGroup: (groupId: string) => void;
 }
 
@@ -33,6 +34,7 @@ export function GroupSidebar({
   onSelectFilter,
   onCreateGroup,
   onRenameGroup,
+  onChangeGroupColor,
   onDeleteGroup,
 }: IGroupSidebarProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -82,6 +84,7 @@ export function GroupSidebar({
                   isActive={activeFilter.type === "group" && activeFilter.groupId === group.id}
                   onSelect={() => onSelectFilter({ type: "group", groupId: group.id })}
                   onRename={(name) => onRenameGroup(group.id, name)}
+                  onChangeColor={(color) => onChangeGroupColor(group.id, color)}
                   onDelete={() => onDeleteGroup(group.id)}
                 />
               </li>

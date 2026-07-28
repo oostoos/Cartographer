@@ -56,11 +56,11 @@ def reorderGroupsRoute():
 
 @groups_blueprint.patch("/<group_id>")
 def updateGroupRoute(group_id: str):
-    """Rename a group."""
+    """Update a group's name and/or color."""
     try:
         payload = requireJsonObjectBody()
         update_payload = parseGroupUpdatePayload(payload)
-        group = updateGroup(group_id, update_payload.name)
+        group = updateGroup(group_id, name=update_payload.name, color=update_payload.color)
     except (InvalidPayloadError, EmptyGroupNameError) as error:
         return buildErrorResponse(str(error))
     if group is None:
