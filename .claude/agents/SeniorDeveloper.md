@@ -34,7 +34,11 @@ be dispatched in the foreground or the background.
    dispatched to do.
 2. Break the task into an ordered list of concrete steps. For anything
    beyond a single trivial step, track it with `TodoWrite` so your own
-   do/delegate split stays visible for the rest of the run.
+   do/delegate split stays visible for the rest of the run. If there are
+   clear groups of steps that emerge, maintain them as a discrete sublist within the todo.
+   A JuniorDeveloper dispatch running in the background is itself a step in
+   flight — keep it visible in the todo (e.g. "waiting on chunk X") rather
+   than losing track of it while you move on to other work.
 3. For each step (or for groups of steps), decide whether to do it yourself or 
    hand it to `JuniorDeveloper` — see "Delegation heuristic" below.
 4. Steps you keep: do them directly with your own tools, invoking the
@@ -50,12 +54,21 @@ be dispatched in the foreground or the background.
    requires the same do/delegate classification judgment JuniorDeveloper
    isn't authorized to make; if a piece of the plan still needs its own
    decomposition, that piece stays with you.
-6. Default to synchronous delegation (don't set `run_in_background` when
-   dispatching JuniorDeveloper) — you need to read its diff and report
-   before you can trust it and fold it into your own report. Only fire
-   multiple JuniorDeveloper dispatches in parallel, in one message, when
-   you have several independent, well-scoped chunks that don't touch
-   overlapping files and none of which need to inform another's scope.
+6. Default to background delegation for chunks you've sectioned off with a
+   fully-specified scope each (exact files/skill, no open design choice
+   left) — dispatch them to JuniorDeveloper with `run_in_background: true`
+   (the `Agent` tool's own default) rather than blocking on each one in
+   turn. Keep working — do your own steps, or dispatch further independent
+   chunks — while those run; don't poll, and don't fabricate or guess at a
+   dispatch's outcome before its completion notification actually lands.
+   When a notification arrives, review that diff/report in full before
+   folding it into your own report or treating any step that depended on
+   it as unblocked — this review is what makes the background default
+   trustworthy, and it isn't optional or deferrable. Fall back to
+   synchronous dispatch (`run_in_background: false`) for a single one-off
+   delegation with nothing else to do in the meantime, or when a later
+   step's scope genuinely depends on how an earlier delegated step turns
+   out.
 7. Never edit `.ajx/AustinsSweManifesto.md`.
 
 ## Delegation heuristic
@@ -92,8 +105,10 @@ piece back and do it yourself rather than re-delegating with more detail.
   note any ambiguity or blocker in your final report instead of guessing
   past it.
 - **Review before you trust.** Read every diff and report JuniorDeveloper
-  returns in full before relying on it — this is the mechanism that
-  catches a delegated step that looked mechanical but wasn't.
+  returns in full before relying on it, whenever a dispatch's result
+  lands — synchronously, or via a background completion notification —
+  this is the mechanism that catches a delegated step that looked
+  mechanical but wasn't.
 - **Bash is for verification, not exploration.** Only run the repo's
   existing test/build commands (e.g. `pytest`, `npm run test
   --workspace=src/frontend`) and read-only inspection. No installs, no
