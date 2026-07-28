@@ -5,10 +5,22 @@ Mirrored on the frontend by src/frontend/groups/groups-api.ts.
 from dataclasses import dataclass
 
 from lib.language.python.validation.type_checks import isDict, isList, isString
+from src.backend.request_validation import (
+    REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR,
+    InvalidPayloadError,
+)
 
+__all__ = [
+    "GroupCreatePayload",
+    "GroupReorderPayload",
+    "GroupUpdatePayload",
+    "InvalidPayloadError",
+    "parseGroupCreatePayload",
+    "parseGroupReorderPayload",
+    "parseGroupUpdatePayload",
+]
 
-class InvalidPayloadError(ValueError):
-    """Raised when a request payload is malformed or missing a required field."""
+NAME_REQUIRED_STRING_ERROR = "'name' is required and must be a string"
 
 
 @dataclass
@@ -21,11 +33,11 @@ class GroupCreatePayload:
 def parseGroupCreatePayload(data: object) -> GroupCreatePayload:
     """Parse and validate a group-create request body. Raises InvalidPayloadError if malformed."""
     if not isDict(data):
-        raise InvalidPayloadError("Request body must be a JSON object")
+        raise InvalidPayloadError(REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR)
 
     name = data.get("name")
     if not isString(name):
-        raise InvalidPayloadError("'name' is required and must be a string")
+        raise InvalidPayloadError(NAME_REQUIRED_STRING_ERROR)
 
     return GroupCreatePayload(name=name)
 
@@ -40,11 +52,11 @@ class GroupUpdatePayload:
 def parseGroupUpdatePayload(data: object) -> GroupUpdatePayload:
     """Parse and validate a group-rename request body. Raises InvalidPayloadError if malformed."""
     if not isDict(data):
-        raise InvalidPayloadError("Request body must be a JSON object")
+        raise InvalidPayloadError(REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR)
 
     name = data.get("name")
     if not isString(name):
-        raise InvalidPayloadError("'name' is required and must be a string")
+        raise InvalidPayloadError(NAME_REQUIRED_STRING_ERROR)
 
     return GroupUpdatePayload(name=name)
 
@@ -59,7 +71,7 @@ class GroupReorderPayload:
 def parseGroupReorderPayload(data: object) -> GroupReorderPayload:
     """Parse and validate a group-reorder request body. Raises InvalidPayloadError if malformed."""
     if not isDict(data):
-        raise InvalidPayloadError("Request body must be a JSON object")
+        raise InvalidPayloadError(REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR)
 
     group_ids = data.get("group_ids")
     if not isList(group_ids) or not all(isString(group_id) for group_id in group_ids):

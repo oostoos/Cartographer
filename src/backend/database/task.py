@@ -5,6 +5,7 @@ from lib.language.python.strings.bool_codec import decodeBoolFromString, encodeB
 from lib.language.python.strings.constants import EMPTY_STRING
 from lib.stack.parchment.ids import generateRecordId
 from src.backend.database.models import Task
+from lib.language.python.collections.ordering import computeNextOrder, reorderRecordsByIds
 from src.backend.database.record_store import (
     clearObjectType,
     deleteRecord,
@@ -133,13 +134,7 @@ def reorderTasks(task_ids: list[str]) -> list[Task]:
 
     Returns every task, freshly sorted by order.
     """
-    for index, task_id in enumerate(task_ids):
-        task = getTask(task_id)
-        if task is None:
-            continue
-        task.order = float(index)
-        task.updated_at = currentUtcIsoTimestamp()
-        writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
+    reorderRecordsByIds(task_ids, getTask, _saveTaskAtOrder)
     return getAllTasks()
 
 
@@ -167,8 +162,14 @@ def _requireNonEmptyTitle(title: str) -> None:
 
 def _nextTaskOrder() -> float:
     """The order value a newly created task should get: one past the current highest."""
-    existing_orders = [task.order for task in getAllTasks()]
-    return max(existing_orders, default=-1.0) + 1
+    return computeNextOrder([task.order for task in getAllTasks()])
+
+
+def _saveTaskAtOrder(task: Task, order: float) -> None:
+    """Persist a task at a new order, stamping updated_at."""
+    task.order = order
+    task.updated_at = currentUtcIsoTimestamp()
+    writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
 
 
 def _encodeTask(task: Task) -> list[str]:

@@ -17,6 +17,7 @@ from lib.language.python.date.utc_timestamp import currentUtcIsoTimestamp
 
 # collections — generic dict/list-building helpers
 from lib.language.python.collections.dict_utils import buildDictFromKeysAndValues
+from lib.language.python.collections.ordering import computeNextOrder, reorderRecordsByIds
 
 # validation — generic type-check predicates
 from lib.language.python.validation.type_checks import isDict, isList, isString
@@ -33,6 +34,8 @@ __all__ = [
     "releaseExclusiveLock",
     "currentUtcIsoTimestamp",
     "buildDictFromKeysAndValues",
+    "computeNextOrder",
+    "reorderRecordsByIds",
     "isDict",
     "isList",
     "isString",

@@ -2,13 +2,14 @@ import { deleteJson, getJson, patchJson, postJson } from "@lib-stack/api/http-cl
 
 import type { TTask } from "./types";
 
-// Mirrors src/backend/tasks/schemas.py's TaskCreatePayload/TaskUpdatePayload — keep in sync.
+// Mirrors src/backend/tasks/schemas.py's TaskCreatePayload — keep in sync.
 export type TTaskCreatePayload = {
   title: string;
   description: string;
   group_id?: string | null;
 };
 
+// Mirrors src/backend/tasks/schemas.py's TaskUpdatePayload — keep in sync.
 export type TTaskUpdatePayload = {
   title?: string;
   description?: string;

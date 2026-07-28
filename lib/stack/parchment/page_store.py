@@ -5,6 +5,7 @@ per page) but nothing about what a page represents (Task, Profile, ...) — that
 knowledge belongs to src/backend/database.
 """
 from pathlib import Path
+from typing import Callable
 
 from lib.language.python.file_io.atomic_write import atomicWriteText
 from lib.language.python.file_io.file_lock import acquireExclusiveLock, releaseExclusiveLock
@@ -44,13 +45,7 @@ def writePath(path: Path, content: str) -> None:
     No knowledge of what the content represents or how it's structured — that's
     readPage/writePage's job. This is just the target path this content lands at.
     """
-    lock = acquireExclusiveLock(
-        path, timeout_seconds=LOCK_TIMEOUT_SECONDS, retry_delay_seconds=LOCK_RETRY_DELAY_SECONDS
-    )
-    try:
-        atomicWriteText(path, content)
-    finally:
-        releaseExclusiveLock(lock)
+    _runUnderExclusiveLock(path, lambda: atomicWriteText(path, content))
 
 
 def readPath(path: Path) -> str | None:
@@ -63,13 +58,7 @@ def readPath(path: Path) -> str | None:
 def deletePage(data_root: Path, page_key: str, page_id: str) -> None:
     """Delete a page if it exists. A no-op if it doesn't."""
     path = buildPagePath(data_root, page_key, page_id)
-    lock = acquireExclusiveLock(
-        path, timeout_seconds=LOCK_TIMEOUT_SECONDS, retry_delay_seconds=LOCK_RETRY_DELAY_SECONDS
-    )
-    try:
-        path.unlink(missing_ok=True)
-    finally:
-        releaseExclusiveLock(lock)
+    _runUnderExclusiveLock(path, lambda: path.unlink(missing_ok=True))
 
 
 def listPageIds(data_root: Path, page_key: str) -> list[str]:
@@ -84,6 +73,21 @@ def clearPageKey(data_root: Path, page_key: str) -> None:
     """Delete every page stored under the given key."""
     for page_id in listPageIds(data_root, page_key):
         deletePage(data_root, page_key, page_id)
+
+
+def _runUnderExclusiveLock(path: Path, action: Callable[[], None]) -> None:
+    """Acquire an exclusive lock for path, run action, then release the lock even if it raises.
+
+    Shared scaffold for writePath/deletePage — the two page_store operations that mutate
+    a path on disk and need the same acquire/run/release-even-on-error shape.
+    """
+    lock = acquireExclusiveLock(
+        path, timeout_seconds=LOCK_TIMEOUT_SECONDS, retry_delay_seconds=LOCK_RETRY_DELAY_SECONDS
+    )
+    try:
+        action()
+    finally:
+        releaseExclusiveLock(lock)
 
 
 def _escapeFieldValue(value: str) -> str:

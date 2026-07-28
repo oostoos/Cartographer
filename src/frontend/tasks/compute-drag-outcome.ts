@@ -8,14 +8,20 @@ export type TDragOutcome =
   | { type: "assign-group"; taskId: string; groupId: string }
   | null;
 
+/** The `useSortable`/`useDroppable` `data.type` value a group card tags itself with, so a
+ * drop can be recognized as "onto a group" here. Shared with the group card that sets it
+ * (see `groups/group-card.tsx`) — the single source of truth for this drag/drop contract. */
+export const GROUP_DROP_DATA_TYPE = "group";
+
 interface IGroupDropData {
-  type?: string;
+  type?: typeof GROUP_DROP_DATA_TYPE;
   groupId?: string;
 }
 
 /** Interprets a drag-end event as a group reorder (when the dragged item is a group), a drop
- * onto a group card (identified by `over.data.current.type === "group"`, set by the group
- * card's `useDroppable`/`useSortable`), or a task reorder — whichever applies. Null if none do. */
+ * onto a group card (identified by `over.data.current.type === GROUP_DROP_DATA_TYPE`, set by
+ * the group card's `useDroppable`/`useSortable`), or a task reorder — whichever applies. Null
+ * if none do. */
 export function computeDragOutcome(
   activeTaskIds: string[],
   activeGroupIds: string[],
@@ -32,7 +38,7 @@ export function computeDragOutcome(
   }
 
   const overData = over.data.current as IGroupDropData | undefined;
-  if (overData?.type === "group" && overData.groupId) {
+  if (overData?.type === GROUP_DROP_DATA_TYPE && overData.groupId) {
     return { type: "assign-group", taskId: activeId, groupId: overData.groupId };
   }
 

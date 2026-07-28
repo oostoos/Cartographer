@@ -10,6 +10,7 @@ import { GripIcon, PencilIcon, TrashIcon } from "@lib-stack/design-language/icon
 
 import "./group-card.css";
 
+import { GROUP_DROP_DATA_TYPE } from "../tasks/compute-drag-outcome";
 import type { TGroup } from "./types";
 
 export interface IGroupCardProps {
@@ -40,7 +41,7 @@ export function GroupCard({
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging, isOver } =
     useSortable({
       id: group.id,
-      data: { type: "group", groupId: group.id },
+      data: { type: GROUP_DROP_DATA_TYPE, groupId: group.id },
     });
 
   const style = {

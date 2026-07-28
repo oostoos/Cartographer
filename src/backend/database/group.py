@@ -3,6 +3,7 @@ from lib.language.python.collections.dict_utils import buildDictFromKeysAndValue
 from lib.language.python.date.utc_timestamp import currentUtcIsoTimestamp
 from lib.stack.parchment.ids import generateRecordId
 from src.backend.database.models import Group
+from lib.language.python.collections.ordering import computeNextOrder, reorderRecordsByIds
 from src.backend.database.record_store import (
     deleteRecord,
     listRecordIds,
@@ -70,13 +71,7 @@ def reorderGroups(group_ids: list[str]) -> list[Group]:
 
     Returns every group, freshly sorted by order.
     """
-    for index, group_id in enumerate(group_ids):
-        group = getGroup(group_id)
-        if group is None:
-            continue
-        group.order = float(index)
-        group.updated_at = currentUtcIsoTimestamp()
-        writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
+    reorderRecordsByIds(group_ids, getGroup, _saveGroupAtOrder)
     return getAllGroups()
 
 
@@ -98,8 +93,14 @@ def _requireNonEmptyName(name: str) -> None:
 
 def _nextGroupOrder() -> float:
     """The order value a newly created group should get: one past the current highest."""
-    existing_orders = [group.order for group in getAllGroups()]
-    return max(existing_orders, default=-1.0) + 1
+    return computeNextOrder([group.order for group in getAllGroups()])
+
+
+def _saveGroupAtOrder(group: Group, order: float) -> None:
+    """Persist a group at a new order, stamping updated_at."""
+    group.order = order
+    group.updated_at = currentUtcIsoTimestamp()
+    writeRecord(GROUP_OBJECT_TYPE, group.id, _encodeGroup(group))
 
 
 def _encodeGroup(group: Group) -> list[str]:

@@ -1,16 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { deleteJson, getJson, patchJson, postJson, putJson } from "./http-client";
+import { stubFetchResolving } from "@lib/http/fetch-stub";
 
-function stubFetchResolving(body: unknown) {
-  const mockFetch = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: () => Promise.resolve(body),
-  });
-  vi.stubGlobal("fetch", mockFetch);
-  return mockFetch;
-}
+import { deleteJson, getJson, patchJson, postJson, putJson } from "./http-client";
 
 describe("http-client", () => {
   afterEach(() => {

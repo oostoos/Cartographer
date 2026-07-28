@@ -11,6 +11,7 @@
   --color-accent-hover: #74563f;
   --color-success: #5b7a5a;
   --color-danger: #a65b4b;
+  --color-overlay: rgba(46, 42, 36, 0.4);
 
   --radius-small: 6px;
   --radius-medium: 12px;

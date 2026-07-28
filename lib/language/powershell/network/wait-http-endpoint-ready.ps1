@@ -11,14 +11,17 @@ How long to sleep between polling attempts.
 .OUTPUTS
 [bool] $true once a request succeeds, $false if TimeoutSeconds elapsed first.
 #>
+$WaitHttpEndpointReadyDefaultTimeoutSeconds = 15
+$WaitHttpEndpointReadyDefaultPollIntervalMilliseconds = 250
+
 function Wait-HttpEndpointReady {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Uri,
 
-        [int]$TimeoutSeconds = 15,
+        [int]$TimeoutSeconds = $WaitHttpEndpointReadyDefaultTimeoutSeconds,
 
-        [int]$PollIntervalMilliseconds = 250
+        [int]$PollIntervalMilliseconds = $WaitHttpEndpointReadyDefaultPollIntervalMilliseconds
     )
 
     $startTime = Get-Date

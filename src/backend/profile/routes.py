@@ -1,11 +1,12 @@
 """HTTP routes for the /api/profile resource."""
 from dataclasses import asdict
 
-from flask import Blueprint, request
+from flask import Blueprint
 
-from lib.language.python.validation.type_checks import isDict, isString
+from lib.language.python.validation.type_checks import isString
 from lib.stack.flask.responses import buildErrorResponse, buildSuccessResponse
 from src.backend.database.profile import deleteAllData, getProfile, setDisplayName
+from src.backend.request_validation import InvalidPayloadError, requireJsonObjectBody
 
 profile_blueprint = Blueprint("profile", __name__, url_prefix="/api/profile")
 
@@ -19,13 +20,13 @@ def getProfileRoute():
 @profile_blueprint.put("")
 def putProfileRoute():
     """Set the profile's display name."""
-    payload = request.get_json()
-    if not isDict(payload):
-        return buildErrorResponse("Request body must be a JSON object")
-
-    display_name = payload.get("display_name")
-    if not isString(display_name):
-        return buildErrorResponse("'display_name' is required and must be a string")
+    try:
+        payload = requireJsonObjectBody()
+        display_name = payload.get("display_name")
+        if not isString(display_name):
+            raise InvalidPayloadError("'display_name' is required and must be a string")
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
 
     profile = setDisplayName(display_name)
     return buildSuccessResponse(asdict(profile))

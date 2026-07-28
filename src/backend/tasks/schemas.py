@@ -5,10 +5,22 @@ Mirrored on the frontend by src/frontend/tasks/tasks-api.ts.
 from dataclasses import dataclass
 
 from lib.language.python.validation.type_checks import isDict, isList, isString
+from src.backend.request_validation import (
+    REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR,
+    InvalidPayloadError,
+)
 
+__all__ = [
+    "InvalidPayloadError",
+    "TaskCreatePayload",
+    "TaskReorderPayload",
+    "TaskUpdatePayload",
+    "parseTaskCreatePayload",
+    "parseTaskReorderPayload",
+    "parseTaskUpdatePayload",
+]
 
-class InvalidPayloadError(ValueError):
-    """Raised when a request payload is malformed or missing a required field."""
+DESCRIPTION_MUST_BE_STRING_ERROR = "'description' must be a string"
 
 
 @dataclass
@@ -31,7 +43,7 @@ class TaskUpdatePayload:
 def parseTaskCreatePayload(data: object) -> TaskCreatePayload:
     """Parse and validate a task-create request body. Raises InvalidPayloadError if malformed."""
     if not isDict(data):
-        raise InvalidPayloadError("Request body must be a JSON object")
+        raise InvalidPayloadError(REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR)
 
     title = data.get("title")
     if not isString(title):
@@ -39,7 +51,7 @@ def parseTaskCreatePayload(data: object) -> TaskCreatePayload:
 
     description = data.get("description", "")
     if not isString(description):
-        raise InvalidPayloadError("'description' must be a string")
+        raise InvalidPayloadError(DESCRIPTION_MUST_BE_STRING_ERROR)
 
     group_id = data.get("group_id")
     if group_id is not None and not isString(group_id):
@@ -51,7 +63,7 @@ def parseTaskCreatePayload(data: object) -> TaskCreatePayload:
 def parseTaskUpdatePayload(data: object) -> TaskUpdatePayload:
     """Parse and validate a task-update request body. Raises InvalidPayloadError if malformed."""
     if not isDict(data):
-        raise InvalidPayloadError("Request body must be a JSON object")
+        raise InvalidPayloadError(REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR)
 
     title = data.get("title")
     if title is not None and not isString(title):
@@ -59,7 +71,7 @@ def parseTaskUpdatePayload(data: object) -> TaskUpdatePayload:
 
     description = data.get("description")
     if description is not None and not isString(description):
-        raise InvalidPayloadError("'description' must be a string")
+        raise InvalidPayloadError(DESCRIPTION_MUST_BE_STRING_ERROR)
 
     return TaskUpdatePayload(title=title, description=description)
 
@@ -74,7 +86,7 @@ class TaskReorderPayload:
 def parseTaskReorderPayload(data: object) -> TaskReorderPayload:
     """Parse and validate a task-reorder request body. Raises InvalidPayloadError if malformed."""
     if not isDict(data):
-        raise InvalidPayloadError("Request body must be a JSON object")
+        raise InvalidPayloadError(REQUEST_BODY_MUST_BE_JSON_OBJECT_ERROR)
 
     task_ids = data.get("task_ids")
     if not isList(task_ids) or not all(isString(task_id) for task_id in task_ids):

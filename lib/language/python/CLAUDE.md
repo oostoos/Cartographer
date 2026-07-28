@@ -30,6 +30,12 @@ reaching into individual modules directly.
   `values` into a dict, paired by position. If the lists differ in length,
   extra items in the longer one are dropped (same truncate-to-shorter
   behavior as the underlying `zip()`).
+- **`computeNextOrder(existing_orders: list[float]) -> float`** — the order
+  value a newly created record should get: one past the current highest.
+- **`reorderRecordsByIds(record_ids, get_record, save_record_at_order) -> None`**
+  — reassigns order so records sort in the given id sequence, via caller-
+  supplied fetch/save callbacks. Unknown ids are skipped. No knowledge of
+  what a "record" is.
 
 ## validation — generic type-check predicates
 

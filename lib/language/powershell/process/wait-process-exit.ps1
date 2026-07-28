@@ -12,14 +12,17 @@ Maximum time to wait before giving up. 0 (default) waits indefinitely.
 [bool] $true once the process has exited (or was already gone), $false if
 TimeoutSeconds elapsed while it was still running.
 #>
+$WaitProcessExitDefaultPollIntervalMilliseconds = 500
+$WaitProcessExitDefaultTimeoutSeconds = 0
+
 function Wait-ProcessExit {
     param(
         [Parameter(Mandatory = $true)]
         [int]$ProcessId,
 
-        [int]$PollIntervalMilliseconds = 500,
+        [int]$PollIntervalMilliseconds = $WaitProcessExitDefaultPollIntervalMilliseconds,
 
-        [int]$TimeoutSeconds = 0
+        [int]$TimeoutSeconds = $WaitProcessExitDefaultTimeoutSeconds
     )
 
     $startTime = Get-Date

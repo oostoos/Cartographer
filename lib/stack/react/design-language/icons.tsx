@@ -6,6 +6,9 @@ export interface IIconProps {
 }
 
 const DEFAULT_ICON_SIZE_PX = 16;
+const ICON_VIEWBOX_SIZE = 24;
+const ICON_VIEWBOX = `0 0 ${ICON_VIEWBOX_SIZE} ${ICON_VIEWBOX_SIZE}`;
+const ICON_STROKE_WIDTH = 2;
 
 interface IIconSvgProps extends IIconProps {
   children: ReactNode;
@@ -17,10 +20,10 @@ function IconSvg({ className, size = DEFAULT_ICON_SIZE_PX, children }: IIconSvgP
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={ICON_VIEWBOX}
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={ICON_STROKE_WIDTH}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

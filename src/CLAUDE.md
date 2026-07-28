@@ -10,11 +10,16 @@ Grouped by functional area, not by file type (no top-level "hooks" or
 "utils" dumping grounds).
 
 - **`backend/`**: `app.py` (entrypoint, registers blueprints), `config.py`
-  (Cartographer's port env-var config), `database/` (`task.py`/`profile.py`/
-  `group.py` — business-facing wrappers around `record_store.py`, which
-  binds `paths.py`'s `DATA_ROOT` to `lib/stack/parchment`'s page_store engine
-  so callers never pass it), `tasks/`, `profile/`, and `groups/` (Flask
-  blueprints + request schemas).
+  (Cartographer's port env-var config), `request_validation.py` (shared
+  `InvalidPayloadError` + `requireJsonObjectBody()` used by every blueprint
+  so JSON-body validation isn't redefined per functional area), `database/`
+  (`task.py`/`profile.py`/`group.py` — business-facing wrappers around
+  `record_store.py`, which binds `paths.py`'s `DATA_ROOT` to
+  `lib/stack/parchment`'s page_store engine so callers never pass it;
+  `task.py` and `group.py` build their reorderable-position support on
+  `lib/language/python`'s `computeNextOrder`/`reorderRecordsByIds`, which
+  are stack/business-agnostic so they live there instead of here),
+  `tasks/`, `profile/`, and `groups/` (Flask blueprints + request schemas).
   `paths.py` picks `DATA_ROOT` between `.data/prod` and `.data/test` based on
   the `CARTOGRAPHER_DATA_ENV` env var (defaults to `prod`); pytest tests
   bypass both via the `_use_tmp_data_root` autouse fixture in `conftest.py`,

@@ -1,9 +1,9 @@
 """HTTP routes for the /api/groups resource."""
 from dataclasses import asdict
+from http import HTTPStatus
 
-from flask import Blueprint, request
+from flask import Blueprint
 
-from lib.language.python.validation.type_checks import isDict
 from lib.stack.flask.responses import buildErrorResponse, buildSuccessResponse
 from src.backend.database.group import (
     EmptyGroupNameError,
@@ -14,16 +14,13 @@ from src.backend.database.group import (
     updateGroup,
 )
 from src.backend.groups.schemas import (
-    InvalidPayloadError,
     parseGroupCreatePayload,
     parseGroupReorderPayload,
     parseGroupUpdatePayload,
 )
+from src.backend.request_validation import InvalidPayloadError, requireJsonObjectBody
 
 groups_blueprint = Blueprint("groups", __name__, url_prefix="/api/groups")
-
-CREATED_STATUS_CODE = 201
-NOT_FOUND_STATUS_CODE = 404
 
 
 @groups_blueprint.get("")
@@ -37,19 +34,19 @@ def listGroups():
 def createGroupRoute():
     """Create a new group."""
     try:
-        payload = _requireJsonObjectBody()
+        payload = requireJsonObjectBody()
         create_payload = parseGroupCreatePayload(payload)
         group = createGroup(create_payload.name)
     except (InvalidPayloadError, EmptyGroupNameError) as error:
         return buildErrorResponse(str(error))
-    return buildSuccessResponse(asdict(group), CREATED_STATUS_CODE)
+    return buildSuccessResponse(asdict(group), HTTPStatus.CREATED)
 
 
 @groups_blueprint.patch("/reorder")
 def reorderGroupsRoute():
     """Reorder groups to match the given id sequence."""
     try:
-        payload = _requireJsonObjectBody()
+        payload = requireJsonObjectBody()
         reorder_payload = parseGroupReorderPayload(payload)
     except InvalidPayloadError as error:
         return buildErrorResponse(str(error))
@@ -61,13 +58,13 @@ def reorderGroupsRoute():
 def updateGroupRoute(group_id: str):
     """Rename a group."""
     try:
-        payload = _requireJsonObjectBody()
+        payload = requireJsonObjectBody()
         update_payload = parseGroupUpdatePayload(payload)
         group = updateGroup(group_id, update_payload.name)
     except (InvalidPayloadError, EmptyGroupNameError) as error:
         return buildErrorResponse(str(error))
     if group is None:
-        return buildErrorResponse(f"No group with id '{group_id}'", NOT_FOUND_STATUS_CODE)
+        return buildErrorResponse(f"No group with id '{group_id}'", HTTPStatus.NOT_FOUND)
     return buildSuccessResponse(asdict(group))
 
 
@@ -76,16 +73,5 @@ def deleteGroupRoute(group_id: str):
     """Delete a group, unassigning every task in it."""
     deleted = deleteGroup(group_id)
     if not deleted:
-        return buildErrorResponse(f"No group with id '{group_id}'", NOT_FOUND_STATUS_CODE)
+        return buildErrorResponse(f"No group with id '{group_id}'", HTTPStatus.NOT_FOUND)
     return buildSuccessResponse({"id": group_id})
-
-
-def _requireJsonObjectBody() -> dict:
-    """Parse the request body as JSON, raising InvalidPayloadError if it isn't a JSON object.
-
-    Malformed JSON itself surfaces as a 400 via Flask/app_factory's HTTPException handling.
-    """
-    payload = request.get_json()
-    if not isDict(payload):
-        raise InvalidPayloadError("Request body must be a JSON object")
-    return payload
