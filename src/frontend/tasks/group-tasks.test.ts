@@ -16,6 +16,10 @@ function buildTask(overrides: Partial<TTask>): TTask {
     completed_at: null,
     order: 0,
     group_id: null,
+    energy_requirement: null,
+    impact: null,
+    due_date: null,
+    time_estimate_minutes: null,
     ...overrides,
   };
 }

@@ -55,6 +55,26 @@ export function setTaskGroup(taskId: string, groupId: string | null): Promise<TT
   return patchJson<TTask>(`/tasks/${taskId}/group`, { group_id: groupId });
 }
 
+/** Set a task's energy requirement (1-5), or clear it by passing null. */
+export function setTaskEnergyRequirement(taskId: string, energyRequirement: number | null): Promise<TTask> {
+  return patchJson<TTask>(`/tasks/${taskId}/energy`, { energy_requirement: energyRequirement });
+}
+
+/** Set a task's impact (1-5), or clear it by passing null. */
+export function setTaskImpact(taskId: string, impact: number | null): Promise<TTask> {
+  return patchJson<TTask>(`/tasks/${taskId}/impact`, { impact });
+}
+
+/** Set a task's due date, or clear it by passing null. */
+export function setTaskDueDate(taskId: string, dueDate: string | null): Promise<TTask> {
+  return patchJson<TTask>(`/tasks/${taskId}/due-date`, { due_date: dueDate });
+}
+
+/** Set a task's time estimate in minutes, or clear it by passing null. */
+export function setTaskTimeEstimateMinutes(taskId: string, timeEstimateMinutes: number | null): Promise<TTask> {
+  return patchJson<TTask>(`/tasks/${taskId}/time-estimate`, { time_estimate_minutes: timeEstimateMinutes });
+}
+
 /** Delete a task. */
 export function deleteTask(taskId: string): Promise<{ id: string }> {
   return deleteJson<{ id: string }>(`/tasks/${taskId}`);

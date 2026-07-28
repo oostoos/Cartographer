@@ -1,8 +1,14 @@
 """Task records: business-facing wrapper around the common page_store engine."""
+from typing import Callable
+
 from lib.language.python.collections.dict_utils import buildDictFromKeysAndValues
 from lib.language.python.date.utc_timestamp import currentUtcIsoTimestamp
 from lib.language.python.strings.bool_codec import decodeBoolFromString, encodeBoolAsString
 from lib.language.python.strings.constants import EMPTY_STRING
+from lib.language.python.strings.optional_int_codec import (
+    decodeOptionalIntFromString,
+    encodeOptionalIntAsString,
+)
 from lib.stack.parchment.ids import generateRecordId
 from src.backend.database.models import Task
 from lib.language.python.collections.ordering import computeNextOrder, reorderRecordsByIds
@@ -25,6 +31,10 @@ TASK_FIELD_ORDER = [
     "completed_at",
     "order",
     "group_id",
+    "energy_requirement",
+    "impact",
+    "due_date",
+    "time_estimate_minutes",
 ]
 
 class EmptyTaskTitleError(ValueError):
@@ -118,6 +128,40 @@ def setTaskGroup(task_id: str, group_id: str | None) -> Task | None:
     return task
 
 
+def setTaskEnergyRequirement(task_id: str, energy_requirement: int | None) -> Task | None:
+    """Set a task's energy requirement (1-5), or clear it when energy_requirement is None.
+
+    Returns None if the task doesn't exist.
+    """
+    return _applyFieldUpdate(task_id, lambda task: setattr(task, "energy_requirement", energy_requirement))
+
+
+def setTaskImpact(task_id: str, impact: int | None) -> Task | None:
+    """Set a task's impact (1-5), or clear it when impact is None.
+
+    Returns None if the task doesn't exist.
+    """
+    return _applyFieldUpdate(task_id, lambda task: setattr(task, "impact", impact))
+
+
+def setTaskDueDate(task_id: str, due_date: str | None) -> Task | None:
+    """Set a task's due date (YYYY-MM-DD), or clear it when due_date is None.
+
+    Returns None if the task doesn't exist.
+    """
+    return _applyFieldUpdate(task_id, lambda task: setattr(task, "due_date", due_date))
+
+
+def setTaskTimeEstimateMinutes(task_id: str, time_estimate_minutes: int | None) -> Task | None:
+    """Set a task's time estimate in minutes, or clear it when time_estimate_minutes is None.
+
+    Returns None if the task doesn't exist.
+    """
+    return _applyFieldUpdate(
+        task_id, lambda task: setattr(task, "time_estimate_minutes", time_estimate_minutes)
+    )
+
+
 def unassignTasksFromGroup(group_id: str) -> None:
     """Clear group_id on every task currently assigned to the given group.
 
@@ -172,6 +216,20 @@ def _saveTaskAtOrder(task: Task, order: float) -> None:
     writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
 
 
+def _applyFieldUpdate(task_id: str, mutate: Callable[[Task], None]) -> Task | None:
+    """Shared scaffold for single-field setters: fetch, mutate in place, stamp updated_at, persist.
+
+    Returns None if the task doesn't exist.
+    """
+    task = getTask(task_id)
+    if task is None:
+        return None
+    mutate(task)
+    task.updated_at = currentUtcIsoTimestamp()
+    writeRecord(TASK_OBJECT_TYPE, task.id, _encodeTask(task))
+    return task
+
+
 def _encodeTask(task: Task) -> list[str]:
     """Encode a Task into the field list page_store expects, in TASK_FIELD_ORDER."""
     values = {
@@ -184,6 +242,10 @@ def _encodeTask(task: Task) -> list[str]:
         "completed_at": task.completed_at if task.completed_at is not None else EMPTY_STRING,
         "order": str(task.order),
         "group_id": task.group_id if task.group_id is not None else EMPTY_STRING,
+        "energy_requirement": encodeOptionalIntAsString(task.energy_requirement),
+        "impact": encodeOptionalIntAsString(task.impact),
+        "due_date": task.due_date if task.due_date is not None else EMPTY_STRING,
+        "time_estimate_minutes": encodeOptionalIntAsString(task.time_estimate_minutes),
     }
     return [values[field] for field in TASK_FIELD_ORDER]
 
@@ -191,10 +253,10 @@ def _encodeTask(task: Task) -> list[str]:
 def _decodeTask(fields: list[str]) -> Task:
     """Decode a page_store field list (in TASK_FIELD_ORDER) back into a Task.
 
-    completed_at, order, and group_id are read defensively since legacy records
-    written before those fields existed have fewer fields on disk; zip() simply omits
-    the key in that case, so missing ones default to None (completed_at, group_id)
-    and 0.0 (order).
+    completed_at, order, group_id, energy_requirement, impact, due_date, and
+    time_estimate_minutes are read defensively since legacy records written before
+    those fields existed have fewer fields on disk; zip() simply omits the key in
+    that case, so missing ones default to None (or 0.0 for order).
     """
     values = buildDictFromKeysAndValues(TASK_FIELD_ORDER, fields)
     return Task(
@@ -207,4 +269,8 @@ def _decodeTask(fields: list[str]) -> Task:
         completed_at=values.get("completed_at", EMPTY_STRING) or None,
         order=float(values.get("order") or 0.0),
         group_id=values.get("group_id", EMPTY_STRING) or None,
+        energy_requirement=decodeOptionalIntFromString(values.get("energy_requirement", EMPTY_STRING)),
+        impact=decodeOptionalIntFromString(values.get("impact", EMPTY_STRING)),
+        due_date=values.get("due_date", EMPTY_STRING) or None,
+        time_estimate_minutes=decodeOptionalIntFromString(values.get("time_estimate_minutes", EMPTY_STRING)),
     )

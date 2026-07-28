@@ -1,0 +1,22 @@
+.segmented-scale {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.segmented-scale__segment {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: none;
+  border-radius: 2px;
+  padding: 0;
+  background-color: var(--color-border);
+  cursor: pointer;
+}
+
+.segmented-scale__segment:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.segmented-scale__segment[data-filled="true"] {
+  background-color: var(--color-accent);
+}

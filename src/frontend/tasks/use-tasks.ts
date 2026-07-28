@@ -8,7 +8,11 @@ import {
   fetchTasks,
   reorderTasks as reorderTasksRequest,
   setTaskCompleted as setTaskCompletedRequest,
+  setTaskDueDate as setTaskDueDateRequest,
+  setTaskEnergyRequirement as setTaskEnergyRequirementRequest,
   setTaskGroup as setTaskGroupRequest,
+  setTaskImpact as setTaskImpactRequest,
+  setTaskTimeEstimateMinutes as setTaskTimeEstimateMinutesRequest,
 } from "./tasks-api";
 import type { TTask } from "./types";
 
@@ -22,6 +26,10 @@ export interface IUseTasksResult {
   reorderActiveTasks: (orderedActiveTaskIds: string[]) => Promise<void>;
   assignTaskGroup: (taskId: string, groupId: string | null) => Promise<void>;
   unassignTasksFromGroup: (groupId: string) => void;
+  setTaskEnergyRequirement: (taskId: string, energyRequirement: number | null) => Promise<void>;
+  setTaskImpact: (taskId: string, impact: number | null) => Promise<void>;
+  setTaskDueDate: (taskId: string, dueDate: string | null) => Promise<void>;
+  setTaskTimeEstimateMinutes: (taskId: string, timeEstimateMinutes: number | null) => Promise<void>;
   deleteTask: (taskId: string) => Promise<void>;
 }
 
@@ -83,6 +91,38 @@ export function useTasks(): IUseTasksResult {
     [setTasks],
   );
 
+  const setTaskEnergyRequirement = useCallback(
+    async (taskId: string, energyRequirement: number | null) => {
+      const updated = await setTaskEnergyRequirementRequest(taskId, energyRequirement);
+      applyTaskUpdate(updated);
+    },
+    [applyTaskUpdate],
+  );
+
+  const setTaskImpact = useCallback(
+    async (taskId: string, impact: number | null) => {
+      const updated = await setTaskImpactRequest(taskId, impact);
+      applyTaskUpdate(updated);
+    },
+    [applyTaskUpdate],
+  );
+
+  const setTaskDueDate = useCallback(
+    async (taskId: string, dueDate: string | null) => {
+      const updated = await setTaskDueDateRequest(taskId, dueDate);
+      applyTaskUpdate(updated);
+    },
+    [applyTaskUpdate],
+  );
+
+  const setTaskTimeEstimateMinutes = useCallback(
+    async (taskId: string, timeEstimateMinutes: number | null) => {
+      const updated = await setTaskTimeEstimateMinutesRequest(taskId, timeEstimateMinutes);
+      applyTaskUpdate(updated);
+    },
+    [applyTaskUpdate],
+  );
+
   const deleteTask = useCallback(
     async (taskId: string) => {
       await deleteTaskRequest(taskId);
@@ -101,6 +141,10 @@ export function useTasks(): IUseTasksResult {
     reorderActiveTasks,
     assignTaskGroup,
     unassignTasksFromGroup,
+    setTaskEnergyRequirement,
+    setTaskImpact,
+    setTaskDueDate,
+    setTaskTimeEstimateMinutes,
     deleteTask,
   };
 }

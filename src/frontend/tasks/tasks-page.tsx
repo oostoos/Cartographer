@@ -49,6 +49,10 @@ export function TasksPage() {
     reorderActiveTasks,
     assignTaskGroup,
     unassignTasksFromGroup,
+    setTaskEnergyRequirement,
+    setTaskImpact,
+    setTaskDueDate,
+    setTaskTimeEstimateMinutes,
     deleteTask,
   } = useTasks();
   const { groups, createGroup, renameGroup, reorderGroups, deleteGroup } = useGroups();
@@ -144,6 +148,10 @@ export function TasksPage() {
                           onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
                           groupName={task.group_id ? getGroupName(task.group_id) : null}
                           onRemoveGroup={() => assignTaskGroup(task.id, null)}
+                          onSetEnergyRequirement={(value) => setTaskEnergyRequirement(task.id, value)}
+                          onSetImpact={(value) => setTaskImpact(task.id, value)}
+                          onSetDueDate={(value) => setTaskDueDate(task.id, value)}
+                          onSetTimeEstimateMinutes={(value) => setTaskTimeEstimateMinutes(task.id, value)}
                           onDelete={() => handleDeleteTask(task)}
                         />
                       ))}
@@ -155,6 +163,10 @@ export function TasksPage() {
                           onToggleCompleted={(completed) => toggleTaskCompleted(task.id, completed)}
                           groupName={task.group_id ? getGroupName(task.group_id) : null}
                           onRemoveGroup={() => assignTaskGroup(task.id, null)}
+                          onSetEnergyRequirement={(value) => setTaskEnergyRequirement(task.id, value)}
+                          onSetImpact={(value) => setTaskImpact(task.id, value)}
+                          onSetDueDate={(value) => setTaskDueDate(task.id, value)}
+                          onSetTimeEstimateMinutes={(value) => setTaskTimeEstimateMinutes(task.id, value)}
                           onDelete={() => handleDeleteTask(task)}
                         />
                       </li>
@@ -165,6 +177,10 @@ export function TasksPage() {
                     onToggleCompleted={toggleTaskCompleted}
                     getGroupName={getGroupName}
                     onRemoveGroup={(taskId) => assignTaskGroup(taskId, null)}
+                    onSetEnergyRequirement={setTaskEnergyRequirement}
+                    onSetImpact={setTaskImpact}
+                    onSetDueDate={setTaskDueDate}
+                    onSetTimeEstimateMinutes={setTaskTimeEstimateMinutes}
                     onDelete={(taskId) => {
                       const task = grouped.completedPrior.find((candidate) => candidate.id === taskId);
                       if (task) handleDeleteTask(task);

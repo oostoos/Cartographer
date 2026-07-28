@@ -15,6 +15,10 @@ class Task:
     completed_at: str | None = None
     order: float = 0.0
     group_id: str | None = None
+    energy_requirement: int | None = None
+    impact: int | None = None
+    due_date: str | None = None
+    time_estimate_minutes: int | None = None
 
 
 @dataclass

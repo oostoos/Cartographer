@@ -49,7 +49,7 @@ export function TaskCreateForm({ onCreate }: ITaskCreateFormProps) {
         onChange={(event) => setDescription(event.target.value)}
         aria-label="Task description"
       />
-      <Button type="submit" disabled={isSubmitting || !title.trim()}>
+      <Button type="submit" variant="additive" disabled={isSubmitting || !title.trim()}>
         <PlusIcon /> Add task
       </Button>
     </form>

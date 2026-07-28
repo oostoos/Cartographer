@@ -21,3 +21,14 @@
   display: flex;
   gap: var(--space-sm);
 }
+
+.task-detail-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.task-detail-field__label {
+  min-width: 9rem;
+  color: var(--color-text-secondary);
+}

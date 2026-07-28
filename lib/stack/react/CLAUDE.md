@@ -18,21 +18,30 @@ look by loading its own token stylesheet before anything here renders.
 ## design-language — design tokens-driven UI primitives
 
 - **`Button({ variant?, ...ButtonHTMLAttributes })`** — styled button;
-  `variant: "primary" | "secondary" | "danger"` (default `"primary"`) drives
-  the class name. Exports `TButtonVariant`.
+  `variant: "primary" | "secondary" | "danger" | "additive"` (default
+  `"primary"`) drives the class name. Exports `TButtonVariant`.
 - **`Card({ children })`** — a surface-colored, shadowed container for
   grouped content.
-- **`IconButton({ "aria-label", ...ButtonHTMLAttributes })`** — a
+- **`IconButton({ "aria-label", variant?, ...ButtonHTMLAttributes })`** — a
   square/icon-only button; `aria-label` is required by the prop type for
-  accessibility. Forwards its ref.
+  accessibility. `variant: "default" | "danger" | "additive"` (default
+  `"default"`) colors the icon for destructive/additive actions. Exports
+  `TIconButtonVariant`. Forwards its ref.
 - **`InitialsChip({ initials })`** — a small circular chip rendering a
   person's initials text (e.g. a profile avatar placeholder).
 - **`Modal({ isOpen, onClose, title, children })`** — a centered dialog
   overlay; closes on Escape or a backdrop click, renders nothing while
   `isOpen` is false.
-- **`PlusIcon`, `CloseIcon`, `ChevronDownIcon`, `GripIcon`, `PencilIcon`,
-  `TrashIcon`** — shared `24x24` stroke icons, each taking `IIconProps`
-  (standard SVG props).
+- **`PlusIcon`, `MinusIcon`, `CloseIcon`, `ChevronDownIcon`, `GripIcon`,
+  `PencilIcon`, `TrashIcon`** — shared `24x24` stroke icons, each taking
+  `IIconProps` (standard SVG props).
+- **`SegmentedScale({ segmentCount, value, onChange, "aria-label" })`** — a
+  volume-style row of `segmentCount` clickable segments, filled up to
+  `value` (1-based, `null` = none filled). Exports `ISegmentedScaleProps`.
+- **`NumberStepper({ value, step, minimum?, onChange, formatValue?, "aria-label" })`**
+  — a −/+ stepper over an optional int, moving by `step` each click.
+  Decrementing below `minimum` (defaults to `step`) clears the value to
+  `null` rather than going negative. Exports `INumberStepperProps`.
 
 ## layout — page structure primitives
 

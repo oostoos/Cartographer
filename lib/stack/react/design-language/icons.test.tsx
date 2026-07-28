@@ -1,10 +1,11 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { ChevronDownIcon, CloseIcon, GripIcon, PlusIcon } from "./icons";
+import { ChevronDownIcon, CloseIcon, GripIcon, MinusIcon, PlusIcon } from "./icons";
 
 describe.each([
   ["PlusIcon", PlusIcon],
+  ["MinusIcon", MinusIcon],
   ["CloseIcon", CloseIcon],
   ["ChevronDownIcon", ChevronDownIcon],
   ["GripIcon", GripIcon],

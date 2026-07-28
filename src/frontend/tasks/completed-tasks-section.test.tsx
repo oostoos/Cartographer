@@ -16,6 +16,10 @@ function buildTask(overrides: Partial<TTask>): TTask {
     completed_at: "2026-01-01T00:00:00Z",
     order: 0,
     group_id: null,
+    energy_requirement: null,
+    impact: null,
+    due_date: null,
+    time_estimate_minutes: null,
     ...overrides,
   };
 }
@@ -92,5 +96,15 @@ describe("CompletedTasksSection", () => {
     fireEvent.click(screen.getByRole("button", { name: 'Delete "Buy milk"' }));
 
     expect(onDelete).toHaveBeenCalledWith("1");
+  });
+
+  it("calls onSetEnergyRequirement with the task id when the energy pill's segment is clicked", () => {
+    const onSetEnergyRequirement = vi.fn();
+    renderSection([buildTask({ id: "1", energy_requirement: 2 })], { onSetEnergyRequirement });
+
+    fireEvent.click(screen.getByRole("button", { name: /Completed/ }));
+    fireEvent.click(screen.getAllByRole("button", { name: /^Energy: level/ })[4]);
+
+    expect(onSetEnergyRequirement).toHaveBeenCalledWith("1", 5);
   });
 });

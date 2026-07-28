@@ -14,6 +14,10 @@ export interface ISortableTaskListItemProps {
   onToggleCompleted: (completed: boolean) => void;
   groupName?: string | null;
   onRemoveGroup?: () => void;
+  onSetEnergyRequirement?: (value: number | null) => void;
+  onSetImpact?: (value: number | null) => void;
+  onSetDueDate?: (value: string | null) => void;
+  onSetTimeEstimateMinutes?: (value: number | null) => void;
   onDelete?: () => void;
 }
 
@@ -24,6 +28,10 @@ export function SortableTaskListItem({
   onToggleCompleted,
   groupName,
   onRemoveGroup,
+  onSetEnergyRequirement,
+  onSetImpact,
+  onSetDueDate,
+  onSetTimeEstimateMinutes,
   onDelete,
 }: ISortableTaskListItemProps) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
@@ -42,6 +50,10 @@ export function SortableTaskListItem({
         onToggleCompleted={onToggleCompleted}
         groupName={groupName}
         onRemoveGroup={onRemoveGroup}
+        onSetEnergyRequirement={onSetEnergyRequirement}
+        onSetImpact={onSetImpact}
+        onSetDueDate={onSetDueDate}
+        onSetTimeEstimateMinutes={onSetTimeEstimateMinutes}
         onDelete={onDelete}
         dragHandle={
           <IconButton

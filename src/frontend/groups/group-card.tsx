@@ -108,7 +108,7 @@ export function GroupCard({
               <PencilIcon />
             </IconButton>
           )}
-          <IconButton aria-label={`Delete ${group.name}`} onClick={onDelete}>
+          <IconButton variant="danger" aria-label={`Delete ${group.name}`} onClick={onDelete}>
             <TrashIcon />
           </IconButton>
         </div>

@@ -36,3 +36,16 @@
   background-color: var(--color-danger);
   color: var(--color-surface);
 }
+
+.button--danger:hover:not(:disabled) {
+  background-color: var(--color-danger-hover);
+}
+
+.button--additive {
+  background-color: var(--color-additive);
+  color: var(--color-surface);
+}
+
+.button--additive:hover:not(:disabled) {
+  background-color: var(--color-additive-hover);
+}

@@ -13,6 +13,10 @@ export interface ICompletedTasksSectionProps {
   /** Resolves a task's group name for its pill, given its group_id. */
   getGroupName?: (groupId: string) => string | null;
   onRemoveGroup?: (taskId: string) => void;
+  onSetEnergyRequirement?: (taskId: string, value: number | null) => void;
+  onSetImpact?: (taskId: string, value: number | null) => void;
+  onSetDueDate?: (taskId: string, value: string | null) => void;
+  onSetTimeEstimateMinutes?: (taskId: string, value: number | null) => void;
   onDelete?: (taskId: string) => void;
 }
 
@@ -22,6 +26,10 @@ export function CompletedTasksSection({
   onToggleCompleted,
   getGroupName,
   onRemoveGroup,
+  onSetEnergyRequirement,
+  onSetImpact,
+  onSetDueDate,
+  onSetTimeEstimateMinutes,
   onDelete,
 }: ICompletedTasksSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -51,6 +59,14 @@ export function CompletedTasksSection({
                 onToggleCompleted={(completed) => onToggleCompleted(task.id, completed)}
                 groupName={task.group_id ? getGroupName?.(task.group_id) : null}
                 onRemoveGroup={onRemoveGroup ? () => onRemoveGroup(task.id) : undefined}
+                onSetEnergyRequirement={
+                  onSetEnergyRequirement ? (value) => onSetEnergyRequirement(task.id, value) : undefined
+                }
+                onSetImpact={onSetImpact ? (value) => onSetImpact(task.id, value) : undefined}
+                onSetDueDate={onSetDueDate ? (value) => onSetDueDate(task.id, value) : undefined}
+                onSetTimeEstimateMinutes={
+                  onSetTimeEstimateMinutes ? (value) => onSetTimeEstimateMinutes(task.id, value) : undefined
+                }
                 onDelete={onDelete ? () => onDelete(task.id) : undefined}
               />
             </li>

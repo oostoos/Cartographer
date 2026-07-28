@@ -3,10 +3,25 @@ import { useLocation, useNavigate, useOutletContext, useParams } from "react-rou
 
 import { Button } from "@lib-stack/design-language/button";
 import { Card } from "@lib-stack/design-language/card";
+import { IconButton } from "@lib-stack/design-language/icon-button";
+import { CloseIcon } from "@lib-stack/design-language/icons";
+import { NumberStepper } from "@lib-stack/design-language/number-stepper";
+import { SegmentedScale } from "@lib-stack/design-language/segmented-scale";
 
 import "./task-detail-panel.css";
 
-import { fetchTask, setTaskCompleted, updateTask } from "./tasks-api";
+import { formatTimeEstimateLabel } from "./format-time-estimate-label";
+import { TASK_SCALE_MAXIMUM, TASK_TIME_ESTIMATE_STEP_MINUTES } from "./task-field-bounds";
+import { TaskDueDateField } from "./task-due-date-field";
+import {
+  fetchTask,
+  setTaskCompleted,
+  setTaskDueDate,
+  setTaskEnergyRequirement,
+  setTaskImpact,
+  setTaskTimeEstimateMinutes,
+  updateTask,
+} from "./tasks-api";
 import type { ITasksOutletContext } from "./tasks-outlet-context";
 import type { TTask } from "./types";
 
@@ -24,6 +39,10 @@ export function TaskDetailPanel() {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editEnergyRequirement, setEditEnergyRequirement] = useState<number | null>(null);
+  const [editImpact, setEditImpact] = useState<number | null>(null);
+  const [editDueDate, setEditDueDate] = useState<string | null>(null);
+  const [editTimeEstimateMinutes, setEditTimeEstimateMinutes] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -47,6 +66,10 @@ export function TaskDetailPanel() {
       if (!isEditing) {
         setEditTitle(contextTask.title);
         setEditDescription(contextTask.description);
+        setEditEnergyRequirement(contextTask.energy_requirement);
+        setEditImpact(contextTask.impact);
+        setEditDueDate(contextTask.due_date);
+        setEditTimeEstimateMinutes(contextTask.time_estimate_minutes);
       }
       setIsLoading(false);
       setError(null);
@@ -64,6 +87,10 @@ export function TaskDetailPanel() {
         setTask(loaded);
         setEditTitle(loaded.title);
         setEditDescription(loaded.description);
+        setEditEnergyRequirement(loaded.energy_requirement);
+        setEditImpact(loaded.impact);
+        setEditDueDate(loaded.due_date);
+        setEditTimeEstimateMinutes(loaded.time_estimate_minutes);
       } catch {
         if (!isCancelled) setError("Task not found.");
       } finally {
@@ -91,10 +118,26 @@ export function TaskDetailPanel() {
 
     setIsSaving(true);
     try {
-      const updated = await updateTask(task.id, {
+      // Fired sequentially, not via Promise.all: each call is a full read-modify-write of the
+      // whole task record, so concurrent PATCH calls for the same task risk one clobbering
+      // another's change if their reads interleave. Awaiting each guarantees the next one's
+      // read sees the prior write.
+      let updated = await updateTask(task.id, {
         title: trimmedTitle,
         description: editDescription.trim(),
       });
+      if (editEnergyRequirement !== task.energy_requirement) {
+        updated = await setTaskEnergyRequirement(task.id, editEnergyRequirement);
+      }
+      if (editImpact !== task.impact) {
+        updated = await setTaskImpact(task.id, editImpact);
+      }
+      if (editDueDate !== task.due_date) {
+        updated = await setTaskDueDate(task.id, editDueDate);
+      }
+      if (editTimeEstimateMinutes !== task.time_estimate_minutes) {
+        updated = await setTaskTimeEstimateMinutes(task.id, editTimeEstimateMinutes);
+      }
       setTask(updated);
       onTaskUpdated(updated);
       setIsEditing(false);
@@ -107,6 +150,10 @@ export function TaskDetailPanel() {
     if (!task) return;
     setEditTitle(task.title);
     setEditDescription(task.description);
+    setEditEnergyRequirement(task.energy_requirement);
+    setEditImpact(task.impact);
+    setEditDueDate(task.due_date);
+    setEditTimeEstimateMinutes(task.time_estimate_minutes);
     setIsEditing(false);
   }
 
@@ -150,6 +197,51 @@ export function TaskDetailPanel() {
                   onChange={(event) => setEditDescription(event.target.value)}
                   aria-label="Task description"
                 />
+                <div className="task-detail-field">
+                  <span className="task-detail-field__label">Energy requirement</span>
+                  <SegmentedScale
+                    segmentCount={TASK_SCALE_MAXIMUM}
+                    value={editEnergyRequirement}
+                    onChange={setEditEnergyRequirement}
+                    aria-label="Energy requirement"
+                  />
+                  {editEnergyRequirement !== null && (
+                    <IconButton
+                      aria-label="Clear energy requirement"
+                      onClick={() => setEditEnergyRequirement(null)}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  )}
+                </div>
+                <div className="task-detail-field">
+                  <span className="task-detail-field__label">Impact</span>
+                  <SegmentedScale
+                    segmentCount={TASK_SCALE_MAXIMUM}
+                    value={editImpact}
+                    onChange={setEditImpact}
+                    aria-label="Impact"
+                  />
+                  {editImpact !== null && (
+                    <IconButton aria-label="Clear impact" onClick={() => setEditImpact(null)}>
+                      <CloseIcon />
+                    </IconButton>
+                  )}
+                </div>
+                <div className="task-detail-field">
+                  <span className="task-detail-field__label">Due date</span>
+                  <TaskDueDateField value={editDueDate} onChange={setEditDueDate} aria-label="Due date" />
+                </div>
+                <div className="task-detail-field">
+                  <span className="task-detail-field__label">Time estimate</span>
+                  <NumberStepper
+                    value={editTimeEstimateMinutes}
+                    step={TASK_TIME_ESTIMATE_STEP_MINUTES}
+                    onChange={setEditTimeEstimateMinutes}
+                    formatValue={formatTimeEstimateLabel}
+                    aria-label="Time estimate"
+                  />
+                </div>
                 <div className="task-detail-actions">
                   <Button onClick={handleSave} disabled={isSaving || !editTitle.trim()}>
                     Save

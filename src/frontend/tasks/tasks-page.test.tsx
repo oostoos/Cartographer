@@ -19,6 +19,10 @@ const TASK: TTask = {
   completed_at: null,
   order: 0,
   group_id: null,
+  energy_requirement: null,
+  impact: null,
+  due_date: null,
+  time_estimate_minutes: null,
 };
 
 const GROUP: TGroup = {
@@ -249,6 +253,22 @@ describe("TasksPage", () => {
     await waitFor(() =>
       expect(createSpy).toHaveBeenCalledWith({ title: "Buy milk", description: "", group_id: null }),
     );
+  });
+
+  it("renders an energy pill for a task with energy_requirement set, adjustable inline", async () => {
+    const withEnergy = buildTask({ id: "1", title: "Buy milk", energy_requirement: 2 });
+    vi.spyOn(tasksApi, "fetchTasks").mockResolvedValue([withEnergy]);
+    stubGroups();
+    const setEnergySpy = vi
+      .spyOn(tasksApi, "setTaskEnergyRequirement")
+      .mockResolvedValue({ ...withEnergy, energy_requirement: 5 });
+
+    renderPage();
+
+    await waitFor(() => expect(screen.getByText("Energy")).toBeInTheDocument());
+    fireEvent.click(screen.getAllByRole("button", { name: /^Energy: level/ })[4]);
+
+    await waitFor(() => expect(setEnergySpy).toHaveBeenCalledWith("1", 5));
   });
 
   it("deletes a task via its row's delete button without a confirmation prompt", async () => {

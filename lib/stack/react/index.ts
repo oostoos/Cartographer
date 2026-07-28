@@ -10,9 +10,22 @@ export { Button } from "./design-language/button";
 export type { TButtonVariant } from "./design-language/button";
 export { Card } from "./design-language/card";
 export { IconButton } from "./design-language/icon-button";
+export type { TIconButtonVariant } from "./design-language/icon-button";
 export { InitialsChip } from "./design-language/initials-chip";
 export { Modal } from "./design-language/modal";
-export { ChevronDownIcon, CloseIcon, GripIcon, PencilIcon, PlusIcon, TrashIcon } from "./design-language/icons";
+export {
+  ChevronDownIcon,
+  CloseIcon,
+  GripIcon,
+  MinusIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+} from "./design-language/icons";
+export { NumberStepper } from "./design-language/number-stepper";
+export type { INumberStepperProps } from "./design-language/number-stepper";
+export { SegmentedScale } from "./design-language/segmented-scale";
+export type { ISegmentedScaleProps } from "./design-language/segmented-scale";
 
 // layout — page structure primitives
 export { PageContainer } from "./layout/page-container";

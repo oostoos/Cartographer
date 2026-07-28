@@ -12,7 +12,11 @@ from src.backend.database.task import (
     getTask,
     reorderTasks,
     setTaskCompleted,
+    setTaskDueDate,
+    setTaskEnergyRequirement,
     setTaskGroup,
+    setTaskImpact,
+    setTaskTimeEstimateMinutes,
     unassignTasksFromGroup,
     updateTask,
 )
@@ -305,3 +309,147 @@ def test_decode_task_defaults_group_id_to_none_for_legacy_eight_field_record():
     fetched = getTask(task.id)
 
     assert fetched.group_id is None
+
+
+def test_create_task_defaults_new_fields_to_none():
+    task = createTask("Buy milk")
+
+    assert task.energy_requirement is None
+    assert task.impact is None
+    assert task.due_date is None
+    assert task.time_estimate_minutes is None
+
+
+def test_set_task_energy_requirement_sets_value():
+    task = createTask("Buy milk")
+
+    updated = setTaskEnergyRequirement(task.id, 3)
+
+    assert updated.energy_requirement == 3
+    assert getTask(task.id).energy_requirement == 3
+
+
+def test_set_task_energy_requirement_clears_with_none():
+    task = createTask("Buy milk")
+    setTaskEnergyRequirement(task.id, 3)
+
+    updated = setTaskEnergyRequirement(task.id, None)
+
+    assert updated.energy_requirement is None
+
+
+def test_set_task_energy_requirement_on_unknown_id_returns_none():
+    assert setTaskEnergyRequirement("does-not-exist", 3) is None
+
+
+def test_set_task_energy_requirement_advances_updated_at():
+    task = createTask("Buy milk")
+
+    updated = setTaskEnergyRequirement(task.id, 3)
+
+    assert updated.updated_at >= task.updated_at
+
+
+def test_set_task_impact_sets_value():
+    task = createTask("Buy milk")
+
+    updated = setTaskImpact(task.id, 5)
+
+    assert updated.impact == 5
+    assert getTask(task.id).impact == 5
+
+
+def test_set_task_impact_clears_with_none():
+    task = createTask("Buy milk")
+    setTaskImpact(task.id, 5)
+
+    updated = setTaskImpact(task.id, None)
+
+    assert updated.impact is None
+
+
+def test_set_task_impact_on_unknown_id_returns_none():
+    assert setTaskImpact("does-not-exist", 5) is None
+
+
+def test_set_task_due_date_sets_value():
+    task = createTask("Buy milk")
+
+    updated = setTaskDueDate(task.id, "2026-08-01")
+
+    assert updated.due_date == "2026-08-01"
+    assert getTask(task.id).due_date == "2026-08-01"
+
+
+def test_set_task_due_date_clears_with_none():
+    task = createTask("Buy milk")
+    setTaskDueDate(task.id, "2026-08-01")
+
+    updated = setTaskDueDate(task.id, None)
+
+    assert updated.due_date is None
+
+
+def test_set_task_due_date_on_unknown_id_returns_none():
+    assert setTaskDueDate("does-not-exist", "2026-08-01") is None
+
+
+def test_set_task_time_estimate_minutes_sets_value():
+    task = createTask("Buy milk")
+
+    updated = setTaskTimeEstimateMinutes(task.id, 45)
+
+    assert updated.time_estimate_minutes == 45
+    assert getTask(task.id).time_estimate_minutes == 45
+
+
+def test_set_task_time_estimate_minutes_clears_with_none():
+    task = createTask("Buy milk")
+    setTaskTimeEstimateMinutes(task.id, 45)
+
+    updated = setTaskTimeEstimateMinutes(task.id, None)
+
+    assert updated.time_estimate_minutes is None
+
+
+def test_set_task_time_estimate_minutes_on_unknown_id_returns_none():
+    assert setTaskTimeEstimateMinutes("does-not-exist", 45) is None
+
+
+def test_encode_decode_round_trip_preserves_new_fields():
+    task = createTask("Buy milk")
+    setTaskEnergyRequirement(task.id, 2)
+    setTaskImpact(task.id, 4)
+    setTaskDueDate(task.id, "2026-08-01")
+    updated = setTaskTimeEstimateMinutes(task.id, 30)
+
+    fetched = getTask(task.id)
+
+    assert fetched == updated
+    assert fetched.energy_requirement == 2
+    assert fetched.impact == 4
+    assert fetched.due_date == "2026-08-01"
+    assert fetched.time_estimate_minutes == 30
+
+
+def test_decode_task_defaults_new_fields_to_none_for_legacy_nine_field_record():
+    task = createTask("Buy milk")
+    legacy_fields = [
+        task.id,
+        task.title,
+        task.description,
+        "false",
+        task.created_at,
+        task.updated_at,
+        "",
+        str(task.order),
+        "",
+    ]
+    writePage(record_store_module.DATA_ROOT, TASK_OBJECT_TYPE, task.id, legacy_fields)
+
+    fetched = getTask(task.id)
+
+    assert fetched.energy_requirement is None
+    assert fetched.impact is None
+    assert fetched.due_date is None
+    assert fetched.time_estimate_minutes is None

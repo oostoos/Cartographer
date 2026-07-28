@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 
 import "./button.css";
 
-export type TButtonVariant = "primary" | "secondary" | "danger";
+export type TButtonVariant = "primary" | "secondary" | "danger" | "additive";
 
 export interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: TButtonVariant;

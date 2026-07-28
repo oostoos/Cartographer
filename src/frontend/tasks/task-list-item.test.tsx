@@ -15,6 +15,10 @@ const TASK: TTask = {
   completed_at: null,
   order: 0,
   group_id: null,
+  energy_requirement: null,
+  impact: null,
+  due_date: null,
+  time_estimate_minutes: null,
 };
 
 function renderItem(task: TTask, onToggleCompleted = vi.fn()) {
@@ -157,5 +161,90 @@ describe("TaskListItem", () => {
     renderItem(TASK);
 
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("renders an energy pill when energy_requirement and onSetEnergyRequirement are given", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem
+          task={{ ...TASK, energy_requirement: 3 }}
+          onToggleCompleted={vi.fn()}
+          onSetEnergyRequirement={vi.fn()}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Energy")).toBeInTheDocument();
+  });
+
+  it("renders no energy pill when energy_requirement is null", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem task={TASK} onToggleCompleted={vi.fn()} onSetEnergyRequirement={vi.fn()} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText("Energy")).not.toBeInTheDocument();
+  });
+
+  it("renders no energy pill when onSetEnergyRequirement is not given, even if energy_requirement is set", () => {
+    renderItem({ ...TASK, energy_requirement: 3 });
+
+    expect(screen.queryByText("Energy")).not.toBeInTheDocument();
+  });
+
+  it("renders an impact pill when impact and onSetImpact are given", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem task={{ ...TASK, impact: 4 }} onToggleCompleted={vi.fn()} onSetImpact={vi.fn()} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Impact")).toBeInTheDocument();
+  });
+
+  it("renders a due date field when due_date and onSetDueDate are given", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem
+          task={{ ...TASK, due_date: "2026-08-01" }}
+          onToggleCompleted={vi.fn()}
+          onSetDueDate={vi.fn()}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('"Buy milk" due date')).toHaveValue("2026-08-01");
+  });
+
+  it("renders a time estimate pill when time_estimate_minutes and onSetTimeEstimateMinutes are given", () => {
+    render(
+      <MemoryRouter>
+        <TaskListItem
+          task={{ ...TASK, time_estimate_minutes: 45 }}
+          onToggleCompleted={vi.fn()}
+          onSetTimeEstimateMinutes={vi.fn()}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("45m")).toBeInTheDocument();
+  });
+
+  it("calls onSetEnergyRequirement with the clicked level", () => {
+    const onSetEnergyRequirement = vi.fn();
+    render(
+      <MemoryRouter>
+        <TaskListItem
+          task={{ ...TASK, energy_requirement: 2 }}
+          onToggleCompleted={vi.fn()}
+          onSetEnergyRequirement={onSetEnergyRequirement}
+        />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getAllByRole("button", { name: /^Energy: level/ })[4]);
+
+    expect(onSetEnergyRequirement).toHaveBeenCalledWith(5);
   });
 });

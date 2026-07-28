@@ -42,6 +42,15 @@ reaching into individual modules directly.
 - **`isString(value) -> bool`** — true if `value` is a `str`.
 - **`isDict(value) -> bool`** — true if `value` is a `dict`.
 - **`isList(value) -> bool`** — true if `value` is a `list`.
+- **`isInt(value) -> bool`** — true if `value` is an `int`. Excludes `bool`
+  (a `bool` is an `int` subclass in Python, but isn't one for validation
+  purposes).
+- **`isIntInRange(value: int, minimum: int, maximum: int) -> bool`** — true
+  if `minimum <= value <= maximum`.
+- **`isMultipleOf(value: int, step: int) -> bool`** — true if `value` is an
+  exact multiple of `step`.
+- **`isIsoDateString(value) -> bool`** — true if `value` is a `str`
+  parseable as an ISO 8601 date (`YYYY-MM-DD`).
 
 ## strings — generic string constants and encoding helpers
 
@@ -50,3 +59,7 @@ reaching into individual modules directly.
   `"true"`/`"false"`.
 - **`decodeBoolFromString(value: str) -> bool`** — decodes `"true"`/`"false"`
   back into a bool. Any value other than `"true"` decodes to `False`.
+- **`encodeOptionalIntAsString(value: int | None) -> str`** — encodes an
+  optional int as a string; `None` encodes to `EMPTY_STRING`.
+- **`decodeOptionalIntFromString(value: str) -> int | None`** — decodes a
+  string produced by `encodeOptionalIntAsString` back into an optional int.

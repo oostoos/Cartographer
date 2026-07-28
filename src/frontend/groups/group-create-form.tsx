@@ -39,7 +39,7 @@ export function GroupCreateForm({ onCreate }: IGroupCreateFormProps) {
         aria-label="Group name"
         autoFocus
       />
-      <Button type="submit" disabled={isSubmitting || !name.trim()}>
+      <Button type="submit" variant="additive" disabled={isSubmitting || !name.trim()}>
         Create
       </Button>
     </form>

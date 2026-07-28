@@ -9,8 +9,10 @@
   --color-text-secondary: #6b6255;
   --color-accent: #8c6a4f;
   --color-accent-hover: #74563f;
-  --color-success: #5b7a5a;
+  --color-additive: #3a7d74;
+  --color-additive-hover: #2e625a;
   --color-danger: #a65b4b;
+  --color-danger-hover: #8a4c3f;
   --color-overlay: rgba(46, 42, 36, 0.4);
 
   --radius-small: 6px;

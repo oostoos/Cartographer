@@ -60,7 +60,7 @@ export function GroupSidebar({
         >
           No group
         </Button>
-        <Button type="button" variant="secondary" onClick={() => setIsCreateModalOpen(true)}>
+        <Button type="button" variant="additive" onClick={() => setIsCreateModalOpen(true)}>
           <PlusIcon /> New group
         </Button>
       </div>

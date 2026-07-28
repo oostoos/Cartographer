@@ -1,0 +1,7 @@
+.task-time-estimate-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-small);
+  background-color: var(--color-surface-muted);
+}

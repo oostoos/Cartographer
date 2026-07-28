@@ -17,6 +17,10 @@ const TASK: TTask = {
   completed_at: null,
   order: 0,
   group_id: null,
+  energy_requirement: null,
+  impact: null,
+  due_date: null,
+  time_estimate_minutes: null,
 };
 
 function LocationEcho() {
@@ -120,6 +124,88 @@ describe("TaskDetailPanel", () => {
       title: "Buy oat milk",
       description: "unsweetened",
     });
+  });
+
+  it("save only calls setTaskEnergyRequirement when energy requirement was changed", async () => {
+    const updateSpy = vi.spyOn(tasksApi, "updateTask").mockResolvedValue(TASK);
+    const energySpy = vi
+      .spyOn(tasksApi, "setTaskEnergyRequirement")
+      .mockResolvedValue({ ...TASK, energy_requirement: 3 });
+    const impactSpy = vi.spyOn(tasksApi, "setTaskImpact");
+    const onTaskUpdated = vi.fn();
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated });
+    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /^Energy requirement: level/ })[2],
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(energySpy).toHaveBeenCalledWith(TASK.id, 3));
+    expect(updateSpy).toHaveBeenCalled();
+    expect(impactSpy).not.toHaveBeenCalled();
+  });
+
+  it("save does not call any of the new field setters when nothing changed", async () => {
+    const updateSpy = vi.spyOn(tasksApi, "updateTask").mockResolvedValue(TASK);
+    const energySpy = vi.spyOn(tasksApi, "setTaskEnergyRequirement");
+    const impactSpy = vi.spyOn(tasksApi, "setTaskImpact");
+    const dueDateSpy = vi.spyOn(tasksApi, "setTaskDueDate");
+    const estimateSpy = vi.spyOn(tasksApi, "setTaskTimeEstimateMinutes");
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
+    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(updateSpy).toHaveBeenCalled());
+    expect(energySpy).not.toHaveBeenCalled();
+    expect(impactSpy).not.toHaveBeenCalled();
+    expect(dueDateSpy).not.toHaveBeenCalled();
+    expect(estimateSpy).not.toHaveBeenCalled();
+  });
+
+  it("save calls setTaskDueDate and setTaskTimeEstimateMinutes when those fields were changed", async () => {
+    vi.spyOn(tasksApi, "updateTask").mockResolvedValue(TASK);
+    const dueDateSpy = vi
+      .spyOn(tasksApi, "setTaskDueDate")
+      .mockResolvedValue({ ...TASK, due_date: "2026-08-01" });
+    const estimateSpy = vi
+      .spyOn(tasksApi, "setTaskTimeEstimateMinutes")
+      .mockResolvedValue({ ...TASK, due_date: "2026-08-01", time_estimate_minutes: 15 });
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
+    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.change(screen.getByLabelText("Due date"), { target: { value: "2026-08-01" } });
+    fireEvent.click(screen.getByRole("button", { name: "Increase Time estimate" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(dueDateSpy).toHaveBeenCalledWith(TASK.id, "2026-08-01"));
+    expect(estimateSpy).toHaveBeenCalledWith(TASK.id, 15);
+  });
+
+  it("cancel resets edited scale/date/estimate fields without saving", async () => {
+    const energySpy = vi.spyOn(tasksApi, "setTaskEnergyRequirement");
+
+    renderAtTaskId(TASK.id, { tasks: [TASK], onTaskUpdated: vi.fn() });
+    await waitFor(() => expect(screen.getByText("Buy milk")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    fireEvent.click(screen.getAllByRole("button", { name: /^Energy requirement: level/ })[2]);
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(energySpy).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit" }));
+    expect(screen.getAllByRole("button", { name: /^Energy requirement: level/ })[0]).toHaveAttribute(
+      "data-filled",
+      "false",
+    );
   });
 
   it("save is disabled and does nothing when the edited title is blank", async () => {

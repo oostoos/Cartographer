@@ -9,4 +9,8 @@ export type TTask = {
   completed_at: string | null;
   order: number;
   group_id: string | null;
+  energy_requirement: number | null;
+  impact: number | null;
+  due_date: string | null;
+  time_estimate_minutes: number | null;
 };

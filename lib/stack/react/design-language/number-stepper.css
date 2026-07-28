@@ -1,0 +1,12 @@
+.number-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.number-stepper__value {
+  min-width: 3ch;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}

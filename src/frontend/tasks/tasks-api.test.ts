@@ -9,7 +9,11 @@ import {
   fetchTasks,
   reorderTasks,
   setTaskCompleted,
+  setTaskDueDate,
+  setTaskEnergyRequirement,
   setTaskGroup,
+  setTaskImpact,
+  setTaskTimeEstimateMinutes,
   updateTask,
 } from "./tasks-api";
 
@@ -80,6 +84,46 @@ describe("tasks-api", () => {
     await setTaskGroup("abc", null);
 
     expect(spy).toHaveBeenCalledWith("/tasks/abc/group", { group_id: null });
+  });
+
+  it("setTaskEnergyRequirement calls PATCH /tasks/:id/energy with energy_requirement", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskEnergyRequirement("abc", 3);
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/energy", { energy_requirement: 3 });
+  });
+
+  it("setTaskEnergyRequirement calls PATCH /tasks/:id/energy with null to clear it", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskEnergyRequirement("abc", null);
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/energy", { energy_requirement: null });
+  });
+
+  it("setTaskImpact calls PATCH /tasks/:id/impact with impact", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskImpact("abc", 5);
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/impact", { impact: 5 });
+  });
+
+  it("setTaskDueDate calls PATCH /tasks/:id/due-date with due_date", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskDueDate("abc", "2026-08-01");
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/due-date", { due_date: "2026-08-01" });
+  });
+
+  it("setTaskTimeEstimateMinutes calls PATCH /tasks/:id/time-estimate with time_estimate_minutes", async () => {
+    const spy = vi.spyOn(httpClient, "patchJson").mockResolvedValue({});
+
+    await setTaskTimeEstimateMinutes("abc", 45);
+
+    expect(spy).toHaveBeenCalledWith("/tasks/abc/time-estimate", { time_estimate_minutes: 45 });
   });
 
   it("deleteTask calls DELETE /tasks/:id", async () => {

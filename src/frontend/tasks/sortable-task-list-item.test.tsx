@@ -18,6 +18,10 @@ const TASK: TTask = {
   completed_at: null,
   order: 0,
   group_id: null,
+  energy_requirement: null,
+  impact: null,
+  due_date: null,
+  time_estimate_minutes: null,
 };
 
 function renderItem(overrides: Partial<Parameters<typeof SortableTaskListItem>[0]> = {}) {
@@ -79,5 +83,14 @@ describe("SortableTaskListItem", () => {
     screen.getByRole("button", { name: 'Delete "Buy milk"' }).click();
 
     expect(onDelete).toHaveBeenCalled();
+  });
+
+  it("renders and wires an energy pill when given energy_requirement and onSetEnergyRequirement", () => {
+    const onSetEnergyRequirement = vi.fn();
+    renderItem({ task: { ...TASK, energy_requirement: 2 }, onSetEnergyRequirement });
+
+    screen.getAllByRole("button", { name: /^Energy: level/ })[4].click();
+
+    expect(onSetEnergyRequirement).toHaveBeenCalledWith(5);
   });
 });

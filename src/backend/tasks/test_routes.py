@@ -282,3 +282,133 @@ def test_delete_task_removes_it_from_subsequent_list(client):
     response = client.get("/api/tasks")
 
     assert response.get_json()["data"] == []
+
+
+def test_patch_task_energy_sets_value(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/energy", json={"energy_requirement": 3})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["energy_requirement"] == 3
+
+
+def test_patch_task_energy_clears_with_null(client):
+    created = _create(client)
+    client.patch(f"/api/tasks/{created['id']}/energy", json={"energy_requirement": 3})
+
+    response = client.patch(f"/api/tasks/{created['id']}/energy", json={"energy_requirement": None})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["energy_requirement"] is None
+
+
+def test_patch_task_energy_out_of_range_returns_400_envelope(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/energy", json={"energy_requirement": 6})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_energy_unknown_id_returns_404_envelope(client):
+    response = client.patch("/api/tasks/does-not-exist/energy", json={"energy_requirement": 3})
+
+    assert response.status_code == 404
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_impact_sets_value(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/impact", json={"impact": 5})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["impact"] == 5
+
+
+def test_patch_task_impact_out_of_range_returns_400_envelope(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/impact", json={"impact": 0})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_impact_unknown_id_returns_404_envelope(client):
+    response = client.patch("/api/tasks/does-not-exist/impact", json={"impact": 5})
+
+    assert response.status_code == 404
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_due_date_sets_value(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/due-date", json={"due_date": "2026-08-01"})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["due_date"] == "2026-08-01"
+
+
+def test_patch_task_due_date_clears_with_null(client):
+    created = _create(client)
+    client.patch(f"/api/tasks/{created['id']}/due-date", json={"due_date": "2026-08-01"})
+
+    response = client.patch(f"/api/tasks/{created['id']}/due-date", json={"due_date": None})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["due_date"] is None
+
+
+def test_patch_task_due_date_malformed_returns_400_envelope(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/due-date", json={"due_date": "not-a-date"})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_due_date_unknown_id_returns_404_envelope(client):
+    response = client.patch("/api/tasks/does-not-exist/due-date", json={"due_date": "2026-08-01"})
+
+    assert response.status_code == 404
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_time_estimate_sets_value(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/time-estimate", json={"time_estimate_minutes": 45})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["time_estimate_minutes"] == 45
+
+
+def test_patch_task_time_estimate_clears_with_null(client):
+    created = _create(client)
+    client.patch(f"/api/tasks/{created['id']}/time-estimate", json={"time_estimate_minutes": 45})
+
+    response = client.patch(f"/api/tasks/{created['id']}/time-estimate", json={"time_estimate_minutes": None})
+
+    assert response.status_code == 200
+    assert response.get_json()["data"]["time_estimate_minutes"] is None
+
+
+def test_patch_task_time_estimate_non_multiple_of_15_returns_400_envelope(client):
+    created = _create(client)
+
+    response = client.patch(f"/api/tasks/{created['id']}/time-estimate", json={"time_estimate_minutes": 20})
+
+    assert response.status_code == 400
+    assert response.get_json()["success"] is False
+
+
+def test_patch_task_time_estimate_unknown_id_returns_404_envelope(client):
+    response = client.patch("/api/tasks/does-not-exist/time-estimate", json={"time_estimate_minutes": 45})
+
+    assert response.status_code == 404
+    assert response.get_json()["success"] is False

@@ -44,6 +44,15 @@ export function PlusIcon(props: IIconProps) {
   );
 }
 
+/** "-" icon, e.g. for a decrement button. */
+export function MinusIcon(props: IIconProps) {
+  return (
+    <IconSvg {...props}>
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </IconSvg>
+  );
+}
+
 /** "x" icon, e.g. for a close button. */
 export function CloseIcon(props: IIconProps) {
   return (

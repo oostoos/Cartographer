@@ -14,3 +14,8 @@ def isDict(value: object) -> bool:
 def isList(value: object) -> bool:
     """True if value is a list."""
     return isinstance(value, list)
+
+
+def isInt(value: object) -> bool:
+    """True if value is an int. bool is excluded even though it's an int subclass."""
+    return isinstance(value, int) and not isinstance(value, bool)

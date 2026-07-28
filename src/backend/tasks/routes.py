@@ -15,13 +15,21 @@ from src.backend.database.task import (
     getTask,
     reorderTasks,
     setTaskCompleted,
+    setTaskDueDate,
+    setTaskEnergyRequirement,
     setTaskGroup,
+    setTaskImpact,
+    setTaskTimeEstimateMinutes,
     updateTask,
 )
 from src.backend.request_validation import InvalidPayloadError, requireJsonObjectBody
 from src.backend.tasks.schemas import (
     parseTaskCreatePayload,
+    parseTaskDueDatePayload,
+    parseTaskEnergyRequirementPayload,
+    parseTaskImpactPayload,
     parseTaskReorderPayload,
+    parseTaskTimeEstimateMinutesPayload,
     parseTaskUpdatePayload,
 )
 
@@ -124,6 +132,66 @@ def setTaskGroupRoute(task_id: str):
         return buildErrorResponse(str(error))
 
     task = setTaskGroup(task_id, group_id)
+    if task is None:
+        return buildErrorResponse(f"No task with id '{task_id}'", HTTPStatus.NOT_FOUND)
+    return buildSuccessResponse(asdict(task))
+
+
+@tasks_blueprint.patch("/<task_id>/energy")
+def setTaskEnergyRequirementRoute(task_id: str):
+    """Set a task's energy requirement, or clear it when energy_requirement is null."""
+    try:
+        payload = requireJsonObjectBody()
+        parsed = parseTaskEnergyRequirementPayload(payload)
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+
+    task = setTaskEnergyRequirement(task_id, parsed.energy_requirement)
+    if task is None:
+        return buildErrorResponse(f"No task with id '{task_id}'", HTTPStatus.NOT_FOUND)
+    return buildSuccessResponse(asdict(task))
+
+
+@tasks_blueprint.patch("/<task_id>/impact")
+def setTaskImpactRoute(task_id: str):
+    """Set a task's impact, or clear it when impact is null."""
+    try:
+        payload = requireJsonObjectBody()
+        parsed = parseTaskImpactPayload(payload)
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+
+    task = setTaskImpact(task_id, parsed.impact)
+    if task is None:
+        return buildErrorResponse(f"No task with id '{task_id}'", HTTPStatus.NOT_FOUND)
+    return buildSuccessResponse(asdict(task))
+
+
+@tasks_blueprint.patch("/<task_id>/due-date")
+def setTaskDueDateRoute(task_id: str):
+    """Set a task's due date, or clear it when due_date is null."""
+    try:
+        payload = requireJsonObjectBody()
+        parsed = parseTaskDueDatePayload(payload)
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+
+    task = setTaskDueDate(task_id, parsed.due_date)
+    if task is None:
+        return buildErrorResponse(f"No task with id '{task_id}'", HTTPStatus.NOT_FOUND)
+    return buildSuccessResponse(asdict(task))
+
+
+@tasks_blueprint.patch("/<task_id>/time-estimate")
+def setTaskTimeEstimateMinutesRoute(task_id: str):
+    """Set a task's time estimate in minutes, or clear it when time_estimate_minutes is null."""
+    try:
+        payload = requireJsonObjectBody()
+        parsed = parseTaskTimeEstimateMinutesPayload(payload)
+    except InvalidPayloadError as error:
+        return buildErrorResponse(str(error))
+
+    task = setTaskTimeEstimateMinutes(task_id, parsed.time_estimate_minutes)
     if task is None:
         return buildErrorResponse(f"No task with id '{task_id}'", HTTPStatus.NOT_FOUND)
     return buildSuccessResponse(asdict(task))
